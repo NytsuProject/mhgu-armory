@@ -2,7 +2,7 @@
 
 export const A = {
   data: { categories: null, weapons: {}, sets: null, pieces: null,
-          piecesByKey: null, searchIndex: null },
+          piecesByKey: null, skillLevels: null, searchIndex: null },
   state: { view: "cover", wClass: null, wTree: null, wLevel: 1,
            aSet: null, aSlot: "head" },
   hooks: {},          // registrados por cada módulo
@@ -95,13 +95,15 @@ export async function fetchJSON(path) {
 }
 
 export async function loadCoreData() {
-  const [cats, sets, pieces, monsters] = await Promise.all([
+  const [cats, sets, pieces, monsters, skillLevels] = await Promise.all([
     fetchJSON("data/weapon-categories.json"),
     fetchJSON("data/armor/sets.json"),
     fetchJSON("data/armor/pieces.json"),
     fetchJSON("data/armor/monsters.json"),
+    fetchJSON("data/armor/skill-levels.json"),
   ]);
   A.data.categories = cats.classes;
+  A.data.skillLevels = skillLevels;
   A.data.sets = sets.sets;
   A.data.piecesMeta = pieces;
   A.data.pieces = pieces.pieces;

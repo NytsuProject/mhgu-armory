@@ -171,3 +171,32 @@
   #view-armor { grid-template-columns: 200px 1fr 250px; }
   #piece-strip { grid-template-columns: repeat(3, 1fr); }
 }
+/* Guía de niveles del conjunto */
+.skill-guide {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 310px), 1fr));
+  gap: 10px; align-items: start;
+}
+.skill-guide-card {
+  overflow: hidden; border: 1px solid var(--edge); border-radius: 4px;
+  background: rgba(255,255,255,.26);
+}
+.skill-guide-card header {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 8px;
+  padding: 8px 12px; border-bottom: 1px solid var(--edge); background: rgba(169,133,79,.17);
+}
+.skill-guide-card h3 { font-size: 14px; }
+.skill-guide-card header span { font-size: 12px; font-weight: bold; color: var(--gold-hi); }
+.guide-tier { display: grid; grid-template-columns: 3em 1fr; gap: 9px; padding: 9px 12px; font-size: 12px; }
+.guide-tier + .guide-tier { border-top: 1px dotted var(--edge); }
+.guide-tier.reached { box-shadow: inset 3px 0 var(--green); }
+.guide-points {
+  align-self: start; text-align: center; padding: 2px; font-weight: bold;
+  color: var(--gold-hi); border: 1px solid var(--edge); border-radius: 3px;
+}
+.guide-points.neg { color: var(--red); }
+.guide-tier small { display: inline-block; color: var(--text-dim); margin-left: 8px; }
+.guide-tier.reached small { color: #285c2c; font-weight: bold; }
+.skill-guide-card p, .guide-note { color: var(--text-dim); font-size: 12px; line-height: 1.5; }
+.guide-tier p { margin-top: 4px; }
+.skill-guide-card > p { padding: 10px 12px; }
+.guide-note { margin: 8px 0 0; font-size: 11px; }
