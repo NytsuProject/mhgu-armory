@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MHGU ARMORY — Monster Hunter Generations Ultimate</title>
+<link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="css/weapons.css">
+<link rel="stylesheet" href="css/armor.css">
+<link rel="stylesheet" href="css/animations.css">
+</head>
+<body>
+<div id="sprite-holder" aria-hidden="true"></div>
+
+<header id="topbar">
+  <button class="brand" data-nav="cover" title="Inicio">
+    <svg class="ic"><use href="#i-anvil"/></svg>
+    <span>MHGU <em>ARMORY</em></span>
+  </button>
+  <nav id="mainnav">
+    <button data-nav="cover">Inicio</button>
+    <button data-nav="weapons">Weapon Forge</button>
+    <button data-nav="armor">Armor Collection</button>
+  </nav>
+  <div id="global-search">
+    <svg class="ic"><use href="#i-search"/></svg>
+    <input id="gs-input" type="text" autocomplete="off" spellcheck="false"
+           placeholder="Buscar armas, armaduras, piezas, monstruos…">
+    <div id="gs-results" class="hidden"></div>
+  </div>
+</header>
+
+<main>
+  <!-- ══════════ PORTADA ══════════ -->
+  <section id="view-cover" class="view">
+    <div class="cover-ornament top"></div>
+    <div class="cover-inner">
+      <div class="cover-emblem">
+        <svg class="ic big"><use href="#i-anvil"/></svg>
+      </div>
+      <h1 class="cover-title">MHGU ARMORY</h1>
+      <div class="cover-rule"><span>✦</span></div>
+      <p class="cover-sub">Monster Hunter Generations Ultimate</p>
+      <p class="cover-tag">Enciclopedia visual de herrería · 14 clases de arma · 1.242 conjuntos</p>
+      <div class="cover-doors">
+        <button class="door" data-nav="weapons">
+          <img class="door-ic" src="assets/weapons/classes/great_sword.png" alt="">
+          <span class="door-title">Weapon Forge</span>
+          <span class="door-sub">Árboles de mejora · 1.592 líneas · 10.911 armas</span>
+        </button>
+        <button class="door" data-nav="armor">
+          <img class="door-ic" src="assets/armor/slots/chest.png" alt="">
+          <span class="door-title">Armor Collection</span>
+          <span class="door-sub">5.637 piezas · rangos bajo, alto y G</span>
+        </button>
+      </div>
+      <p class="cover-note">Datos contrastados con las tablas del juego (v1.4.0) · mhgu.db (MIT) ·
+        mhgu-collection-tracker (MIT) · nombres oficiales en español</p>
+      <p class="cover-fan">Proyecto fan de ayuda a la comunidad, sin ánimo de lucro y sin afiliación con Capcom.
+        Monster Hunter Generations Ultimate y todos sus recursos son © Capcom Co., Ltd.</p>
+    </div>
+    <div class="cover-ornament bottom"></div>
+  </section>
+
+  <!-- ══════════ WEAPON FORGE ══════════ -->
+  <section id="view-weapons" class="view hidden">
+    <aside id="w-left" class="side-panel">
+      <div class="panel-block">
+        <div class="panel-title"><svg class="ic"><use href="#i-anvil"/></svg> Clases de arma</div>
+        <div id="class-list"></div>
+      </div>
+      <div class="panel-block">
+        <div class="panel-title"><svg class="ic"><use href="#i-search"/></svg> Filtros</div>
+        <div id="w-filters">
+          <input id="wf-name" type="text" placeholder="Nombre de arma…" autocomplete="off">
+          <label>Rareza
+            <select id="wf-rarity">
+              <option value="">Todas</option>
+              <option value="1-3">1–3 (rango bajo)</option>
+              <option value="4-7">4–7 (rango alto)</option>
+              <option value="8-11">8–11 (rango G)</option>
+            </select>
+          </label>
+          <label>Elemento
+            <select id="wf-element"><option value="">Todos</option></select>
+          </label>
+          <label>Afinidad
+            <select id="wf-affinity">
+              <option value="">Cualquiera</option>
+              <option value="pos">Positiva</option>
+              <option value="neg">Negativa</option>
+              <option value="zero">Sin afinidad</option>
+            </select>
+          </label>
+          <div id="wf-bow" class="bow-filters" hidden>
+            <div class="bow-filters-title"><svg class="ic"><use href="#i-bow"/></svg> Solo arco</div>
+            <label>Tiro de arco
+              <select id="wf-arc">
+                <option value="">Todos</option>
+                <option value="Focus">Foco · Focus</option>
+                <option value="Wide">Amplio · Wide</option>
+                <option value="Blast">Ráfaga · Blast</option>
+              </select>
+            </label>
+            <label>Tipo de flecha
+              <select id="wf-shot">
+                <option value="">Todas</option>
+                <option value="Rapid">Salva · Rapid</option>
+                <option value="Pierce">Perforante · Pierce</option>
+                <option value="Spread">Abanico · Spread</option>
+                <option value="Heavy">Pesada · Heavy</option>
+              </select>
+            </label>
+            <label class="chk"><input type="checkbox" id="wf-shot-lu"> Incluir cargas solo de Recargando</label>
+          </div>
+          <button id="wf-clear" class="btn-ghost">Limpiar filtros</button>
+        </div>
+        <div id="w-count" class="count-line"></div>
+      </div>
+      <div class="panel-block legend">
+        <div class="panel-title">Leyenda</div>
+        <div><span class="lg lg-root"></span> Forja directa (placa verde)</div>
+        <div><span class="lg lg-branch"></span> Bifurcación (placa roja + Nv)</div>
+        <div><span class="lg lg-final"></span> Camino de evolución (borde dorado)</div>
+        <div><span class="lg lg-path"></span> Casilla seleccionada (anillo azul)</div>
+      </div>
+    </aside>
+
+    <div id="w-center">
+      <div id="w-toolbar">
+        <div id="w-class-title">Selecciona una clase</div>
+        <div class="toolbar-btns">
+          <button id="wt-zoomout" class="tool-btn" title="Alejar"><svg class="ic"><use href="#i-zoomout"/></svg></button>
+          <button id="wt-zoomin" class="tool-btn" title="Acercar"><svg class="ic"><use href="#i-zoomin"/></svg></button>
+          <button id="wt-center" class="tool-btn" title="Centrar árbol"><svg class="ic"><use href="#i-center"/></svg></button>
+          <button id="wt-expand" class="tool-btn text" title="Expandir todas las ramas">Expandir todo</button>
+        </div>
+      </div>
+      <div id="tree-viewport">
+        <svg id="tree-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+        <div id="tree-hint">Rueda: zoom · Arrastrar: desplazar · Clic en casilla: ver arma · Doble clic: contraer/expandir rama</div>
+      </div>
+    </div>
+
+    <aside id="w-right" class="side-panel">
+      <div id="weapon-details">
+        <div class="empty-state">
+          <svg class="ic big"><use href="#i-anvil"/></svg>
+          <p>Selecciona un arma del árbol para ver sus estadísticas, materiales de evolución y características.</p>
+        </div>
+      </div>
+    </aside>
+  </section>
+
+  <!-- ══════════ ARMOR COLLECTION ══════════ -->
+  <section id="view-armor" class="view hidden">
+    <aside id="a-left" class="side-panel">
+      <div class="panel-block">
+        <div class="panel-title"><svg class="ic"><use href="#i-shield"/></svg> Conjuntos</div>
+        <div id="a-filters">
+          <input id="af-name" type="text" placeholder="Nombre de conjunto / pieza…" autocomplete="off">
+          <div class="filter-row">
+            <select id="af-rank">
+              <option value="">Rango: todos</option>
+              <option value="LR">Rango bajo</option>
+              <option value="HR">Rango alto</option>
+              <option value="G">Rango G</option>
+            </select>
+            <select id="af-rarity">
+              <option value="">Rareza: todas</option>
+            </select>
+          </div>
+          <div class="filter-row">
+            <select id="af-cls">
+              <option value="">Tipo: todos</option>
+              <option value="B">Espadachín</option>
+              <option value="G">Artillero</option>
+              <option value="A">Ambos</option>
+            </select>
+            <select id="af-gender">
+              <option value="">Género: todos</option>
+              <option value="0">Masculino</option>
+              <option value="1">Femenino</option>
+              <option value="2">Ambos</option>
+            </select>
+          </div>
+          <select id="af-monster"><option value="">Monstruo: todos</option></select>
+          <select id="af-skill"><option value="">Habilidad: todas</option></select>
+          <button id="af-clear" class="btn-ghost">Limpiar filtros</button>
+        </div>
+        <div id="a-count" class="count-line"></div>
+      </div>
+      <div id="set-list"></div>
+    </aside>
+
+    <div id="a-center">
+      <div id="set-header"></div>
+      <div id="piece-strip"></div>
+      <div id="set-summary"></div>
+    </div>
+
+    <aside id="a-right" class="side-panel">
+      <div id="piece-details">
+        <div class="empty-state">
+          <svg class="ic big"><use href="#i-shield"/></svg>
+          <p>Selecciona un conjunto y una pieza para consultar defensa, resistencias, ranuras y habilidades.</p>
+        </div>
+      </div>
+    </aside>
+  </section>
+</main>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

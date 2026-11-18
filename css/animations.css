@@ -1,0 +1,37 @@
+/* ═══════════════════════════════════════════════════════════════
+   MHGU ARMORY — animations.css · transiciones discretas
+   ═══════════════════════════════════════════════════════════════ */
+@keyframes viewIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.view:not(.hidden) { animation: viewIn .28s ease-out; }
+
+@keyframes panelIn {
+  from { opacity: 0; transform: translateX(10px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+#weapon-details.swap, #piece-details.swap { animation: panelIn .22s ease-out; }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+#gs-results:not(.hidden) { animation: fadeIn .14s ease-out; }
+#set-header.swap, #piece-strip.swap, #set-summary.swap { animation: fadeIn .25s ease-out; }
+
+@keyframes emberPulse {
+  0%, 100% { box-shadow: 0 0 0 5px rgba(201,165,92,.06), 0 0 40px rgba(201,165,92,.12), inset 0 0 22px rgba(0,0,0,.7); }
+  50%      { box-shadow: 0 0 0 5px rgba(201,165,92,.09), 0 0 54px rgba(201,165,92,.2), inset 0 0 22px rgba(0,0,0,.7); }
+}
+.cover-emblem { animation: emberPulse 4.5s ease-in-out infinite; }
+
+@keyframes titleGlow {
+  from { opacity: 0; letter-spacing: 20px; filter: blur(3px); }
+  to   { opacity: 1; letter-spacing: 12px; filter: blur(0); }
+}
+.cover-title { animation: titleGlow .9s ease-out; }
+
+/* zoom suave del árbol (transform se aplica por JS; transición solo en zoom programático) */
+#tree-svg.smooth #tree-world { transition: transform .25s ease-out; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}

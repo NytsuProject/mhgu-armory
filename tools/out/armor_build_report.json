@@ -1,0 +1,431 @@
+{
+ "pieces": 5637,
+ "gameVerified": 5637,
+ "gameMismatch": [],
+ "esFromGame": 5637,
+ "esFromDb": 0,
+ "esMissing": 0,
+ "genderOverride": [
+  {
+   "slot": "head",
+   "sid": 160,
+   "catalog": 1,
+   "game": 0
+  },
+  {
+   "slot": "head",
+   "sid": 161,
+   "catalog": 1,
+   "game": 0
+  },
+  {
+   "slot": "head",
+   "sid": 199,
+   "catalog": 1,
+   "game": 0
+  },
+  {
+   "slot": "head",
+   "sid": 200,
+   "catalog": 1,
+   "game": 0
+  },
+  {
+   "slot": "head",
+   "sid": 464,
+   "catalog": 1,
+   "game": 0
+  },
+  {
+   "slot": "head",
+   "sid": 465,
+   "catalog": 1,
+   "game": 0
+  },
+  {
+   "slot": "head",
+   "sid": 684,
+   "catalog": 1,
+   "game": 0
+  },
+  {
+   "slot": "head",
+   "sid": 685,
+   "catalog": 1,
+   "game": 0
+  },
+  {
+   "slot": "head",
+   "sid": 928,
+   "catalog": 1,
+   "game": 0
+  },
+  {
+   "slot": "head",
+   "sid": 929,
+   "catalog": 1,
+   "game": 0
+  },
+  {
+   "slot": "chest",
+   "sid": 160,
+   "catalog": 1,
+   "game": 0
+  },
+  {
+   "slot": "chest",
+   "sid": 161,
+   "catalog": 1,
+   "game": 0
+  },
+  {
+   "slot": "chest",
+   "sid": 199,
+   "catalog": 1,
+   "game": 0
+  },
+  {
+   "slot": "chest",
+   "sid": 200,
+   "catalog": 1,
+   "game": 0
+  },
+  {
+   "slot": "chest",
+   "sid": 464,
+   "catalog": 1,
+   "game": 0
+  },
+  {
+   "slot": "chest",
+   "sid": 465,
+   "catalog": 1,
+   "game": 0
+  },
+  {
+   "slot": "chest",
+   "sid": 684,
+   "catalog": 1,
+   "game": 0
+  },
+  {
+   "slot": "chest",
+   "sid": 685,
+   "catalog": 1,
+   "game": 0
+  },
+  {
+   "slot": "chest",
+   "sid": 686,
+   "catalog": 0,
+   "game": 1
+  },
+  {
+   "slot": "chest",
+   "sid": 687,
+   "catalog": 0,
+   "game": 1
+  },
+  {
+   "slot": "chest",
+   "sid": 928,
+   "catalog": 1,
+   "game": 0
+  },
+  {
+   "slot": "chest",
+   "sid": 929,
+   "catalog": 1,
+   "game": 0
+  },
+  {
+   "slot": "arms",
+   "sid": 160,
+   "catalog": 1,
+   "game": 0
+  },
+  {
+   "slot": "arms",
+   "sid": 161,
+   "catalog": 1,
+   "game": 0
+  },
+  {
+   "slot": "arms",
+   "sid": 199,
+   "catalog": 1,
+   "game": 0
+  },
+  {
+   "slot": "arms",
+   "sid": 200,
+   "catalog": 1,
+   "game": 0
+  },
+  {
+   "slot": "arms",
+   "sid": 464,
+   "catalog": 1,
+   "game": 0
+  },
+  {
+   "slot": "arms",
+   "sid": 465,
+   "catalog": 1,
+   "game": 0
+  },
+  {
+   "slot": "arms",
+   "sid": 684,
+   "catalog": 1,
+   "game": 0
+  },
+  {
+   "slot": "arms",
+   "sid": 685,
+   "catalog": 1,
+   "game": 0
+  },
+  {
+   "slot": "arms",
+   "sid": 686,
+   "catalog": 0,
+   "game": 1
+  },
+  {
+   "slot": "arms",
+   "sid": 687,
+   "catalog": 0,
+   "game": 1
+  },
+  {
+   "slot": "arms",
+   "sid": 928,
+   "catalog": 1,
+   "game": 0
+  },
+  {
+   "slot": "arms",
+   "sid": 929,
+   "catalog": 1,
+   "game": 0
+  },
+  {
+   "slot": "waist",
+   "sid": 160,
+   "catalog": 1,
+   "game": 0
+  },
+  {
+   "slot": "waist",
+   "sid": 161,
+   "catalog": 1,
+   "game": 0
+  },
+  {
+   "slot": "waist",
+   "sid": 199,
+   "catalog": 1,
+   "game": 0
+  },
+  {
+   "slot": "waist",
+   "sid": 200,
+   "catalog": 1,
+   "game": 0
+  },
+  {
+   "slot": "waist",
+   "sid": 464,
+   "catalog": 1,
+   "game": 0
+  },
+  {
+   "slot": "waist",
+   "sid": 465,
+   "catalog": 1,
+   "game": 0
+  },
+  {
+   "slot": "waist",
+   "sid": 928,
+   "catalog": 1,
+   "game": 0
+  },
+  {
+   "slot": "waist",
+   "sid": 929,
+   "catalog": 1,
+   "game": 0
+  },
+  {
+   "slot": "legs",
+   "sid": 160,
+   "catalog": 1,
+   "game": 0
+  },
+  {
+   "slot": "legs",
+   "sid": 161,
+   "catalog": 1,
+   "game": 0
+  },
+  {
+   "slot": "legs",
+   "sid": 199,
+   "catalog": 1,
+   "game": 0
+  },
+  {
+   "slot": "legs",
+   "sid": 200,
+   "catalog": 1,
+   "game": 0
+  },
+  {
+   "slot": "legs",
+   "sid": 464,
+   "catalog": 1,
+   "game": 0
+  },
+  {
+   "slot": "legs",
+   "sid": 465,
+   "catalog": 1,
+   "game": 0
+  },
+  {
+   "slot": "legs",
+   "sid": 684,
+   "catalog": 2,
+   "game": 0
+  },
+  {
+   "slot": "legs",
+   "sid": 685,
+   "catalog": 2,
+   "game": 0
+  },
+  {
+   "slot": "legs",
+   "sid": 686,
+   "catalog": 2,
+   "game": 1
+  },
+  {
+   "slot": "legs",
+   "sid": 687,
+   "catalog": 2,
+   "game": 1
+  },
+  {
+   "slot": "legs",
+   "sid": 928,
+   "catalog": 1,
+   "game": 0
+  },
+  {
+   "slot": "legs",
+   "sid": 929,
+   "catalog": 1,
+   "game": 0
+  },
+  {
+   "slot": "legs",
+   "sid": 1273,
+   "catalog": 2,
+   "game": 1
+  },
+  {
+   "slot": "legs",
+   "sid": 1274,
+   "catalog": 2,
+   "game": 1
+  },
+  {
+   "slot": "legs",
+   "sid": 1275,
+   "catalog": 2,
+   "game": 0
+  },
+  {
+   "slot": "legs",
+   "sid": 1276,
+   "catalog": 2,
+   "game": 0
+  }
+ ],
+ "dbGenderMismatch": [],
+ "sets": 1242,
+ "setsIncomplete": 206,
+ "gmdEmpty": 0,
+ "unreleased": 195,
+ "catUnmatched": [],
+ "setsNoMonster": [
+  "Chainmail",
+  "Metal Boots",
+  "Metal Feet",
+  "Melahoa",
+  "Melahoa",
+  "Edel",
+  "Edel",
+  "Skull Visage",
+  "Skull Mask",
+  "Chainmail S",
+  "Silver Metal Boots",
+  "Silver Feet",
+  "Melahoa S",
+  "Melahoa S",
+  "Melahoa U",
+  "Melahoa U",
+  "Edel S",
+  "Edel S",
+  "Chainmail S",
+  "Skull Visage S",
+  "Skull Mask S",
+  "Chakra",
+  "Varia Suit",
+  "Varia Suit",
+  "Zero Suit",
+  "Zero Suit",
+  "Varia Suit",
+  "Varia Suit",
+  "Zero Suit",
+  "Zero Suit",
+  "Ancient",
+  "Ancient",
+  "Master's",
+  "Master's",
+  "Takami Feather",
+  "Hayabusa Feather",
+  "Kakuju Feather",
+  "Sword Saint Earring",
+  "Barrage Earring",
+  "Flame Earring",
+  "Shock Earring",
+  "Ice Earring",
+  "Water Earring",
+  "Comet Earring",
+  "Edel X",
+  "Edel X",
+  "Chain X",
+  "Chainmail X",
+  "Melahoa X",
+  "Melahoa X",
+  "Melahoa Z",
+  "Melahoa Z",
+  "Silver Boots X",
+  "Metal Feet X",
+  "Yaksha",
+  "Carnage",
+  "Kaiserin",
+  "Kaiserin",
+  "Ancient X",
+  "Ancient X",
+  "Master's X",
+  "Master's X",
+  "Hylian",
+  "Hylian"
+ ],
+ "setsWithMonster": 1178
+}

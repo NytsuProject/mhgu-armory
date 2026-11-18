@@ -1,0 +1,305 @@
+{
+ "great_sword": {
+  "levels": 958,
+  "esMatched": 958,
+  "lineageOk": 958,
+  "lineageBad": 0,
+  "noEs": [],
+  "lineageIssues": [],
+  "treesWithMonster": 126
+ },
+ "long_sword": {
+  "levels": 875,
+  "esMatched": 865,
+  "lineageOk": 865,
+  "lineageBad": 0,
+  "noEs": [
+   {
+    "tree": 100,
+    "lv": 1,
+    "name": "Starlight Gate (DUMMY)"
+   },
+   {
+    "tree": 100,
+    "lv": 2,
+    "name": "Starlight Gate (DUMMY)"
+   },
+   {
+    "tree": 100,
+    "lv": 3,
+    "name": "Eternal Gate (DUMMY)"
+   },
+   {
+    "tree": 100,
+    "lv": 4,
+    "name": "Eternal Gate (DUMMY)"
+   },
+   {
+    "tree": 100,
+    "lv": 5,
+    "name": "Infinity Gate (DUMMY)"
+   },
+   {
+    "tree": 126,
+    "lv": 1,
+    "name": "Flame Katana (DUMMY)"
+   },
+   {
+    "tree": 126,
+    "lv": 2,
+    "name": "Flame Katana (DUMMY)"
+   },
+   {
+    "tree": 126,
+    "lv": 3,
+    "name": "Eternal Flame (DUMMY)"
+   },
+   {
+    "tree": 126,
+    "lv": 4,
+    "name": "Eternal Flame (DUMMY)"
+   },
+   {
+    "tree": 126,
+    "lv": 5,
+    "name": "Universe Flame (DUMMY)"
+   }
+  ],
+  "lineageIssues": [],
+  "treesWithMonster": 116
+ },
+ "sword_and_shield": {
+  "levels": 877,
+  "esMatched": 872,
+  "lineageOk": 872,
+  "lineageBad": 0,
+  "noEs": [
+   {
+    "tree": 100,
+    "lv": 1,
+    "name": "Star Knight Sword (DUMMY)"
+   },
+   {
+    "tree": 100,
+    "lv": 2,
+    "name": "Star Knight Sword (DUMMY)"
+   },
+   {
+    "tree": 100,
+    "lv": 3,
+    "name": "Eternal Sword (DUMMY)"
+   },
+   {
+    "tree": 100,
+    "lv": 4,
+    "name": "Eternal Sword (DUMMY)"
+   },
+   {
+    "tree": 100,
+    "lv": 5,
+    "name": "Infinity Sword (DUMMY)"
+   }
+  ],
+  "lineageIssues": [],
+  "treesWithMonster": 115
+ },
+ "dual_blades": {
+  "levels": 844,
+  "esMatched": 839,
+  "lineageOk": 839,
+  "lineageBad": 0,
+  "noEs": [
+   {
+    "tree": 99,
+    "lv": 1,
+    "name": "Twin Star Blades LV1 (DUMMY)"
+   },
+   {
+    "tree": 99,
+    "lv": 2,
+    "name": "Twin Star Blades LV2 (DUMMY)"
+   },
+   {
+    "tree": 99,
+    "lv": 3,
+    "name": "Eternal Star Blades LV3 (DUMMY)"
+   },
+   {
+    "tree": 99,
+    "lv": 4,
+    "name": "Eternal Star Blades LV4 (DUMMY)"
+   },
+   {
+    "tree": 99,
+    "lv": 5,
+    "name": "Reverie Star Blades LV5 (DUMMY)"
+   }
+  ],
+  "lineageIssues": [],
+  "treesWithMonster": 112
+ },
+ "hammer": {
+  "levels": 885,
+  "esMatched": 885,
+  "lineageOk": 885,
+  "lineageBad": 0,
+  "noEs": [],
+  "lineageIssues": [],
+  "treesWithMonster": 122
+ },
+ "hunting_horn": {
+  "levels": 801,
+  "esMatched": 796,
+  "lineageOk": 796,
+  "lineageBad": 0,
+  "noEs": [
+   {
+    "tree": 88,
+    "lv": 1,
+    "name": "Tama Frypan (DUMMY)"
+   },
+   {
+    "tree": 88,
+    "lv": 2,
+    "name": "Tama Frypan (DUMMY)"
+   },
+   {
+    "tree": 88,
+    "lv": 3,
+    "name": "Hot Tama Frypan (DUMMY)"
+   },
+   {
+    "tree": 88,
+    "lv": 4,
+    "name": "Hot Tama Frypan (DUMMY)"
+   },
+   {
+    "tree": 88,
+    "lv": 5,
+    "name": "Fiery Tama Frypan (DUMMY)"
+   }
+  ],
+  "lineageIssues": [],
+  "treesWithMonster": 105,
+  "songsEsMatched": 278
+ },
+ "lance": {
+  "levels": 857,
+  "esMatched": 857,
+  "lineageOk": 857,
+  "lineageBad": 0,
+  "noEs": [],
+  "lineageIssues": [],
+  "treesWithMonster": 115
+ },
+ "gunlance": {
+  "levels": 809,
+  "esMatched": 809,
+  "lineageOk": 809,
+  "lineageBad": 0,
+  "noEs": [],
+  "lineageIssues": [],
+  "treesWithMonster": 107
+ },
+ "switch_axe": {
+  "levels": 769,
+  "esMatched": 765,
+  "lineageOk": 765,
+  "lineageBad": 0,
+  "noEs": [
+   {
+    "tree": 109,
+    "lv": 1,
+    "name": "Red Tomahawk (DUMMY)"
+   },
+   {
+    "tree": 109,
+    "lv": 2,
+    "name": "Crimson Tomahawk (DUMMY)"
+   },
+   {
+    "tree": 109,
+    "lv": 3,
+    "name": "Crimson Tomahawk (DUMMY)"
+   },
+   {
+    "tree": 109,
+    "lv": 4,
+    "name": "Purgatory Tomahawk (DUMMY)"
+   }
+  ],
+  "lineageIssues": [],
+  "treesWithMonster": 102
+ },
+ "charge_blade": {
+  "levels": 533,
+  "esMatched": 528,
+  "lineageOk": 528,
+  "lineageBad": 0,
+  "noEs": [
+   {
+    "tree": 59,
+    "lv": 1,
+    "name": "Starlight Axe (DUMMY)"
+   },
+   {
+    "tree": 59,
+    "lv": 2,
+    "name": "Starlight Axe (DUMMY)"
+   },
+   {
+    "tree": 59,
+    "lv": 3,
+    "name": "Grandstar Axe (DUMMY)"
+   },
+   {
+    "tree": 59,
+    "lv": 4,
+    "name": "Grandstar Axe (DUMMY)"
+   },
+   {
+    "tree": 59,
+    "lv": 5,
+    "name": "Grandcross Axe (DUMMY)"
+   }
+  ],
+  "lineageIssues": [],
+  "treesWithMonster": 73
+ },
+ "insect_glaive": {
+  "levels": 547,
+  "esMatched": 547,
+  "lineageOk": 547,
+  "lineageBad": 0,
+  "noEs": [],
+  "lineageIssues": [],
+  "treesWithMonster": 79
+ },
+ "light_bowgun": {
+  "levels": 703,
+  "esMatched": 703,
+  "lineageOk": 703,
+  "lineageBad": 0,
+  "noEs": [],
+  "lineageIssues": [],
+  "treesWithMonster": 104
+ },
+ "heavy_bowgun": {
+  "levels": 718,
+  "esMatched": 718,
+  "lineageOk": 718,
+  "lineageBad": 0,
+  "noEs": [],
+  "lineageIssues": [],
+  "treesWithMonster": 101
+ },
+ "bow": {
+  "levels": 735,
+  "esMatched": 735,
+  "lineageOk": 735,
+  "lineageBad": 0,
+  "noEs": [],
+  "lineageIssues": [],
+  "treesWithMonster": 102
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "classes": [
+  {
+   "slug": "great_sword",
+   "file": "weapons/great-sword.json",
+   "label": "Great Sword",
+   "labelEs": "Gran espada",
+   "trees": 136,
+   "levels": 958
+  },
+  {
+   "slug": "long_sword",
+   "file": "weapons/long-sword.json",
+   "label": "Long Sword",
+   "labelEs": "Espada larga",
+   "trees": 126,
+   "levels": 875
+  },
+  {
+   "slug": "sword_and_shield",
+   "file": "weapons/sword-and-shield.json",
+   "label": "Sword & Shield",
+   "labelEs": "Espada y escudo",
+   "trees": 128,
+   "levels": 877
+  },
+  {
+   "slug": "dual_blades",
+   "file": "weapons/dual-blades.json",
+   "label": "Dual Blades",
+   "labelEs": "Espadas dobles",
+   "trees": 125,
+   "levels": 844
+  },
+  {
+   "slug": "hammer",
+   "file": "weapons/hammer.json",
+   "label": "Hammer",
+   "labelEs": "Martillo",
+   "trees": 131,
+   "levels": 885
+  },
+  {
+   "slug": "hunting_horn",
+   "file": "weapons/hunting-horn.json",
+   "label": "Hunting Horn",
+   "labelEs": "Cornamusa",
+   "trees": 111,
+   "levels": 801
+  },
+  {
+   "slug": "lance",
+   "file": "weapons/lance.json",
+   "label": "Lance",
+   "labelEs": "Lanza",
+   "trees": 126,
+   "levels": 857
+  },
+  {
+   "slug": "gunlance",
+   "file": "weapons/gunlance.json",
+   "label": "Gunlance",
+   "labelEs": "Lanza pistola",
+   "trees": 114,
+   "levels": 809
+  },
+  {
+   "slug": "switch_axe",
+   "file": "weapons/switch-axe.json",
+   "label": "Switch Axe",
+   "labelEs": "Hacha espada",
+   "trees": 109,
+   "levels": 769
+  },
+  {
+   "slug": "charge_blade",
+   "file": "weapons/charge-blade.json",
+   "label": "Charge Blade",
+   "labelEs": "Hacha cargada",
+   "trees": 80,
+   "levels": 533
+  },
+  {
+   "slug": "insect_glaive",
+   "file": "weapons/insect-glaive.json",
+   "label": "Insect Glaive",
+   "labelEs": "Glaive insecto",
+   "trees": 82,
+   "levels": 547
+  },
+  {
+   "slug": "light_bowgun",
+   "file": "weapons/light-bowgun.json",
+   "label": "Light Bowgun",
+   "labelEs": "Ballesta ligera",
+   "trees": 109,
+   "levels": 703
+  },
+  {
+   "slug": "heavy_bowgun",
+   "file": "weapons/heavy-bowgun.json",
+   "label": "Heavy Bowgun",
+   "labelEs": "Ballesta pesada",
+   "trees": 108,
+   "levels": 718
+  },
+  {
+   "slug": "bow",
+   "file": "weapons/bow.json",
+   "label": "Bow",
+   "labelEs": "Arco",
+   "trees": 107,
+   "levels": 735
+  }
+ ]
+}
