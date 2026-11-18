@@ -1,5 +1,5 @@
 /* search.js — buscador global (armas, conjuntos, piezas, monstruos) */
-import { A, esc, icon, classIcon, slotIcon, monsterIcon, rarColor, loadSearchIndex, loadWeaponClass } from "./app.js";
+import { A, brandIcon, esc, classIcon, slotIcon, monsterIcon, rarColor, loadSearchIndex, loadWeaponClass } from "./app.js";
 import { openWeapon, openArmor, showView } from "./navigation.js";
 
 const norm = s => (s || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
@@ -69,7 +69,7 @@ function renderResults() {
     <div class="gs-group">${g.group}</div>
     ${g.items.map(it => {
       const i = flat++;
-      let icHtml = icon("anvil"), main = "", sub = "";
+      let icHtml = brandIcon(), main = "", sub = "";
       if (it.kind === "w") { icHtml = classIcon(it.e.c); main = it.hit; sub = classLabel(it.e.c); }
       if (it.kind === "a") { icHtml = slotIcon("chest"); main = it.hit; sub = `R${it.e.r}`; }
       if (it.kind === "p") { icHtml = slotIcon(it.e.s); main = it.hit; sub = SLOT_ES[it.e.s]; }

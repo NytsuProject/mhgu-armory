@@ -14,6 +14,7 @@ aspecto de la pantalla de herrería del juego (pergamino y madera).
   expandir ramas, filtros por clase y (en el arco) por tipo de tiro y flecha.
 - **Armor Collection** — 1.242 conjuntos y 5.637 piezas (rangos bajo, alto y G)
   con defensa, resistencias, habilidades y ranuras.
+- **Builder** — elige el arma y su nivel, combina cinco piezas y un talismán personalizado; engarza joyas en las ranuras de cada uno; consulta los puntos positivos y negativos y sus umbrales en tiempo real.
 - **Buscador global** y tooltips de procedencia (monstruo de origen) en armas,
   conjuntos y piezas.
 - Nombres oficiales en español cuando están verificados; etiquetas
@@ -42,3 +43,9 @@ referencia fan no comercial; si Capcom o cualquier titular lo solicita, se
 retirarán de inmediato. Los glifos estructurales en SVG son obra propia.
 Código y datos de terceros usados con atribución (MIT). Ver
 [`docs/README.md`](docs/README.md) y [`docs/DATA_SOURCES.md`](docs/DATA_SOURCES.md).
+En **Builder → Exportar build**, «Copiar enlace» crea una copia del equipo en el
+fragmento de la URL (`#builder=v2.…` con arma; compatible con los enlaces v1); no requiere cuenta ni almacenamiento en un
+servidor. «Descargar imagen» genera una ficha completa con los engarces por pieza,
+el talismán, la defensa, las resistencias y los puntos y efectos de habilidad. La ficha
+del arma distingue ataque físico, elemento/estado, afinidad base y potencial; indica
+los requisitos de los efectos condicionales.

@@ -40,6 +40,7 @@ export const SHOT_ES = { Rapid: "Salva", Pierce: "Perforante", Spread: "Abanico"
 export const esc = s => String(s ?? "").replace(/[&<>"']/g,
   c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
+export const brandIcon = (cls = 'ic') => `<img class="${cls}" src="assets/brand/armory-crest.svg" alt="">`;
 export const icon = (id, cls = "ic") => `<svg class="${cls}"><use href="#i-${id}"/></svg>`;
 
 /* iconos reales extraídos del juego (ver docs/DATA_SOURCES.md) */
@@ -58,10 +59,10 @@ export async function probeGameIcons() {
 }
 const glyph = (id, cls, extra = "") =>
   `<svg class="${cls} glyph${extra ? " " + extra : ""}"><use href="#i-${id}"/></svg>`;
+const raritySuffix = rar => rar == null ? "" : rar >= 11 ? "_rX" : `_r${rar}`;
 export const classIcon = (slug, rar = null, cls = "wicon") => {
   if (!gameIcons) return glyph(slug, cls);
-  const suf = rar == null ? "" : rar >= 11 ? "_rX" : `_r${rar}`;
-  return `<img class="${cls}" src="assets/weapons/classes/${slug}${suf}.png" alt="" loading="lazy">`;
+  return `<img class="${cls}" src="assets/weapons/classes/${slug}${raritySuffix(rar)}.png" alt="" loading="lazy">`;
 };
 export const eleIcon = (es, cls = "eicon") => {
   if (!ELE_ICON[es]) return "";
@@ -69,8 +70,8 @@ export const eleIcon = (es, cls = "eicon") => {
   return `<img class="${cls}" src="assets/icons/elements/${ELE_ICON[es]}.png" alt="${esc(es)}" loading="lazy">`;
 };
 export const eleIconPath = es => (gameIcons && ELE_ICON[es]) ? `assets/icons/elements/${ELE_ICON[es]}.png` : null;
-export const slotIcon = (slot, cls = "sicon") =>
-  gameIcons ? `<img class="${cls}" src="assets/armor/slots/${slot}.png" alt="" loading="lazy">` : glyph(slot, cls);
+export const slotIcon = (slot, cls = "sicon", rar = null) =>
+  gameIcons ? `<img class="${cls}" src="assets/armor/slots/${slot}${raritySuffix(rar)}.png" alt="" loading="lazy">` : glyph(slot, cls);
 export const monsterIcon = (id, cls = "micon") =>
   gameIcons ? `<img class="${cls}" src="assets/monsters/${id}.webp" alt="" loading="lazy" onerror="this.remove()">` : glyph("monster", cls);
 
@@ -158,10 +159,13 @@ async function boot() {
   tree.init();
   details.init();
   armor.init();
+  (await import("./builder.js")).init();
   search.init();
   filters.init();
 
-  nav.showView("cover");
+  const builderRoute = () => location.hash === '#builder' || location.hash.startsWith('#builder=');
+  nav.showView(builderRoute() ? 'builder' : 'cover');
+  window.addEventListener('hashchange', () => { if (builderRoute()) nav.showView('builder'); });
 }
 
 boot().catch(err => {

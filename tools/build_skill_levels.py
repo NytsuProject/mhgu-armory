@@ -11,6 +11,8 @@ ARMOR = Path(__file__).resolve().parents[1] / 'data' / 'armor'
 def build(db):
     pieces = json.loads((ARMOR / 'pieces.json').read_text(encoding='utf-8'))['pieces']
     trees = {en for piece in pieces for en, _, _ in piece['sk']}
+    jewels = json.loads((ARMOR / 'decorations.json').read_text(encoding='utf-8'))
+    trees.update(en for jewel in jewels for en, _, _ in jewel['sk'])
     levels = {tree: [] for tree in sorted(trees - {'Torso Up'})}  # efecto por pieza, sin umbral
     for tree, points, name, desc in db.execute('''
         SELECT t.name, s.required_skill_tree_points, s.name_es, s.description_es

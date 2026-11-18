@@ -1,7 +1,7 @@
 /* navigation.js — enrutado entre vistas y apertura profunda de armas/conjuntos */
 import { A } from "./app.js";
 
-const VIEWS = ["cover", "weapons", "armor"];
+const VIEWS = ["cover", "weapons", "armor", "builder"];
 
 export function showView(name) {
   A.state.view = name;
@@ -10,6 +10,7 @@ export function showView(name) {
   }
   document.querySelectorAll("#mainnav button").forEach(b =>
     b.classList.toggle("active", b.dataset.nav === name));
+  if (name === "builder") A.hooks.openBuilder();
   if (name === "weapons" && !A.state.wClass) {
     A.hooks.loadClass?.("great_sword");
   }
