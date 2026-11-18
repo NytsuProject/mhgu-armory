@@ -1,5 +1,5 @@
 /* weapon-details.js — panel derecho: estadísticas por nivel y rasgos de clase */
-import { A, esc, icon, classIcon, eleIcon, rarColor, rarBadge, vBadge, rankOf, RANK_ES,
+import { A, brandIcon, esc, icon, classIcon, eleIcon, rarColor, rarBadge, vBadge, rankOf, RANK_ES,
          ELE_COLORS, NOTE_COLORS, NOTE_ES, SHARP_COLORS, SHARP_ES, ARC_ES, SHOT_ES, slotCount } from "./app.js";
 import { monsterRows } from "./tooltip.js";
 
@@ -147,7 +147,7 @@ function lineageHTML(t) {
       </button>`);
   } else {
     out.push(`<div class="lin-kind">Origen</div>
-      <div class="lin-btn" style="cursor:default">${icon("anvil")}<span>Forja directa (sin arma previa)</span></div>`);
+      <div class="lin-btn" style="cursor:default">${brandIcon()}<span>Forja directa (sin arma previa)</span></div>`);
   }
   const kids = d.children.get(t.id) || [];
   if (kids.length) {
@@ -224,7 +224,7 @@ export function renderWeaponDetails(t, lv) {
 
 export function clearWeaponDetails() {
   document.getElementById("weapon-details").innerHTML = `
-    <div class="empty-state">${icon("anvil", "ic big")}
+    <div class="empty-state">${brandIcon("ic big")}
       <p>Selecciona un arma del árbol para ver sus estadísticas y características.</p>
     </div>`;
 }

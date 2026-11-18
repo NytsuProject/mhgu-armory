@@ -92,6 +92,13 @@
       "description": "Combina los efectos de \"suerte +1\" y \"experto capturas\"."
     }
   ],
+  "Bherna": [
+    {
+      "points": 10,
+      "name": "Alma de Bherna",
+      "description": "Combina los efectos de \"resistencia al fuego +15\" y \"mitad hambre\"."
+    }
+  ],
   "Bind Res": [
     {
       "points": 10,
@@ -116,6 +123,13 @@
       "points": 10,
       "name": "Filoescama afilada",
       "description": "Esquiva con el arma desenvainada para conseguir diferentes efectos. Refuerza el revestimiento de alcance a los arcos."
+    }
+  ],
+  "Blast C+": [
+    {
+      "points": 10,
+      "name": "Rev. nitro",
+      "description": "Permite usar revestimientos de nitro cuando llevas un arco."
     }
   ],
   "Bleeding": [
@@ -212,6 +226,13 @@
       "description": "Esquivar te cubre de burbujas, lo cual aumenta tu capacidad para evitar ataques enemigos."
     }
   ],
+  "C.Range C+": [
+    {
+      "points": 10,
+      "name": "Rev. alcance",
+      "description": "Permite usar revestimientos de alcance cuando llevas un arco."
+    }
+  ],
   "C.beard": [
     {
       "points": 10,
@@ -274,6 +295,18 @@
       "points": 15,
       "name": "Buscamuletos",
       "description": "Te permite extraer dos amuletos a la vez... Bueno, quizás."
+    }
+  ],
+  "Clust S+": [
+    {
+      "points": 10,
+      "name": "Mun. de grupo Nv1",
+      "description": "Permite que se carguen los disparos de grupo Nv1."
+    },
+    {
+      "points": 15,
+      "name": "Mun. de grupo",
+      "description": "Permite que se carguen todos los niveles de disparos de grupo."
     }
   ],
   "Cold Res": [
@@ -351,6 +384,18 @@
       "points": 10,
       "name": "Clandestino",
       "description": "Combina los efectos de \"carga+\", \"combinación +20%\" y \"sigilo\"."
+    }
+  ],
+  "Crag S+": [
+    {
+      "points": 10,
+      "name": "Mun. explosiva Nv1",
+      "description": "Permite que se carguen los disparos explosivos Nv1."
+    },
+    {
+      "points": 15,
+      "name": "Mun. explosiva",
+      "description": "Permite que se carguen todos los niveles de disparos explosivos."
     }
   ],
   "Crisis": [
@@ -604,6 +649,18 @@
       "description": "Combina los efectos de \"corredor +1\", \"cachiporra pesada\", \"Normal/salva+\" y \"ataque +2\"."
     }
   ],
+  "Elem C+": [
+    {
+      "points": 10,
+      "name": "Rev. elemental Nv1",
+      "description": "Permite aplicar rev. elementales de nivel 1 al utilizar un arco."
+    },
+    {
+      "points": 15,
+      "name": "Rev. elem. (todos)",
+      "description": "Permite aplicar revestimientos elementales de todos los niveles al usar un arco."
+    }
+  ],
   "Elemental": [
     {
       "points": 10,
@@ -645,6 +702,13 @@
       "points": -10,
       "name": "Evasión -1",
       "description": "Reduce el periodo de invulnerabilidad durante la evasión."
+    }
+  ],
+  "Exhaust C+": [
+    {
+      "points": 10,
+      "name": "Rev. fatiga",
+      "description": "Permite usar revestimientos de fatiga cuando llevas un arco."
     }
   ],
   "Expert": [
@@ -762,6 +826,13 @@
       "points": -10,
       "name": "Resist. fuego -20",
       "description": "Reduce la resistencia al fuego en 20."
+    }
+  ],
+  "Flying Pub": [
+    {
+      "points": 10,
+      "name": "Alma de taberna",
+      "description": "Combina los efectos de \"boxeador\" y \"músico\"."
     }
   ],
   "Frenzy Res": [
@@ -1062,6 +1133,13 @@
       "description": "Facilita el aturdimiento de monstruos."
     }
   ],
+  "Kokoto": [
+    {
+      "points": 10,
+      "name": "Alma de Kokoto",
+      "description": "Combina los efectos de \"capricho +1\" y \"resistencia al rayo +15\"."
+    }
+  ],
   "Lasting Pwr": [
     {
       "points": 10,
@@ -1149,11 +1227,25 @@
       "description": "Combina los efectos de \"constitución +1\" y \"evasión +1\"."
     }
   ],
+  "Normal S+": [
+    {
+      "points": 10,
+      "name": "Mun. normal",
+      "description": "Permite que se carguen todos los niveles de disparos normales."
+    }
+  ],
   "Normal Up": [
     {
       "points": 10,
       "name": "Normal/salva+",
       "description": "Aumenta la potencia de disparos normales y flechas en salva."
+    }
+  ],
+  "Para C+": [
+    {
+      "points": 10,
+      "name": "Rev. paraliz.",
+      "description": "Permite usar revestimientos paralizantes cuando llevas un arco."
     }
   ],
   "Paralysis": [
@@ -1168,6 +1260,18 @@
       "description": "Dobla la duración de la parálisis."
     }
   ],
+  "Pellet S+": [
+    {
+      "points": 10,
+      "name": "Mun. perdigón Nv1",
+      "description": "Permite que se carguen los disparos de perdigón Nv1."
+    },
+    {
+      "points": 15,
+      "name": "Mun. perdigón",
+      "description": "Permite que se carguen todos los niveles de disparos de perdigón."
+    }
+  ],
   "Pellet Up": [
     {
       "points": 10,
@@ -1180,6 +1284,18 @@
       "points": 10,
       "name": "Gurú de captura",
       "description": "Aporta conocimiento sobre cuándo se puede capturar a un monstruo grande."
+    }
+  ],
+  "Pierce S+": [
+    {
+      "points": 10,
+      "name": "Mun. perfor. Nv1",
+      "description": "Permite que se carguen los disparos perforadores Nv1."
+    },
+    {
+      "points": 15,
+      "name": "Mun. perforadora",
+      "description": "Permite que se carguen todos los niveles de disparos perforadores."
     }
   ],
   "Pierce Up": [
@@ -1199,6 +1315,20 @@
       "points": -10,
       "name": "Doble veneno",
       "description": "Duplica el daño recibido por veneno."
+    }
+  ],
+  "Poison C+": [
+    {
+      "points": 10,
+      "name": "Rev. veneno",
+      "description": "Permite usar revestimientos de veneno cuando llevas un arco."
+    }
+  ],
+  "Pokke": [
+    {
+      "points": 10,
+      "name": "Alma de Pokke",
+      "description": "Combina los efectos de \"resistencia al hielo +15\" y \"glotón\"."
     }
   ],
   "Potential": [
@@ -1548,6 +1678,13 @@
       "description": "Dobla la duración del sueño."
     }
   ],
+  "Sleep C+": [
+    {
+      "points": 10,
+      "name": "Rev. sueño",
+      "description": "Permite usar revestimientos de sueño cuando llevas un arco."
+    }
+  ],
   "Snowbaron": [
     {
       "points": 10,
@@ -1560,6 +1697,13 @@
       "points": 10,
       "name": "Alma de Alud X",
       "description": "Combina los efectos de \"distancia evasión\", \"maestro de monta\" y \"estado forma +1\"."
+    }
+  ],
+  "Soaratorium": [
+    {
+      "points": 10,
+      "name": "Alma de Flotatorio",
+      "description": "Combina los efectos de \"resistencia al draco +15\" y \"bioinvestigador\"."
     }
   ],
   "Soulseer": [
@@ -1884,6 +2028,13 @@
       "points": 15,
       "name": "Resist. viento +2",
       "description": "Anula la presión del viento de casi todos los monstruos."
+    }
+  ],
+  "Yukumo": [
+    {
+      "points": 10,
+      "name": "Alma de Yukumo",
+      "description": "Combina los efectos de \"cazamiel\" y \"resistencia al agua +15\"."
     }
   ]
 }

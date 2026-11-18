@@ -113,7 +113,7 @@ body::before {
   text-shadow: 0 1px 0 rgba(0,0,0,.6);
 }
 .brand em { font-style: normal; color: var(--sel-hi); }
-.brand .ic { width: 20px; height: 20px; }
+.brand .ic { width: 29px; height: 31px; object-fit: contain; }
 .brand:hover { color: #fff; }
 
 #mainnav { display: flex; gap: 6px; }
@@ -202,11 +202,9 @@ main { height: calc(100vh - var(--topbar-h)); }
 .cover-emblem {
   width: 96px; height: 96px; margin: 0 auto 18px;
   display: flex; align-items: center; justify-content: center;
-  color: var(--on-wood);
-  border: 3px solid var(--wood-dk); border-radius: 50%;
-  background: radial-gradient(circle at 50% 35%, var(--wood-lt), var(--wood) 75%);
-  box-shadow: 0 0 0 5px rgba(240,192,64,.15), 0 0 30px rgba(0,0,0,.35), inset 0 0 22px rgba(0,0,0,.5);
+  filter: drop-shadow(0 3px 2px rgba(65,45,18,.32));
 }
+.cover-emblem img.ic { width: 86px; height: 94px; }
 .cover-title {
   font-family: var(--font-display); font-size: clamp(34px, 6vw, 56px);
   letter-spacing: 10px; font-weight: 700; color: var(--gold-hi);

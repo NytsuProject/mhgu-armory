@@ -3,24 +3,27 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="assets/brand/armory-crest.svg">
 <title>MHGU ARMORY — Monster Hunter Generations Ultimate</title>
 <link rel="stylesheet" href="css/main.css">
 <link rel="stylesheet" href="css/weapons.css">
-<link rel="stylesheet" href="css/armor.css">
+<link rel="stylesheet" href="css/armor.css?v=skill-guide">
 <link rel="stylesheet" href="css/animations.css">
+<link rel="stylesheet" href="css/builder.css">
 </head>
 <body>
 <div id="sprite-holder" aria-hidden="true"></div>
 
 <header id="topbar">
   <button class="brand" data-nav="cover" title="Inicio">
-    <svg class="ic"><use href="#i-anvil"/></svg>
+    <img class="ic" src="assets/brand/armory-crest.svg" alt="">
     <span>MHGU <em>ARMORY</em></span>
   </button>
   <nav id="mainnav">
     <button data-nav="cover">Inicio</button>
     <button data-nav="weapons">Weapon Forge</button>
     <button data-nav="armor">Armor Collection</button>
+    <button data-nav="builder">Builder</button>
   </nav>
   <div id="global-search">
     <svg class="ic"><use href="#i-search"/></svg>
@@ -36,7 +39,7 @@
     <div class="cover-ornament top"></div>
     <div class="cover-inner">
       <div class="cover-emblem">
-        <svg class="ic big"><use href="#i-anvil"/></svg>
+        <img class="ic big" src="assets/brand/armory-crest.svg" alt="">
       </div>
       <h1 class="cover-title">MHGU ARMORY</h1>
       <div class="cover-rule"><span>✦</span></div>
@@ -53,6 +56,11 @@
           <span class="door-title">Armor Collection</span>
           <span class="door-sub">5.637 piezas · rangos bajo, alto y G</span>
         </button>
+        <button class="door" data-nav="builder">
+          <img class="door-ic" src="assets/icons/items/jewel.png" alt="">
+          <span class="door-title">Builder</span>
+          <span class="door-sub">Taller manual de armaduras y joyas</span>
+        </button>
       </div>
       <p class="cover-note">Datos contrastados con las tablas del juego (v1.4.0) · mhgu.db (MIT) ·
         mhgu-collection-tracker (MIT) · nombres oficiales en español</p>
@@ -66,7 +74,7 @@
   <section id="view-weapons" class="view hidden">
     <aside id="w-left" class="side-panel">
       <div class="panel-block">
-        <div class="panel-title"><svg class="ic"><use href="#i-anvil"/></svg> Clases de arma</div>
+        <div class="panel-title"><img class="ic" src="assets/brand/armory-crest.svg" alt=""> Clases de arma</div>
         <div id="class-list"></div>
       </div>
       <div class="panel-block">
@@ -145,7 +153,7 @@
     <aside id="w-right" class="side-panel">
       <div id="weapon-details">
         <div class="empty-state">
-          <svg class="ic big"><use href="#i-anvil"/></svg>
+          <img class="ic big" src="assets/brand/armory-crest.svg" alt="">
           <p>Selecciona un arma del árbol para ver sus estadísticas, materiales de evolución y características.</p>
         </div>
       </div>
@@ -207,6 +215,65 @@
         </div>
       </div>
     </aside>
+  </section>
+  <section id="view-builder" class="view hidden" aria-labelledby="builder-title">
+    <div class="b-workshop">
+      <header class="b-heading"><div><div class="b-kicker">Herrería &nbsp;/&nbsp; Mesa de equipo</div>
+        <h1 id="builder-title">Builder de armaduras</h1>
+        <p>Combina piezas y engarza joyas para ajustar tus habilidades.</p></div>
+        <span class="b-seal"><img src="assets/weapons/classes/hammer_r3.png" alt=""> Taller manual</span></header>
+      <section class="b-export" aria-label="Compartir equipo">
+        <strong>Exportar build</strong>
+        <button id="b-share" type="button" disabled>Copiar enlace</button>
+        <button id="b-png" type="button" disabled>Descargar imagen</button>
+        <label id="b-link-field" hidden>Enlace a esta versión del equipo
+          <input id="b-share-url" type="text" readonly>
+        </label>
+        <span id="b-export-status" role="status"></span>
+      </section>
+      <div class="b-layout"><section><h2 class="section-rule">Piezas equipadas</h2>
+        <div id="b-pieces"></div></section>
+        <section><h2 class="section-rule">Resumen del equipo</h2><div id="b-summary"></div></section></div>
+      <p id="b-status" role="status"></p>
+    </div>
+    <dialog id="b-image-dialog" aria-labelledby="b-image-title">
+      <div class="b-image-head"><h2 id="b-image-title">Ficha de equipo</h2><button type="button" id="b-image-close">Cerrar ×</button></div>
+      <p>Si la descarga no empieza, usa «Guardar imagen». También puedes guardar la ficha con un clic derecho o manteniéndola pulsada.</p>
+      <a id="b-image-save" download="MHGU-Armory-equipo.png">Guardar imagen</a>
+      <img id="b-image-preview" alt="Ficha completa del equipo, talismán, joyas y habilidades">
+    </dialog>
+    <dialog id="b-talisman-editor" aria-labelledby="b-talisman-title">
+      <form id="b-talisman-form">
+        <div class="b-kicker">Taller manual / Accesorio</div><h2 id="b-talisman-title">Mi talismán</h2>
+        <p>Copia los puntos que muestra el talismán sin joyas. Podrás engarzarlas después.</p>
+        <label>Nombre (opcional)<input id="b-talisman-name" type="text" maxlength="60" placeholder="Mi talismán"></label>
+        <div class="b-talisman-row"><label>Habilidad 1<select id="b-talisman-skill-0"></select></label>
+          <label>Puntos<select id="b-talisman-points-0"></select></label></div>
+        <div class="b-talisman-row"><label>Habilidad 2 (opcional)<select id="b-talisman-skill-1"></select></label>
+          <label>Puntos<select id="b-talisman-points-1"></select></label></div>
+        <label>Ranuras del talismán<select id="b-talisman-slots"><option value="0">Sin ranuras</option><option value="1">1 ranura</option><option value="2">2 ranuras</option><option value="3">3 ranuras</option></select></label>
+        <p id="b-talisman-error" role="alert"></p>
+        <footer><button id="b-talisman-cancel" type="button">Cancelar</button><button type="submit">Equipar talismán</button></footer>
+      </form>
+    </dialog>
+    <dialog id="b-picker" aria-labelledby="b-picker-title">
+      <header><div><div class="b-kicker">Catálogo del taller</div><h2 id="b-picker-title"></h2></div>
+        <button type="button" id="b-close" aria-label="Cerrar selector">Cerrar ×</button></header>
+      <label id="b-weapon-filter" hidden>Clase de arma<select id="b-weapon-class"></select></label>
+      <div id="b-categories" hidden>
+        <fieldset><legend>1 · Tipo de armadura</legend><div class="b-class-choices">
+          <label><input type="radio" name="b-class" value="B" checked><span><img src="assets/weapons/classes/great_sword_r3.png" alt="">Espadachín</span></label>
+          <label><input type="radio" name="b-class" value="G"><span><img src="assets/weapons/classes/light_bowgun_r3.png" alt="">Artillero</span></label>
+        </div></fieldset>
+        <fieldset><legend>2 · Rango</legend><div class="b-rank-choices">
+          <label><input type="radio" name="b-rank" value="LR" checked><span>Rango bajo</span></label>
+          <label><input type="radio" name="b-rank" value="HR"><span>Rango alto</span></label>
+          <label><input type="radio" name="b-rank" value="G"><span>Rango G</span></label>
+        </div></fieldset>
+      </div>
+      <input id="b-search" type="search" aria-label="Filtrar por nombre o habilidad" placeholder="Buscar por nombre o habilidad…">
+      <p id="b-count"></p><div id="b-options"></div>
+    </dialog>
   </section>
 </main>
 

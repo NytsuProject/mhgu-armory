@@ -2,7 +2,8 @@
 import { A, esc, icon, slotIcon, eleIcon, monsterIcon, rarColor, rarBadge, vBadge, RANK_ES, RES_COLORS, slotCount } from "./app.js";
 import { bindTips, monsterRows } from "./tooltip.js";
 
-const SLOTS = ["head", "chest", "arms", "waist", "legs"];
+import { slots as SLOTS, setSkills } from "./builder-model.js";
+import { signed, renderSkillGuide } from "./skill-guide.js";
 let setMeta = new Map();   // id -> {cls, gender, skills:Set, names:string}
 let filtered = [];
 
@@ -131,42 +132,6 @@ function renderPieceStrip(s) {
         c.classList.toggle("active", c.dataset.slot === b.dataset.slot));
       renderPieceDetails(s, b.dataset.slot);
     }));
-}
-
-const signed = n => n > 0 ? `+${n}` : String(n);
-
-function setSkills(pieces) {
-  const skills = new Map();
-  const copies = pieces.filter(p => p.sk.some(([en]) => en === "Torso Up")).length;
-  for (const p of pieces) for (const [en, es, pts] of p.sk) {
-    if (!skills.has(en)) skills.set(en, { en, label: es || en, total: 0 });
-    skills.get(en).total += pts * (p.slot === "chest" ? 1 + copies : 1);
-  }
-  return [...skills.values()].sort((a, b) => b.total - a.total);
-}
-
-function renderSkillGuide({ en, label, total }) {
-  const torso = en === "Torso Up";
-  const levels = A.data.skillLevels[en] || [];
-  // Solo cuenta el mayor nivel alcanzado en la dirección del total.
-  const reached = levels.filter(({ points }) => points > 0 ? total >= points : total <= points);
-  const current = reached.reduce((best, row) =>
-    !best || Math.abs(row.points) > Math.abs(best.points) ? row : best, null);
-  return `<article class="skill-guide-card">
-    <header><h3>${esc(label)}</h3><span>${torso ? "Sin umbral" : `${signed(total)} pts`}</span></header>
-    ${torso ? `<p>Cada pieza con Torso+ copia los puntos de habilidad de la pechera. El total ya incluye esas copias.</p>` :
-      levels.map(row => {
-        const active = row === current;
-        const missing = row.points - total;
-        const status = active ? "Nivel alcanzado" : row.points > 0 && missing > 0
-          ? `Falta${missing === 1 ? "" : "n"} ${missing} ${missing === 1 ? "punto" : "puntos"}` : "";
-        return `<div class="guide-tier${active ? " reached" : ""}">
-          <span class="guide-points${row.points < 0 ? " neg" : ""}">${signed(row.points)}</span>
-          <div><strong>${esc(row.name)}</strong>${status ? `<small>${status}</small>` : ""}
-            <p>${esc(row.description)}</p></div>
-        </div>`;
-      }).join("") || "<p>Sin niveles documentados.</p>"}
-  </article>`;
 }
 
 function renderSummary(s, m) {

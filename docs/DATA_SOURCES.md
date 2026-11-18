@@ -196,3 +196,53 @@ Los iconos (`assets/weapons/classes/`, `assets/armor/slots/`,
 `assets/icons/elements/`, `assets/monsters/`) ya están copiados en el proyecto;
 su procedencia y renombrado quedan documentados en §2, §3 y §7. No se requiere
 red para ejecutar la aplicación: todo se sirve en local.
+
+## Builder manual: joyas
+
+`tools/build_decorations.py ruta/a/mhgu.db` reproduce `data/armor/decorations.json`
+con la misma revisión de JoeLago/MHGUDB-iOS de la fuente 3. Une `decorations.num_slots`
+con `items.name_es` por `_id` y conserva todos los puntos firmados de
+`item_to_skill_tree` (nombres de `skill_trees`). Contiene 242 joyas: 156 de una
+ranura, 46 de dos y 40 de tres. Actualiza también los umbrales de los árboles
+exclusivos de joyas. La capacidad se toma de `pieces.json` (`deco`, por pieza).
+
+Iconografía del Builder (servida localmente, © Capcom, mismas fuentes y condiciones
+que los iconos de la colección): las 55 variantes de `assets/armor/slots/*_r*.png`
+proceden de `docs/assets/icons/icon_armor_<slot>_r{1..10,X}.png` de la fuente 2
+(`53a5ff0`, `body` → `chest`). Los PNG `assets/icons/items/{book,jewel}.png`
+proceden de `MHGUDB/Assets/icons/icon_{book,jewel}.png` de la fuente 3 (`a91a02b`).
+Las 242 decoraciones comparten `items.icon_name = icon_jewel`; se aplica el
+`items.icon_color` de cada una con la paleta de `MHGUDB/Model/Icon.swift`.
+
+### Talismán manual
+
+La ficha reproduce los atributos introducidos, no busca talismanes ni estima su
+probabilidad. `tools/build_talisman_skills.py talisman-data.js mhgu.db` extrae
+los puntos no nulos de cada árbol por posición (unión de los cuatro tipos de
+amuleto) de [`docs/talisman-data.js`](https://github.com/ArmoredRaven17/mhgu-talisman-odds/blob/62dca6fa52847b6af6584f2aefbbe8e03f17858e/docs/talisman-data.js),
+y traduce los nombres con `skill_trees.name_es`. Se validan esos valores individuales,
+no la probabilidad conjunta por rareza. Icono: `MHGUDB/Assets/icons/icon_talisman.png`
+de la fuente 3 (`a91a02b`, © Capcom), servido localmente.
+
+### Ficha de combate (Builder)
+
+La identidad del arma es clase + árbol + nivel: `raw`, `aff`, `ele`, `def` y
+`slots` se leen del mismo nivel que en Weapon Forge. Los ficheros `Weapons/*.tsv`
+de [MHXXDamageCalc, revisión 983f0c8](https://github.com/Awesomeosity/MHXXDamageCalc/tree/983f0c8db12b2ed16d80293a319312564d1b3ce2/MHXXDamageCalc/bin/Debug/Weapons)
+permiten recuperar los **dos** porcentajes de las 14 ramas de Gore caótico que
+el campo `aff` escalar no representa. Contrastados clase, orden de los tres
+niveles y ataque en cada nivel. No se promedian los dos porcentajes.
+
+Valores numéricos de habilidades: [Form1.cs, misma revisión](https://github.com/Awesomeosity/MHXXDamageCalc/blob/983f0c8db12b2ed16d80293a319312564d1b3ce2/MHXXDamageCalc/Form1.cs)
+(`Attack`, `Expert`, `Tenderizer`, `ChainCrit`, `Spirit`, `GlovesOff`, `CritDraw`,
+`Frenzy`, `PunishDraw`, `Elemental`, `FireAtk` y equivalentes por elemento,
+`StatusAtk`, `BombBoost`, etc.). Los componentes de habilidades combinadas
+proceden de las descripciones `skills.description` de mhgu.db; no se acumula
+un mismo efecto dos veces. Para Habilidad +2: `AddAllSkillsPlus2` de
+[Athena MHGU-ASS](https://github.com/AthenaADP/MHGU-ASS/blob/master/Solution.cpp).
+
+Se muestra ataque bruto fijo y condiciones por separado, no daño por golpe ni
+DPS. El potencial de afinidad es para un golpe compatible con los requisitos,
+con límite del 100%; no implica que todos los golpes los cumplan. No se simulan
+objetos, comida, artes, melodías, kinsectos, proyectiles, movimiento ni afilado
+actual. Las habilidades de alma suponen la mejora de armadura requerida.
