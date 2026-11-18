@@ -133,17 +133,49 @@ function renderPieceStrip(s) {
     }));
 }
 
+const signed = n => n > 0 ? `+${n}` : String(n);
+
+function setSkills(pieces) {
+  const skills = new Map();
+  const copies = pieces.filter(p => p.sk.some(([en]) => en === "Torso Up")).length;
+  for (const p of pieces) for (const [en, es, pts] of p.sk) {
+    if (!skills.has(en)) skills.set(en, { en, label: es || en, total: 0 });
+    skills.get(en).total += pts * (p.slot === "chest" ? 1 + copies : 1);
+  }
+  return [...skills.values()].sort((a, b) => b.total - a.total);
+}
+
+function renderSkillGuide({ en, label, total }) {
+  const torso = en === "Torso Up";
+  const levels = A.data.skillLevels[en] || [];
+  // Solo cuenta el mayor nivel alcanzado en la dirección del total.
+  const reached = levels.filter(({ points }) => points > 0 ? total >= points : total <= points);
+  const current = reached.reduce((best, row) =>
+    !best || Math.abs(row.points) > Math.abs(best.points) ? row : best, null);
+  return `<article class="skill-guide-card">
+    <header><h3>${esc(label)}</h3><span>${torso ? "Sin umbral" : `${signed(total)} pts`}</span></header>
+    ${torso ? `<p>Cada pieza con Torso+ copia los puntos de habilidad de la pechera. El total ya incluye esas copias.</p>` :
+      levels.map(row => {
+        const active = row === current;
+        const missing = row.points - total;
+        const status = active ? "Nivel alcanzado" : row.points > 0 && missing > 0
+          ? `Falta${missing === 1 ? "" : "n"} ${missing} ${missing === 1 ? "punto" : "puntos"}` : "";
+        return `<div class="guide-tier${active ? " reached" : ""}">
+          <span class="guide-points${row.points < 0 ? " neg" : ""}">${signed(row.points)}</span>
+          <div><strong>${esc(row.name)}</strong>${status ? `<small>${status}</small>` : ""}
+            <p>${esc(row.description)}</p></div>
+        </div>`;
+      }).join("") || "<p>Sin niveles documentados.</p>"}
+  </article>`;
+}
+
 function renderSummary(s, m) {
   const ps = m.pieces;
   const defBase = ps.reduce((a, p) => a + p.def[0], 0);
   const defMax = ps.reduce((a, p) => a + p.def[1], 0);
   const res = [0, 0, 0, 0, 0];
   for (const p of ps) p.res.forEach((v, i) => res[i] += v);
-  const skillPts = new Map();
-  for (const p of ps) for (const [en, es, pts] of p.sk) {
-    const k = es || en;
-    skillPts.set(k, (skillPts.get(k) || 0) + pts);
-  }
+  const skills = setSkills(ps);
   const RES_ES = A.data.piecesMeta.resEs;
   const sum = document.getElementById("set-summary");
   sum.innerHTML = `
@@ -158,8 +190,11 @@ function renderSummary(s, m) {
         <div class="v">${ps.reduce((a, p) => a + p.deco, 0)}</div></div>
     </div>
     <div class="section-rule">Puntos de habilidad acumulados</div>
-    <div class="skill-sum">${[...skillPts.entries()].sort((a, b) => b[1] - a[1]).map(([k, v]) =>
-      `<span class="sk-chip${v < 0 ? " neg" : ""}">${esc(k)} <b>${v > 0 ? "+" : ""}${v}</b></span>`).join("") || "<span style='color:var(--text-faint)'>Sin habilidades</span>"}</div>`;
+    <div class="skill-sum">${skills.map(({ en, label, total }) =>
+      `<span class="sk-chip${total < 0 ? " neg" : ""}">${esc(label)}${en === "Torso Up" ? "" : ` <b>${signed(total)}</b>`}</span>`).join("") || "<span style='color:var(--text-faint)'>Sin habilidades</span>"}</div>
+    ${skills.length ? `<div class="section-rule">Efectos y umbrales de activación</div>
+      <div class="skill-guide">${skills.map(renderSkillGuide).join("")}</div>
+      <p class="guide-note">Niveles según los puntos de las piezas, sin adornos, talismán ni bonificaciones de otras habilidades.${s.deviant ? " Las habilidades de alma también requieren mejorar las piezas al nivel correspondiente." : ""}</p>` : ""}`;
   sum.classList.remove("swap"); void sum.offsetWidth; sum.classList.add("swap");
 }
 

@@ -91,6 +91,7 @@ gatheringhallstudios/MHGenDatabase. Usado para:
 - `weapons.parent_id`: verificación de linaje nivel a nivel (0 errores).
 - `armor_families`: los 1,242 conjuntos y sus piezas.
 - `skill_trees.name_es`: nombres ES de habilidades (100 %).
+- `skills` + `skill_trees`: umbrales de puntos, nombres y descripciones ES de cada nivel para las habilidades de armadura. Regenerar `data/armor/skill-levels.json` con `python tools/build_skill_levels.py ruta/a/mhgu.db`. Torso+ copia los puntos de la pechera y no tiene umbral numérico.
 - `armor.gender` / `hunter_type`: contraste de género (coincide con el juego
   en el 100 % de las piezas).
 - `monsters` (129): lista de monstruos del buscador y del filtro «Monstruo»

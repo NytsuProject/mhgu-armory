@@ -1,0 +1,1889 @@
+{
+  "Ammo Saver": [
+    {
+      "points": 10,
+      "name": "Ahorramunic.",
+      "description": "A veces la munición o revestim. vuelven al inventario al disparar."
+    }
+  ],
+  "Amplify": [
+    {
+      "points": 10,
+      "name": "Elementalidad",
+      "description": "Combina los efectos de \"elemental +1\" y \"efecto objeto +1\"."
+    }
+  ],
+  "Anti-Chameleos": [
+    {
+      "points": 10,
+      "name": "Talism. piroescama",
+      "description": "Combina los efectos de \"anula veneno\", \"antirrobo\" y \"autorrastreador\"."
+    }
+  ],
+  "Anti-Kushala": [
+    {
+      "points": 10,
+      "name": "Talismán glacipelo",
+      "description": "Combina los efectos de \"cazador polar\", \"resistencia al viento +2\" y \"anula inmovilizaciones\"."
+    }
+  ],
+  "Anti-Teostra": [
+    {
+      "points": 10,
+      "name": "Talism. ferrenácar",
+      "description": "Combina los efectos de \"cazador tropical\", \"resistencia al fuego +20\" y \"bioinvestigador\"."
+    }
+  ],
+  "Anti-Theft": [
+    {
+      "points": 10,
+      "name": "Antirrobo",
+      "description": "Previene el robo de objetos."
+    }
+  ],
+  "Artillery": [
+    {
+      "points": 10,
+      "name": "Artillería +1",
+      "description": "Mejora disp. de balista, explosivos, rev. de impacto, munición, etc. Mejor control del indic. de calor."
+    },
+    {
+      "points": 15,
+      "name": "Artillería +2",
+      "description": "Potencia ráfagas de balista, disp. explos., rev. de impacto, munición, etc. Mejor control del ind. de calor."
+    }
+  ],
+  "Attack": [
+    {
+      "points": 10,
+      "name": "Ataque +1",
+      "description": "Aumenta ligeramente el ataque."
+    },
+    {
+      "points": 15,
+      "name": "Ataque +2",
+      "description": "Aumenta el ataque."
+    },
+    {
+      "points": 20,
+      "name": "Ataque +3",
+      "description": "Aumenta mucho el ataque."
+    },
+    {
+      "points": -10,
+      "name": "Ataque -1",
+      "description": "Reduce ligeramente el ataque."
+    },
+    {
+      "points": -15,
+      "name": "Ataque -2",
+      "description": "Reduce el ataque."
+    },
+    {
+      "points": -20,
+      "name": "Ataque -3",
+      "description": "Reduce mucho el ataque."
+    }
+  ],
+  "Avarice": [
+    {
+      "points": 10,
+      "name": "Cazarrecompensas",
+      "description": "Combina los efectos de \"suerte +1\" y \"experto capturas\"."
+    }
+  ],
+  "Bind Res": [
+    {
+      "points": 10,
+      "name": "Anula inmovilizac.",
+      "description": "Anula los efectos de estados de atrapamiento como muñeco de nieve y burbujas."
+    }
+  ],
+  "Biology": [
+    {
+      "points": 10,
+      "name": "Bioinvestigador",
+      "description": "Aumenta la eficacia de las bombas boñiga, y protege del hedor y la plaga de nitro."
+    },
+    {
+      "points": 15,
+      "name": "Biólogo",
+      "description": "Aumenta la eficacia de las bombas boñiga, y protege del hedor, la plaga de nitro y la cólera."
+    }
+  ],
+  "Bladescale": [
+    {
+      "points": 10,
+      "name": "Filoescama afilada",
+      "description": "Esquiva con el arma desenvainada para conseguir diferentes efectos. Refuerza el revestimiento de alcance a los arcos."
+    }
+  ],
+  "Bleeding": [
+    {
+      "points": 10,
+      "name": "Anula sangrado",
+      "description": "Evita el sangrado."
+    },
+    {
+      "points": -10,
+      "name": "Sangrado doble",
+      "description": "Duplica el daño recibido por sangrado."
+    }
+  ],
+  "Blight Res": [
+    {
+      "points": 10,
+      "name": "Anti daño elem.",
+      "description": "Anula todas las plagas elementales (fuego, agua, rayo, hielo y draco)."
+    }
+  ],
+  "Bloodbath": [
+    {
+      "points": 10,
+      "name": "Alma Sanguinario",
+      "description": "Combina los efectos de \"ataque+ (G)\" y \"evasión +2\"."
+    }
+  ],
+  "Bloodbath X": [
+    {
+      "points": 10,
+      "name": "Alma Sanguinario X",
+      "description": "Combina los efectos de \"ataque+ (G)\", \"evasión +2\" y \"compuesto\"."
+    }
+  ],
+  "Blunt": [
+    {
+      "points": 10,
+      "name": "Cachiporra pesada",
+      "description": "Aumenta el ataque según lo desafilada que esté tu arma."
+    }
+  ],
+  "Boltreaver": [
+    {
+      "points": 10,
+      "name": "Alma de Fulmen",
+      "description": "Combina los efectos de \"potenciador crítico\", \"disparo bonus\" y \"afilado +1\"."
+    }
+  ],
+  "Boltreaver X": [
+    {
+      "points": 10,
+      "name": "Alma de Fulmen X",
+      "description": "Combina los efectos de \"potenciador crítico\", \"disparo bonus +1\", \"afilado +1\" y \"oportunista\"."
+    }
+  ],
+  "Bomb Boost": [
+    {
+      "points": 10,
+      "name": "Bombardero",
+      "description": "Aumenta el daño de bomba y la probabilidad de combinación de todas las bombas al 100%."
+    }
+  ],
+  "Botany": [
+    {
+      "points": 10,
+      "name": "Herbología",
+      "description": "Aumenta la cantidad de salud recuperada al comer hierbas."
+    },
+    {
+      "points": 15,
+      "name": "Herb. avanzada",
+      "description": "Aumenta aún más la cantidad de salud recuperada al ingerir hierbas respecto a la habilidad Herbología."
+    }
+  ],
+  "Brawn": [
+    {
+      "points": 10,
+      "name": "Golpe demoledor",
+      "description": "Combina los efectos de \"robarresistencia\" y \"boxeador\"."
+    }
+  ],
+  "Brutality": [
+    {
+      "points": 10,
+      "name": "Crueldad",
+      "description": "Combina los efectos de \"ojo crítico +2\" y \"maza\"."
+    }
+  ],
+  "Bubble": [
+    {
+      "points": 10,
+      "name": "Danza burbujeante",
+      "description": "Esquivar te cubre de burbujas, lo cual aumenta tu capacidad para evitar ataques enemigos."
+    }
+  ],
+  "C.beard": [
+    {
+      "points": 10,
+      "name": "Alma de Vítreo",
+      "description": "Combina los efectos de \"buscamuletos\" y \"anula hambre\"."
+    }
+  ],
+  "Capturer": [
+    {
+      "points": 10,
+      "name": "Experto capturas",
+      "description": "Aumenta la probabilidad de obtener más objetos de recompensa por capturas."
+    },
+    {
+      "points": 15,
+      "name": "Maestro capturas",
+      "description": "Aumenta mucho la probabilidad de obtener más objetos de recompensa por capturas."
+    }
+  ],
+  "Carnivore": [
+    {
+      "points": 10,
+      "name": "Carnívoro",
+      "description": "Puedes comer carne cruda. Los bistecs poco hechos y al punto te dan resistencia ilimitada temporal."
+    }
+  ],
+  "Carving": [
+    {
+      "points": 10,
+      "name": "Experto cortador",
+      "description": "Previene envites mientras estés cortando."
+    },
+    {
+      "points": 15,
+      "name": "Célebre cortante",
+      "description": "Aumenta las posibilidades de corte y previene envites mientras estés cortando."
+    }
+  ],
+  "Chain Crit": [
+    {
+      "points": 10,
+      "name": "Atacante constante",
+      "description": "Aumenta la afinidad después de repetidos ataques."
+    }
+  ],
+  "Chance": [
+    {
+      "points": 10,
+      "name": "Carta ganadora",
+      "description": "Aumenta la potencia de las técnicas de caza contra monstruos grandes cuando sea posible."
+    }
+  ],
+  "Charmer": [
+    {
+      "points": 10,
+      "name": "Recogeamuletos",
+      "description": "Te permite extraer dos amuletos a la vez... Bueno, quizááás..."
+    },
+    {
+      "points": 15,
+      "name": "Buscamuletos",
+      "description": "Te permite extraer dos amuletos a la vez... Bueno, quizás."
+    }
+  ],
+  "Cold Res": [
+    {
+      "points": 10,
+      "name": "Anula el frío",
+      "description": "Anula todo el frío."
+    },
+    {
+      "points": -10,
+      "name": "Aumentar frío",
+      "description": "Aumenta la velocidad a la que se agota la resistencia máxima por frío."
+    }
+  ],
+  "ColdBlooded": [
+    {
+      "points": 10,
+      "name": "Cazador polar",
+      "description": "Da energía en climas fríos. Si tomas una bebida fría..."
+    }
+  ],
+  "Combo Plus": [
+    {
+      "points": 10,
+      "name": "Combinación+",
+      "description": "Garantiza los mejores resultados con combinaciones que producen más de un objeto a la vez."
+    }
+  ],
+  "Combo Rate": [
+    {
+      "points": 10,
+      "name": "Combinación +20%",
+      "description": "Mejora la probabilidad de éxito de las combinaciones en un 20%."
+    },
+    {
+      "points": 15,
+      "name": "Combinación +45%",
+      "description": "Mejora la probabilidad de éxito de las combinaciones en un 45%."
+    },
+    {
+      "points": -10,
+      "name": "Combinación -10%",
+      "description": "Reduce la probabilidad de éxito de las combinaciones en un 10%."
+    },
+    {
+      "points": -15,
+      "name": "Combinación -20%",
+      "description": "Reduce la probabilidad de éxito de las combinaciones en un 20%."
+    }
+  ],
+  "Constitution": [
+    {
+      "points": 10,
+      "name": "Constitución +1",
+      "description": "Ralentiza el gasto de resistencia al esquivar, bloquear, etc."
+    },
+    {
+      "points": 15,
+      "name": "Constitución +2",
+      "description": "Ralentiza mucho el gasto de resistencia al esquivar, bloquear, etc."
+    },
+    {
+      "points": -10,
+      "name": "Constitución -1",
+      "description": "Acelera el gasto de resistencia al esquivar, bloquear, etc."
+    },
+    {
+      "points": -15,
+      "name": "Constitución -2",
+      "description": "Acelera mucho el gasto de resistencia al esquivar, bloquear, etc."
+    }
+  ],
+  "Covert": [
+    {
+      "points": 10,
+      "name": "Clandestino",
+      "description": "Combina los efectos de \"carga+\", \"combinación +20%\" y \"sigilo\"."
+    }
+  ],
+  "Crisis": [
+    {
+      "points": 10,
+      "name": "Resucitar",
+      "description": "Aumenta el ataque cuando sufres un efecto anormal."
+    }
+  ],
+  "Crit Draw": [
+    {
+      "points": 10,
+      "name": "Desenf. especial",
+      "description": "Aumenta la afinidad con todos los ataques de desenfundadura en un 100%."
+    }
+  ],
+  "Crit Element": [
+    {
+      "points": 10,
+      "name": "Crít. elemental",
+      "description": "Aumenta el daño elemental (fuego, agua, rayo, hielo, draco) de tus golpes críticos."
+    }
+  ],
+  "Crit Status": [
+    {
+      "points": 10,
+      "name": "Crít. estado",
+      "description": "Aumenta la potencia de estados alterados (parálisis, veneno, sueño) en tus golpes críticos."
+    }
+  ],
+  "Critical Up": [
+    {
+      "points": 10,
+      "name": "Potenciador crítico",
+      "description": "Aumenta el daño de golpes críticos."
+    }
+  ],
+  "Crystalbeard X": [
+    {
+      "points": 10,
+      "name": "Alma de Vítreo X",
+      "description": "Combina los efectos de \"buscamuletos\", \"talismán de héroe\" y \"anula hambre\"."
+    }
+  ],
+  "D. Fencing": [
+    {
+      "points": 10,
+      "name": "Esgrimista sucio",
+      "description": "Combina los efectos de \"fortalecer\", \"corredor +1\" y \"robarresistencia\"."
+    }
+  ],
+  "Dead Eye": [
+    {
+      "points": 10,
+      "name": "Potenciad. disparo",
+      "description": "Alarga el tiempo durante el cual cierta munición y flechas impactan a plena potencia."
+    }
+  ],
+  "Deadeye": [
+    {
+      "points": 10,
+      "name": "Alma de Cíclope",
+      "description": "Combina los efectos de \"anula aturdimiento\" y \"espíritu +2\"."
+    }
+  ],
+  "Deadeye X": [
+    {
+      "points": 10,
+      "name": "Alma de Cíclope X",
+      "description": "Combina los efectos de \"anula aturdimiento\", \"espíritu +2\" y \"fortalecer\"."
+    }
+  ],
+  "Def Lock": [
+    {
+      "points": 10,
+      "name": "Piel de hierro",
+      "description": "Anula los efectos de defensa reducida."
+    }
+  ],
+  "Defense": [
+    {
+      "points": 10,
+      "name": "Defensa +1",
+      "description": "Aumenta ligeramente la defensa."
+    },
+    {
+      "points": 15,
+      "name": "Defensa +2",
+      "description": "Aumenta la defensa."
+    },
+    {
+      "points": 20,
+      "name": "Defensa +3",
+      "description": "Aumenta mucho la defensa."
+    },
+    {
+      "points": -10,
+      "name": "Defensa -1",
+      "description": "Reduce ligeramente la defensa."
+    },
+    {
+      "points": -15,
+      "name": "Defensa -2",
+      "description": "Reduce la defensa."
+    },
+    {
+      "points": -20,
+      "name": "Defensa -3",
+      "description": "Reduce mucho la defensa."
+    }
+  ],
+  "Destroyer": [
+    {
+      "points": 10,
+      "name": "Destructor",
+      "description": "Hace más fácil romper o cortar partes de monstruos."
+    }
+  ],
+  "Distance Runner": [
+    {
+      "points": 10,
+      "name": "Alargaesprint",
+      "description": "Durante un esprint, detiene la pérdida de resistencia por debajo de cierto nivel, lo que permite correr más tiempo."
+    }
+  ],
+  "Dragon Atk": [
+    {
+      "points": 10,
+      "name": "Ataque draco +1",
+      "description": "Aumenta la potencia de ataques de draco y disparos draco (D draco)."
+    },
+    {
+      "points": 15,
+      "name": "Ataque draco +2",
+      "description": "Aumenta mucho la potencia de los ataques de draco y los disparos de draco (D draco)."
+    },
+    {
+      "points": -10,
+      "name": "Ataque draco -1",
+      "description": "Reduce la potencia de ataques de draco y disparos draco (D draco)."
+    }
+  ],
+  "Dragon Res": [
+    {
+      "points": 10,
+      "name": "Resist. draco +15",
+      "description": "Aumenta la resistencia al draco en 15."
+    },
+    {
+      "points": 15,
+      "name": "Resist. draco +20",
+      "description": "Aumenta la resistencia al draco en 20."
+    },
+    {
+      "points": -10,
+      "name": "Resist. draco -20",
+      "description": "Reduce la resistencia al draco en 20."
+    }
+  ],
+  "Dragon Spirit": [
+    {
+      "points": 10,
+      "name": "Corazón dragón",
+      "description": "Aumentará tu ataque y la resistencia elemental cuando pierdas un tercio de la salud, pero sufrirás plaga de dragón."
+    }
+  ],
+  "Dreadking": [
+    {
+      "points": 10,
+      "name": "Alma de Maldito",
+      "description": "Combina los efectos de \"ataque +3\" y \"resistencia al viento +2\"."
+    }
+  ],
+  "Dreadking X": [
+    {
+      "points": 10,
+      "name": "Alma de Maldito X",
+      "description": "Combina los efectos de \"resistencia al viento +2\", \"ataque+ (G)\" y \"adrenalina +1\"."
+    }
+  ],
+  "Dreadqueen": [
+    {
+      "points": 10,
+      "name": "Alma de Maldita",
+      "description": "Combina los efectos de \"estado anormal +2\" y \"efecto área +2\"."
+    }
+  ],
+  "Dreadqueen X": [
+    {
+      "points": 10,
+      "name": "Alma de Maldita X",
+      "description": "Combina los efectos de \"estado anormal +2\", \"efecto área +2\" y \"herbología avanzada\"."
+    }
+  ],
+  "Drilltusk": [
+    {
+      "points": 10,
+      "name": "Alma de Toro",
+      "description": "Combina los efectos de \"adrenalina +2\" y \"carroñero\"."
+    }
+  ],
+  "Drilltusk X": [
+    {
+      "points": 10,
+      "name": "Alma de Toro X",
+      "description": "Combina los efectos de \"adrenalina +2\", \"carroñero\" y \"artillería +2\"."
+    }
+  ],
+  "Eating": [
+    {
+      "points": 10,
+      "name": "Consumir +1",
+      "description": "Aumenta la velocidad de consumo de carne."
+    },
+    {
+      "points": 15,
+      "name": "Consumir +2",
+      "description": "Aumenta la velocidad de consumo de carne y objetos."
+    },
+    {
+      "points": -10,
+      "name": "Consumir -1",
+      "description": "Reduce la velocidad de consumo de carne."
+    }
+  ],
+  "Edge Lore": [
+    {
+      "points": 10,
+      "name": "Mano firme",
+      "description": "Combina los efectos de \"ojo preciso\" y \"filo de cuchilla\"."
+    }
+  ],
+  "Edgemaster": [
+    {
+      "points": 10,
+      "name": "Punzante",
+      "description": "Combina los efectos de \"afilado +1\" y \"ataque+ (G)\"."
+    }
+  ],
+  "Elderfrost": [
+    {
+      "points": 10,
+      "name": "Alma de Glacial",
+      "description": "Combina los efectos de \"corredor +1\", \"cachiporra pesada\" y \"normal/salva+\"."
+    }
+  ],
+  "Elderfrost X": [
+    {
+      "points": 10,
+      "name": "Alma de Glacial X",
+      "description": "Combina los efectos de \"corredor +1\", \"cachiporra pesada\", \"Normal/salva+\" y \"ataque +2\"."
+    }
+  ],
+  "Elemental": [
+    {
+      "points": 10,
+      "name": "Elemental +1",
+      "description": "Aumenta la potencia de los ataques elementales."
+    },
+    {
+      "points": -10,
+      "name": "Elemental -1",
+      "description": "Reduce la potencia de ataques elementales."
+    }
+  ],
+  "Endurance": [
+    {
+      "points": 10,
+      "name": "Oportunista",
+      "description": "Rellena el indicador de técnicas, el indicador de valor y el indicador de alquimia cuando recibes daño."
+    }
+  ],
+  "Evade Dist": [
+    {
+      "points": 10,
+      "name": "Distancia evasión",
+      "description": "Aumenta la distancia de evasión."
+    }
+  ],
+  "Evasion": [
+    {
+      "points": 10,
+      "name": "Evasión +1",
+      "description": "Extiende algo el periodo de invulnerabilidad al esquivar."
+    },
+    {
+      "points": 15,
+      "name": "Evasión +2",
+      "description": "Extiende el periodo de invulnerabilidad al esquivar."
+    },
+    {
+      "points": -10,
+      "name": "Evasión -1",
+      "description": "Reduce el periodo de invulnerabilidad durante la evasión."
+    }
+  ],
+  "Expert": [
+    {
+      "points": 10,
+      "name": "Ojo crítico +1",
+      "description": "Aumenta la afinidad en un 10%."
+    },
+    {
+      "points": 15,
+      "name": "Ojo crítico +2",
+      "description": "Aumenta la afinidad en un 20%."
+    },
+    {
+      "points": 20,
+      "name": "Ojo crítico +3",
+      "description": "Aumenta la afinidad en un 30%."
+    },
+    {
+      "points": -10,
+      "name": "Ojo crítico -1",
+      "description": "Reduce la afinidad en un 5%."
+    },
+    {
+      "points": -15,
+      "name": "Ojo crítico -2",
+      "description": "Reduce la afinidad en un 10%."
+    },
+    {
+      "points": -20,
+      "name": "Ojo crítico -3",
+      "description": "Reduce la afinidad en un 15%."
+    }
+  ],
+  "FastCharge": [
+    {
+      "points": 10,
+      "name": "Foco",
+      "description": "Acelera indic. de esp. L/hacha C/ hacha S/espadas D/téc. esp. balles. lig., y at. carga de gr. espada/martillo/arco."
+    },
+    {
+      "points": -10,
+      "name": "Distracción",
+      "description": "Ralentiza indicadores de esp. L/esp. D/ hacha S/hacha C/téc. esp. balles. lig., y at. carga de gr. espada/martillo/arco."
+    }
+  ],
+  "Fate": [
+    {
+      "points": 10,
+      "name": "Suerte",
+      "description": "A veces aumenta el número de objetos de recompensa al final de una misión."
+    },
+    {
+      "points": 15,
+      "name": "Suerte +1",
+      "description": "Suele aumentar el número de objetos de recompensa recibidos al final de una misión."
+    },
+    {
+      "points": 20,
+      "name": "Suerte +2",
+      "description": "Muy a menudo aumenta el número de objetos de recompensa recibidos al final de una misión."
+    },
+    {
+      "points": -10,
+      "name": "Suerte -1",
+      "description": "A veces reduce el número de objetos de recompensa recibidos al final de una misión."
+    },
+    {
+      "points": -15,
+      "name": "Suerte -2",
+      "description": "A menudo reduce el número de objetos de recompensa recibidos al final de una misión."
+    }
+  ],
+  "Fencing": [
+    {
+      "points": 10,
+      "name": "Ojo preciso",
+      "description": "Evita que tus ataques sean rechazados."
+    },
+    {
+      "points": -10,
+      "name": "Ojo ciego",
+      "description": "Tus ataques son rechazados más fácilmente."
+    }
+  ],
+  "Fire Atk": [
+    {
+      "points": 10,
+      "name": "Ataque fuego +1",
+      "description": "Aumenta la potencia de ataques de fuego y disparos llama (D llama)."
+    },
+    {
+      "points": 15,
+      "name": "Ataque fuego +2",
+      "description": "Aumenta mucho la potencia de ataques de fuego y disparos llama (D llama)."
+    },
+    {
+      "points": -10,
+      "name": "Ataque fuego -1",
+      "description": "Reduce la potencia de ataques de fuego y disparos llama (D llama)."
+    }
+  ],
+  "Fire Res": [
+    {
+      "points": 10,
+      "name": "Resist. fuego +15",
+      "description": "Aumenta la resistencia al fuego en 15."
+    },
+    {
+      "points": 15,
+      "name": "Resist. fuego +20",
+      "description": "Aumenta la resistencia al fuego en 20."
+    },
+    {
+      "points": -10,
+      "name": "Resist. fuego -20",
+      "description": "Reduce la resistencia al fuego en 20."
+    }
+  ],
+  "Frenzy Res": [
+    {
+      "points": 10,
+      "name": "Antivirus",
+      "description": "Dificulta entrar en estado colérico y potencia la recuperación."
+    }
+  ],
+  "Furor": [
+    {
+      "points": 10,
+      "name": "Resentimiento",
+      "description": "Aumenta el ataque cuando el indicador de salud está en rojo."
+    }
+  ],
+  "Fury": [
+    {
+      "points": 10,
+      "name": "Furia",
+      "description": "Combina los efectos de \"adrenalina +2\" y \"tripas\"."
+    }
+  ],
+  "Gathering": [
+    {
+      "points": 10,
+      "name": "Recogida +1",
+      "description": "A veces aumenta el número de veces que puedes recoger objetos en zonas de recogida."
+    },
+    {
+      "points": 15,
+      "name": "Recogida +2",
+      "description": "A menudo aumenta el número de veces que puedes recoger objetos en zonas de recogida."
+    },
+    {
+      "points": -10,
+      "name": "Recogida -1",
+      "description": "A veces reduce el número de veces que puedes recoger objetos en zonas de recogida."
+    }
+  ],
+  "Gloves Off": [
+    {
+      "points": 10,
+      "name": "Poder oculto +1",
+      "description": "Te da poder durante un tiempo limitado cuando se dan unas condiciones determinadas."
+    },
+    {
+      "points": 15,
+      "name": "Poder oculto +2",
+      "description": "Te da gran poder durante un tiempo limitado cuando se dan unas condiciones determinadas."
+    }
+  ],
+  "Gluttony": [
+    {
+      "points": 10,
+      "name": "Glotón",
+      "description": "Aumenta la eficacia de la carne, que sube la resistencia máxima."
+    },
+    {
+      "points": 15,
+      "name": "Carroñero",
+      "description": "Dota cualquier objeto que comas o bebas de potencia para subir tu resistencia máxima."
+    }
+  ],
+  "Grimclaw": [
+    {
+      "points": 10,
+      "name": "Alma de Guadaña",
+      "description": "Combina los efectos de \"tapones +2\" y \"consumir +2\"."
+    }
+  ],
+  "Grimclaw X": [
+    {
+      "points": 10,
+      "name": "Alma Guadaña X",
+      "description": "Combina los efectos de \"consumir +2\", \"tapones +2\" y \"prolongación de SP\"."
+    }
+  ],
+  "Grinder": [
+    {
+      "points": 10,
+      "name": "Pulido a fondo",
+      "description": "Usa una piedra de afilar para pulir un arma y aumentar brevemente su potencia."
+    }
+  ],
+  "Guard": [
+    {
+      "points": 10,
+      "name": "Guardia +1",
+      "description": "Aumenta la probabilidad de mantener la posición al bloquear un ataque."
+    },
+    {
+      "points": 15,
+      "name": "Guardia +2",
+      "description": "Aumenta mucho la probabilidad de mantener la posición al bloquear un ataque."
+    },
+    {
+      "points": -10,
+      "name": "Guardia -1",
+      "description": "Reduce la probabilidad de mantener la posición al bloquear un ataque."
+    }
+  ],
+  "Guard Up": [
+    {
+      "points": 10,
+      "name": "Escudo",
+      "description": "Hace que ataques que no eran bloqueables se hagan bloqueables."
+    }
+  ],
+  "Guts": [
+    {
+      "points": 10,
+      "name": "Tripas",
+      "description": "Evita desmayarte una vez al recibir un golpe mortal si tienes cierta cantidad de salud."
+    }
+  ],
+  "Handicraft": [
+    {
+      "points": 10,
+      "name": "Afilado +1",
+      "description": "Alarga la barra de afilado de tu arma."
+    },
+    {
+      "points": 15,
+      "name": "Afilado +2",
+      "description": "Alarga mucho la barra de afilado de tu arma."
+    }
+  ],
+  "Haphazard": [
+    {
+      "points": 10,
+      "name": "Disparo certero +1",
+      "description": "Mejora la potencia de la munición interna de ballesta, y el tiro en arco y disparo potente del arco."
+    }
+  ],
+  "Health": [
+    {
+      "points": 10,
+      "name": "Salud +20",
+      "description": "Aumenta la salud máxima en 20."
+    },
+    {
+      "points": 15,
+      "name": "Salud +50",
+      "description": "Aumenta la salud máxima en 50."
+    },
+    {
+      "points": -10,
+      "name": "Salud -10",
+      "description": "Reduce la salud máxima en 10."
+    },
+    {
+      "points": -15,
+      "name": "Salud -30",
+      "description": "Reduce la salud máxima en 30."
+    }
+  ],
+  "Hearing": [
+    {
+      "points": 10,
+      "name": "Tapones +1",
+      "description": "Anula el efecto del rugido de algunos monstruos grandes."
+    },
+    {
+      "points": 15,
+      "name": "Tapones +2",
+      "description": "Anula el efecto de todos los rugidos de monstruos grandes."
+    }
+  ],
+  "Heat Res": [
+    {
+      "points": 10,
+      "name": "Anula el calor",
+      "description": "Anula el daño provocado por calor y lava."
+    },
+    {
+      "points": -10,
+      "name": "Aumentar calor",
+      "description": "Incrementa la salud que se pierde debido a calor."
+    }
+  ],
+  "Heavy Up": [
+    {
+      "points": 10,
+      "name": "Peso pesado+",
+      "description": "Incrementa la potencia de disparos pesados y flechas pesadas."
+    }
+  ],
+  "Hellblade": [
+    {
+      "points": 10,
+      "name": "Alma de Inferno",
+      "description": "Combina los efectos de \"afilado +2\", \"potenciador de disparo\" y \"afilado rápido\"."
+    }
+  ],
+  "Hellblade X": [
+    {
+      "points": 10,
+      "name": "Alma de Inferno X",
+      "description": "Combina los efectos de \"afilado +2\", \"bombardero\", \"potenciador de disparo\" y \"afilado rápido\"."
+    }
+  ],
+  "Hero Shield": [
+    {
+      "points": 10,
+      "name": "Talismán de héroe",
+      "description": "Anula el daño de ataques menores del enemigo."
+    }
+  ],
+  "Hoarding": [
+    {
+      "points": 10,
+      "name": "Rataque",
+      "description": "Combina los efectos de \"buscamuletos\" y \"recogida +1\"."
+    }
+  ],
+  "Honey": [
+    {
+      "points": 10,
+      "name": "Cazamiel",
+      "description": "Te permite recoger dos cajas de miel o de jalea real a la vez."
+    }
+  ],
+  "HotBlooded": [
+    {
+      "points": 10,
+      "name": "Cazador tropical",
+      "description": "Da energía en climas áridos. Si tomas una bebida caliente..."
+    }
+  ],
+  "Hunger": [
+    {
+      "points": 10,
+      "name": "Mitad hambre",
+      "description": "Reduce a la mitad el ritmo de gasto máximo de resistencia con el tiempo."
+    },
+    {
+      "points": 15,
+      "name": "Anula hambre",
+      "description": "Anula el gasto de resistencia con el tiempo."
+    },
+    {
+      "points": -10,
+      "name": "Aumenta hambre",
+      "description": "Acelera el gasto de resistencia con el tiempo."
+    },
+    {
+      "points": -15,
+      "name": "Doble hambre",
+      "description": "Acelera mucho el gasto de resistencia con el tiempo."
+    }
+  ],
+  "Ice Atk": [
+    {
+      "points": 10,
+      "name": "Ataque hielo +1",
+      "description": "Aumenta la potencia de ataques de hielo y disparos congeladores (D congeladores)."
+    },
+    {
+      "points": 15,
+      "name": "Ataque hielo +2",
+      "description": "Aumenta mucho la potencia de ataques de hielo y disparos congeladores (D congeladores)."
+    },
+    {
+      "points": -10,
+      "name": "Ataque hielo -1",
+      "description": "Reduce la potencia de ataques de hielo y disparos congeladores (D congeladores)."
+    }
+  ],
+  "Ice Res": [
+    {
+      "points": 10,
+      "name": "Resist. hielo +15",
+      "description": "Aumenta la resistencia al hielo en 15."
+    },
+    {
+      "points": 15,
+      "name": "Resist. hielo +20",
+      "description": "Aumenta la resistencia al hielo en 20."
+    },
+    {
+      "points": -10,
+      "name": "Resist. hielo -20",
+      "description": "Reduce la resistencia al hielo en 20."
+    }
+  ],
+  "Insight": [
+    {
+      "points": 10,
+      "name": "Compuesto",
+      "description": "Facilita llenar el indicador de técnicas, el indicador de valor y el indicador de alquimia. "
+    }
+  ],
+  "KO": [
+    {
+      "points": 10,
+      "name": "Boxeador",
+      "description": "Facilita el aturdimiento de monstruos."
+    }
+  ],
+  "Lasting Pwr": [
+    {
+      "points": 10,
+      "name": "Efecto objeto +1",
+      "description": "Aumenta el tiempo de efecto de ciertos objetos."
+    },
+    {
+      "points": -10,
+      "name": "Efecto objeto -1",
+      "description": "Reduce el tiempo de efecto de ciertos objetos."
+    }
+  ],
+  "Light Eater": [
+    {
+      "points": 10,
+      "name": "Repartidor",
+      "description": "Te permite reutilizar algunos objetos tras haberlos comido o bebido."
+    }
+  ],
+  "Loading": [
+    {
+      "points": 10,
+      "name": "Carga+",
+      "description": "Aumenta munición de ballesta y lanza pistola, niveles de carga de arco y energía de hacha cargada."
+    }
+  ],
+  "Maestro": [
+    {
+      "points": 10,
+      "name": "Músico",
+      "description": "Cuernos/flautas se rompen menos al tocarlos, y alarga el efecto de las melodías de cornamusa."
+    }
+  ],
+  "Mechanic": [
+    {
+      "points": 10,
+      "name": "Colocaexplosivos",
+      "description": "Combina los efectos de \"bombardero\" y \"trampero\"."
+    }
+  ],
+  "Mounting": [
+    {
+      "points": 10,
+      "name": "Maestro de monta",
+      "description": "Facilita permanecer montado en un monstruo hasta derribarlo."
+    },
+    {
+      "points": -10,
+      "name": "Dolor de nalgas",
+      "description": "Dificulta permanecer montado en un monstruo hasta derribarlo."
+    }
+  ],
+  "Mycology": [
+    {
+      "points": 10,
+      "name": "Micólogo",
+      "description": "Permite consumir setas para obtener ciertos beneficios de ellas."
+    }
+  ],
+  "Negative Crit": [
+    {
+      "points": 10,
+      "name": "Afinidad amarga",
+      "description": "Los ataques de afinidad negativa tienen la posibilidad de convertirse en ataques de gran afinidad."
+    }
+  ],
+  "Nightcloak": [
+    {
+      "points": 10,
+      "name": "Alma de Nébula",
+      "description": "Combina los efectos de \"tapones +2\", \"velocidad de recarga +3\" y \"mano firme\"."
+    }
+  ],
+  "Nightcloak X": [
+    {
+      "points": 10,
+      "name": "Alma de Nébula X",
+      "description": "Combina los efectos de \"tapones +2\", \"velocidad de recarga +3\", \"mano firme\" y \"trampero\"."
+    }
+  ],
+  "Nimbleness": [
+    {
+      "points": 10,
+      "name": "Acróbata",
+      "description": "Combina los efectos de \"constitución +1\" y \"evasión +1\"."
+    }
+  ],
+  "Normal Up": [
+    {
+      "points": 10,
+      "name": "Normal/salva+",
+      "description": "Aumenta la potencia de disparos normales y flechas en salva."
+    }
+  ],
+  "Paralysis": [
+    {
+      "points": 10,
+      "name": "Anula parálisis",
+      "description": "Previene la parálisis."
+    },
+    {
+      "points": -10,
+      "name": "Doble parálisis",
+      "description": "Dobla la duración de la parálisis."
+    }
+  ],
+  "Pellet Up": [
+    {
+      "points": 10,
+      "name": "Perdigón/abanico+",
+      "description": "Aumenta la potencia de disparos de perdigón y de las flechas en abanico."
+    }
+  ],
+  "Perception": [
+    {
+      "points": 10,
+      "name": "Gurú de captura",
+      "description": "Aporta conocimiento sobre cuándo se puede capturar a un monstruo grande."
+    }
+  ],
+  "Pierce Up": [
+    {
+      "points": 10,
+      "name": "Perforante+",
+      "description": "Aumenta la potencia de disparos perforadores y flechas perforantes."
+    }
+  ],
+  "Poison": [
+    {
+      "points": 10,
+      "name": "Anula veneno",
+      "description": "Reduce el efecto del veneno mortal y anula totalmente otros venenos menores."
+    },
+    {
+      "points": -10,
+      "name": "Doble veneno",
+      "description": "Duplica el daño recibido por veneno."
+    }
+  ],
+  "Potential": [
+    {
+      "points": 10,
+      "name": "Adrenalina +1",
+      "description": "Aumenta mucho la defensa cuando la salud está por debajo del 40% de su cantidad máxima."
+    },
+    {
+      "points": 15,
+      "name": "Adrenalina +2",
+      "description": "Aumenta mucho ataque y defensa cuando la salud esté por debajo del 40% de su cantidad máxima."
+    },
+    {
+      "points": -10,
+      "name": "Agobiado",
+      "description": "Reduce potenciador defensa y ataque cuando la salud está por debajo del 40% del máximo."
+    }
+  ],
+  "Power C+": [
+    {
+      "points": 10,
+      "name": "Rev. poten. Nv1",
+      "description": "Permite aplicar revestimientos de potencia de Nv1 al usar un arco."
+    },
+    {
+      "points": 15,
+      "name": "Rev. poten. (todos)",
+      "description": "Permite aplicar revestimientos de potencia de todos los niveles al usar un arco."
+    }
+  ],
+  "PowerEater": [
+    {
+      "points": 10,
+      "name": "Gourmet",
+      "description": "Combina los efectos de \"consumir +2\", \"carnívoro\" y \"micólogo\"."
+    }
+  ],
+  "Prayer": [
+    {
+      "points": 10,
+      "name": "Bendición",
+      "description": "Combina los efectos de \"curación +1\" y \"bendición divina\"."
+    }
+  ],
+  "Precision": [
+    {
+      "points": 10,
+      "name": "Precisión +1",
+      "description": "Reduce la desviación al disparar."
+    },
+    {
+      "points": 15,
+      "name": "Precisión +2",
+      "description": "Reduce mucho la desviación al disparar."
+    },
+    {
+      "points": -10,
+      "name": "Precisión -1",
+      "description": "Aumenta la desviación al disparar."
+    },
+    {
+      "points": -15,
+      "name": "Precisión -2",
+      "description": "Aumenta mucho la desviación al disparar."
+    }
+  ],
+  "Prolong SP": [
+    {
+      "points": 10,
+      "name": "Prolongación de SP",
+      "description": "Alarga el tiempo del efecto SP iniciado por técnicas de caza SP. "
+    }
+  ],
+  "Protection": [
+    {
+      "points": 10,
+      "name": "Bendición divina",
+      "description": "A veces reduce el daño recibido."
+    },
+    {
+      "points": -10,
+      "name": "Bendic. demoníaca",
+      "description": "A veces aumenta el daño recibido."
+    }
+  ],
+  "Prudence": [
+    {
+      "points": 10,
+      "name": "Pies veloces",
+      "description": "Combina los efectos de \"plena forma\" y \"distancia evasión\"."
+    }
+  ],
+  "Psychic": [
+    {
+      "points": 10,
+      "name": "Detectar",
+      "description": "Aumenta la información en el mapa cuando hay monstruos grandes marcados."
+    },
+    {
+      "points": 15,
+      "name": "Autorrastreador",
+      "description": "Los monstruos grandes siempre aparecen en el mapa, como si estuviesen marcados."
+    }
+  ],
+  "Punish Draw": [
+    {
+      "points": 10,
+      "name": "Pena inmediata",
+      "description": "Los ataques de desenfundadura de las armas de corte pueden aturdir. Aumenta un poco el ataque."
+    }
+  ],
+  "Ranger": [
+    {
+      "points": 10,
+      "name": "Soldado",
+      "description": "Muestra el mapa siempre, hasta cuando no tienes. Así es más fácil pescar y cocinar."
+    }
+  ],
+  "Rapid Fire": [
+    {
+      "points": 10,
+      "name": "Disparo bonus",
+      "description": "Permite disparar un tiro más con el disparo rápido."
+    }
+  ],
+  "Readiness": [
+    {
+      "points": 10,
+      "name": "Iai-jutsu",
+      "description": "Combina los efectos de \"pena inmediata\" y \"vaina rápida\"."
+    }
+  ],
+  "Rec Level": [
+    {
+      "points": 10,
+      "name": "Curación +1",
+      "description": "Aumenta la cantidad recuperada al recuperar salud."
+    },
+    {
+      "points": -10,
+      "name": "Curación -1",
+      "description": "Reduce la cantidad recuperada al recuperar salud."
+    }
+  ],
+  "Rec Speed": [
+    {
+      "points": 10,
+      "name": "Recuperación +1",
+      "description": "Acelera la recuperación del daño temporal (parte roja del indicador de salud)."
+    },
+    {
+      "points": 15,
+      "name": "Recuperación +2",
+      "description": "Acelera mucho la recuperación del daño temporal (parte roja del indicador de salud)."
+    },
+    {
+      "points": -10,
+      "name": "Recuperación -1",
+      "description": "Frena la recuperación del daño temporal (parte roja del indicador de salud)."
+    },
+    {
+      "points": -15,
+      "name": "Recuperación -2",
+      "description": "Frena mucho la recuperación del daño temporal (parte roja del indicador de salud)."
+    }
+  ],
+  "Recoil": [
+    {
+      "points": 10,
+      "name": "Cadencia +1",
+      "description": "Aumenta ligeramente la cadencia de la ballesta."
+    },
+    {
+      "points": 15,
+      "name": "Cadencia +2",
+      "description": "Aumenta la cadencia de la ballesta."
+    },
+    {
+      "points": 20,
+      "name": "Cadencia +3",
+      "description": "Aumenta mucho la cadencia de la ballesta."
+    },
+    {
+      "points": -10,
+      "name": "Cadencia -1",
+      "description": "Reduce ligeramente la cadencia de la ballesta."
+    },
+    {
+      "points": -15,
+      "name": "Cadencia -2",
+      "description": "Reduce la cadencia de la ballesta."
+    },
+    {
+      "points": -20,
+      "name": "Cadencia -3",
+      "description": "Reduce mucho la cadencia de la ballesta."
+    }
+  ],
+  "Redhelm": [
+    {
+      "points": 10,
+      "name": "Alma de Ámbar",
+      "description": "Combina los efectos de \"foco\" y \"resentimiento\"."
+    }
+  ],
+  "Redhelm X": [
+    {
+      "points": 10,
+      "name": "Alma de Ámbar X",
+      "description": "Combina los efectos de \"resentimiento\", \"foco\" y \"corredor +1\"."
+    }
+  ],
+  "Reload Spd": [
+    {
+      "points": 10,
+      "name": "Vel. recarga +1",
+      "description": "Acelera ligeramente la recarga de la ballesta y la carga de revestimientos de arco."
+    },
+    {
+      "points": 15,
+      "name": "Vel. recarga +2",
+      "description": "Acelera la recarga de ballesta y carga automáticamente los revestimientos de arco."
+    },
+    {
+      "points": 20,
+      "name": "Vel. recarga +3",
+      "description": "Acelera mucho la recarga de ballesta y carga automáticamente los revestimientos de arco."
+    },
+    {
+      "points": -10,
+      "name": "Vel. recarga -1",
+      "description": "Ralentiza ligeramente la recarga de la ballesta y la carga de revestimientos de arco."
+    },
+    {
+      "points": -15,
+      "name": "Vel. recarga -2",
+      "description": "Ralentiza la recarga de ballesta y la carga de revestimientos de arco."
+    },
+    {
+      "points": -20,
+      "name": "Vel. recarga -3",
+      "description": "Ralentiza mucho la recarga de la ballesta y la carga de revestimientos de arco."
+    }
+  ],
+  "Resilience": [
+    {
+      "points": 10,
+      "name": "Muro de hierro",
+      "description": "Combina los efectos de \"defensa +2\" y \"piel de hierro\"."
+    }
+  ],
+  "Rustrazor": [
+    {
+      "points": 10,
+      "name": "Alma de Férreo",
+      "description": "Combina los efectos de \"Guardia +2\" y \"vaina rápida\"."
+    }
+  ],
+  "Rustrazor X": [
+    {
+      "points": 10,
+      "name": "Alma de Férreo X",
+      "description": "Combina los efectos de \"guardia +2\", \"vaina rápida\" y \"filoescama afilada\"."
+    }
+  ],
+  "Secret Arts": [
+    {
+      "points": 10,
+      "name": "Habilidad +2",
+      "description": "Las habilidades a las que hayas añadido puntos recibirán dos puntos de habilidad más."
+    }
+  ],
+  "Sense": [
+    {
+      "points": 10,
+      "name": "Sigilo",
+      "description": "Reduce la probabilidad de ser atacado por monstruos."
+    },
+    {
+      "points": -10,
+      "name": "Provocación",
+      "description": "Aumenta la probabilidad de ser atacado por monstruos."
+    }
+  ],
+  "Sharpener": [
+    {
+      "points": 10,
+      "name": "Afilado rápido",
+      "description": "Acelera el afilado de armas."
+    },
+    {
+      "points": -10,
+      "name": "Afilado lento",
+      "description": "Ralentiza el afilado de armas."
+    }
+  ],
+  "Sharpness": [
+    {
+      "points": 10,
+      "name": "Filo de cuchilla",
+      "description": "Divide por 2 la velocidad de pérdida de afilado del arma."
+    },
+    {
+      "points": -10,
+      "name": "Filo romo",
+      "description": "Dobla la velocidad de pérdida de afilado del arma."
+    }
+  ],
+  "Sheathe Sharpen": [
+    {
+      "points": 10,
+      "name": "Vaina desafiante",
+      "description": "Podrás afilar el arma si la envainas cuando el monstruo esté furioso."
+    }
+  ],
+  "Sheathing": [
+    {
+      "points": 10,
+      "name": "Vaina rápida",
+      "description": "Aumenta la velocidad con la que enfundas las armas."
+    }
+  ],
+  "Silverwind": [
+    {
+      "points": 10,
+      "name": "Alma de Argénteo",
+      "description": "Combina los efectos de \"evasión +2\" y \"ojo crítico +3\"."
+    }
+  ],
+  "Silverwind X": [
+    {
+      "points": 10,
+      "name": "Alma Argénteo X",
+      "description": "Combina los efectos de \"evasión +2\", \"ojo crítico +3\" y \"sigilo\"."
+    }
+  ],
+  "Sleep": [
+    {
+      "points": 10,
+      "name": "Anula sueño",
+      "description": "Previene el sueño."
+    },
+    {
+      "points": -10,
+      "name": "Doble sueño",
+      "description": "Dobla la duración del sueño."
+    }
+  ],
+  "Snowbaron": [
+    {
+      "points": 10,
+      "name": "Alma de Alud",
+      "description": "Combina los efectos de \"distancia evasión\" y \"estado de forma +1\"."
+    }
+  ],
+  "Snowbaron X": [
+    {
+      "points": 10,
+      "name": "Alma de Alud X",
+      "description": "Combina los efectos de \"distancia evasión\", \"maestro de monta\" y \"estado forma +1\"."
+    }
+  ],
+  "Soulseer": [
+    {
+      "points": 10,
+      "name": "Alma de Tengen",
+      "description": "Combina los efectos de \"ojo crítico +3\" y \"espíritu +1\"."
+    }
+  ],
+  "Soulseer X": [
+    {
+      "points": 10,
+      "name": "Alma de Tengen X",
+      "description": "Combina los efectos de \"ojo crítico +3\", y \"espíritu +2\"."
+    }
+  ],
+  "Speed Setup": [
+    {
+      "points": 10,
+      "name": "Trampero",
+      "description": "Hace que las combinaciones de trampa funcionen, y acelera la colocación de trampas y bombas."
+    }
+  ],
+  "Spirit": [
+    {
+      "points": 10,
+      "name": "Espíritu +1",
+      "description": "Aumenta el ataque y la afinidad cuando un monstruo grande se enfada en la misma área."
+    },
+    {
+      "points": 15,
+      "name": "Espíritu +2",
+      "description": "Aumenta mucho ataque y afinidad cuando un monstruo grande se enfada en la misma área."
+    }
+  ],
+  "Stalwart": [
+    {
+      "points": 10,
+      "name": "Portaescudos",
+      "description": "Combina los efectos de \"escudo\" y \"estado forma +1\"."
+    }
+  ],
+  "Stam Drain": [
+    {
+      "points": 10,
+      "name": "Robarresistencia",
+      "description": "Aumenta la capacidad de ciertos ataques de agotar a monstruos."
+    }
+  ],
+  "Stam Recov": [
+    {
+      "points": 10,
+      "name": "Estado forma +1",
+      "description": "Aumenta la velocidad de recuperación de resistencia."
+    },
+    {
+      "points": -10,
+      "name": "Estado forma -1",
+      "description": "Reduce la velocidad de recuperación de resistencia."
+    }
+  ],
+  "Stamina": [
+    {
+      "points": 10,
+      "name": "Corredor +1",
+      "description": "Ralentiza el uso de resistencia de acciones que requieren un consumo continuo (como correr)."
+    },
+    {
+      "points": -10,
+      "name": "Corredor -1",
+      "description": "Acelera el uso de resistencia de acciones que requieren un consumo continuo (como correr)."
+    }
+  ],
+  "Status": [
+    {
+      "points": 10,
+      "name": "Estado anormal +1",
+      "description": "Aumenta la potencia de los ataques de estado anormal."
+    },
+    {
+      "points": 15,
+      "name": "Estado anormal +2",
+      "description": "Aumenta mucho la potencia de los ataques de estado anormal."
+    },
+    {
+      "points": -10,
+      "name": "Estado anormal -1",
+      "description": "Reduce la potencia de los ataques de estado anormal."
+    }
+  ],
+  "Status Res": [
+    {
+      "points": 10,
+      "name": "Bienestar",
+      "description": "Combina los efectos de \"anula veneno\", \"anula parálisis\", \"anula sueño\" y \"anula aturdimiento\"."
+    }
+  ],
+  "SteadyHand": [
+    {
+      "points": 10,
+      "name": "Pulso firme",
+      "description": "Combina los efectos de \"normal/ salva+\", \"perforante+\" y \"perdigón/abanico+\"."
+    }
+  ],
+  "Stonefist": [
+    {
+      "points": 10,
+      "name": "Alma de Pétreo",
+      "description": "Combina los efectos de \"filo de cuchilla\", \"cadencia +2\" y \"bendición divina\"."
+    }
+  ],
+  "Stonefist X": [
+    {
+      "points": 10,
+      "name": "Alma de Pétreo X",
+      "description": "Combina los efectos de \"filo de cuchilla\", \"cadencia +2\", \"bendición divina\" y \"constitución +1\"."
+    }
+  ],
+  "Stun": [
+    {
+      "points": 10,
+      "name": "Mitad aturdimiento",
+      "description": "Reduce la probabilidad de ser aturdido un 50%."
+    },
+    {
+      "points": 15,
+      "name": "Anula aturdimiento",
+      "description": "Previene el aturdimiento."
+    },
+    {
+      "points": -10,
+      "name": "Doble aturdimiento",
+      "description": "Dificulta la recuperación tras ser aturdido."
+    }
+  ],
+  "Survivor": [
+    {
+      "points": 10,
+      "name": "Fortalecer",
+      "description": "Aumenta tu ataque y defensa cada vez que caes en combate."
+    }
+  ],
+  "Talisman Boost": [
+    {
+      "points": 10,
+      "name": "Talismán doble",
+      "description": "Duplica el número de puntos de habilidad que puedes obtener gracias a los talismanes."
+    }
+  ],
+  "Team Player": [
+    {
+      "points": 10,
+      "name": "Reunión camaradas",
+      "description": "Aumenta el ataque y la defensa de los camaradas."
+    }
+  ],
+  "TeamLeader": [
+    {
+      "points": 10,
+      "name": "Ovación camaradas",
+      "description": "\"Puño en alto\" llama a camaradas desmayados o en recuperación. No se puede usar repetidamente."
+    }
+  ],
+  "Tenderizer": [
+    {
+      "points": 10,
+      "name": "Maza",
+      "description": "Aumenta la afinidad si golpeas partes del cuerpo contra las que tus ataques son muy eficaces."
+    }
+  ],
+  "Thunder Atk": [
+    {
+      "points": 10,
+      "name": "Ataque rayo +1",
+      "description": "Aumenta la potencia de ataques de rayo y disparos rayo (D rayo)."
+    },
+    {
+      "points": 15,
+      "name": "Ataque rayo +2",
+      "description": "Aumenta mucho la potencia de ataques de rayo y disparos rayo (D rayo)."
+    },
+    {
+      "points": -10,
+      "name": "Ataque rayo -1",
+      "description": "Reduce la potencia de ataques de rayo y disparos rayo (D rayo)."
+    }
+  ],
+  "Thunder Res": [
+    {
+      "points": 10,
+      "name": "Resist. rayo +15",
+      "description": "Aumenta la resistencia al rayo en 15."
+    },
+    {
+      "points": 15,
+      "name": "Resist. rayo +20",
+      "description": "Aumenta la resistencia al rayo en 20."
+    },
+    {
+      "points": -10,
+      "name": "Resist. rayo -20",
+      "description": "Reduce la resistencia al rayo en 20."
+    }
+  ],
+  "Thunderlord": [
+    {
+      "points": 10,
+      "name": "Alma de Tormenta",
+      "description": "Combina los efectos de \"poder oculto +2\" y \"constitución +2\"."
+    }
+  ],
+  "Thunderlord X": [
+    {
+      "points": 10,
+      "name": "Alma Tormenta X",
+      "description": "Combina los efectos de \"poder oculto +2\", \"constitución +2\" y \"foco\"."
+    }
+  ],
+  "Transporter": [
+    {
+      "points": 10,
+      "name": "Porteador experto",
+      "description": "Mejora la velocidad al transportar objetos y reduce la probabilidad de que se te caigan."
+    }
+  ],
+  "Tremor Res": [
+    {
+      "points": 10,
+      "name": "Resist. temblores",
+      "description": "Impide que los temblores provocados por monstruos grandes te hagan tambalear."
+    }
+  ],
+  "Unscathed": [
+    {
+      "points": 10,
+      "name": "Plena forma",
+      "description": "Aumenta el ataque cuando el indicador de salud está al máximo."
+    }
+  ],
+  "Vault": [
+    {
+      "points": 10,
+      "name": "Transmisión aérea",
+      "description": "Aumenta el daño de los ataques en salto."
+    }
+  ],
+  "Water Atk": [
+    {
+      "points": 10,
+      "name": "Ataque agua +1",
+      "description": "Aumenta la potencia de ataques de agua y disparos agua (D agua)."
+    },
+    {
+      "points": 15,
+      "name": "Ataque agua +2",
+      "description": "Aumenta mucho la potencia de ataques de agua y disparos agua (D agua)."
+    },
+    {
+      "points": -10,
+      "name": "Ataque agua -1",
+      "description": "Reduce la potencia de ataques de agua y disparos agua (D agua)."
+    }
+  ],
+  "Water Res": [
+    {
+      "points": 10,
+      "name": "Resist. agua +15",
+      "description": "Aumenta la resistencia al agua en 15."
+    },
+    {
+      "points": 15,
+      "name": "Resist. agua +20",
+      "description": "Aumenta la resistencia al agua en 20."
+    },
+    {
+      "points": -10,
+      "name": "Resist. agua -20",
+      "description": "Reduce la resistencia al agua en 20."
+    }
+  ],
+  "Whim": [
+    {
+      "points": 10,
+      "name": "Capricho +1",
+      "description": "Reduce la probabilidad de rotura de picos, redes de bichos, bumeranes, flautas y cuernos."
+    },
+    {
+      "points": 15,
+      "name": "Capricho +2",
+      "description": "Reduce mucho la probabilidad de rotura de picos, redes de bichos, bumeranes, flautas y cuernos."
+    },
+    {
+      "points": -10,
+      "name": "Capricho -1",
+      "description": "Aumenta la probabilidad de rotura de picos, redes de bichos, bumeranes, flautas y cuernos."
+    },
+    {
+      "points": -15,
+      "name": "Capricho -2",
+      "description": "Aumenta mucho la probabilidad de rotura de picos, redes de bichos, bumeranes, flautas y cuernos."
+    }
+  ],
+  "Wide-Range": [
+    {
+      "points": 10,
+      "name": "Efecto área +1",
+      "description": "Transfiere parte de los efectos de ciertos objetos a los camaradas en la zona."
+    },
+    {
+      "points": 15,
+      "name": "Efecto área +2",
+      "description": "Transfiere los efectos de ciertos objetos a los camaradas en la zona."
+    }
+  ],
+  "Wind Res": [
+    {
+      "points": 10,
+      "name": "Resist. viento +1",
+      "description": "Reduce casi toda la presión del viento."
+    },
+    {
+      "points": 15,
+      "name": "Resist. viento +2",
+      "description": "Anula la presión del viento de casi todos los monstruos."
+    }
+  ]
+}
