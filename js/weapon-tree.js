@@ -1,5 +1,6 @@
 /* weapon-tree.js — rejilla de herrería del juego: una fila por línea, casillas por nivel */
 import { A, esc, classIcon, eleIconPath, hasGameIcons, rarColor, ELE_COLORS, ARC_ES, SHOT_ES, loadWeaponClass } from "./app.js";
+import { thirdChargeType } from "./bow-charges.js";
 import { bindTips, monsterRows } from "./tooltip.js";
 
 /* geometría de la rejilla (como la pantalla de herrería de MHGU) */
@@ -25,7 +26,7 @@ let bounds = { w: 0, h: 0 };
 let rows = 0, maxCol = 0;
 let collapsed = new Set();
 let current = null;          // datos de la clase cargada
-let filterMatch = null;      // Set de ids que pasan filtros (null = sin filtro)
+let filterMatch = null;      // Map: línea → niveles coincidentes (null = toda la línea)
 
 const trunc = (s, n) => (s && s.length > n ? s.slice(0, n - 1) + "…" : s || "");
 const tileX = (pos, lv) => pos.x + (lv - 1) * COLP;
@@ -228,7 +229,8 @@ function refreshHighlights() {
     g.classList.toggle("selected", isSel);
     g.setAttribute("aria-selected", isSel ? "true" : "false");
     g.classList.toggle("on-path", !isSel && path.has(id) && lv <= path.get(id));
-    g.classList.toggle("dimmed", filterMatch != null && !filterMatch.has(id));
+    const levels = filterMatch?.get(id);
+    g.classList.toggle("dimmed", filterMatch != null && (!filterMatch.has(id) || (levels != null && !levels.has(lv))));
   });
   world.querySelectorAll(".wrow").forEach(g => {
     const id = +g.dataset.id;
@@ -284,7 +286,7 @@ export function applyWeaponFilters(f) {
   if (!active) { filterMatch = null; refreshHighlights(); updateCount(); return; }
   const [rmin, rmax] = f.rarity ? f.rarity.split("-").map(Number) : [0, 99];
   const q = f.name?.toLowerCase() || "";
-  filterMatch = new Set();
+  filterMatch = new Map();
   for (const t of current.trees) {
     let ok = true;
     if (q) ok = t.levels.some(l => (l.nEs || "").toLowerCase().includes(q) || l.n.toLowerCase().includes(q));
@@ -292,12 +294,12 @@ export function applyWeaponFilters(f) {
     if (ok && f.element) ok = t.levels.some(l => (l.ele || []).some(e => e[0] === f.element));
     if (ok && f.affinity) ok = t.levels.some(l =>
       f.affinity === "pos" ? l.aff > 0 : f.affinity === "neg" ? l.aff < 0 : l.aff === 0);
-    // arco: el tiro de arco es constante por árbol; la flecha se busca en las cargas
-    // de cualquier nivel. "!" = carga que solo otorga Recargando (Load Up).
     if (ok && f.arc) ok = t.levels.some(l => l.x?.arc === f.arc);
-    if (ok && f.shot) ok = t.levels.some(l => (l.x?.charges || []).some(c =>
-      c.split(" ")[0] === f.shot && (f.shotLu || !c.endsWith("!"))));
-    if (ok) filterMatch.add(t.id);
+    if (!ok) continue;
+    if (f.shot) {
+      const matches = t.levels.filter(l => thirdChargeType(l, f.shotLu) === f.shot);
+      if (matches.length) filterMatch.set(t.id, new Set(matches.map(l => l.lv)));
+    } else filterMatch.set(t.id, null);
   }
   refreshHighlights();
   updateCount();
@@ -339,13 +341,11 @@ function nodeTip(el) {
   const mons = monsterRows(t.monsters, "Monstruo / materiales de origen");
   let bow = "";
   if (current.class === "bow") {
-    const arc = t.levels.find(x => x.x?.arc)?.x.arc;
-    const order = ["Rapid", "Pierce", "Spread", "Heavy"];
-    const present = new Set(t.levels.flatMap(x => (x.x?.charges || [])
-      .filter(c => !c.endsWith("!")).map(c => c.split(" ")[0])));
-    const shots = order.filter(s => present.has(s)).map(s => SHOT_ES[s] || s);
-    bow = `<div class="tip-bow"><span class="k">Tiro de arco</span> ${esc(ARC_ES[arc] || arc || "—")}` +
-      (shots.length ? ` · <span class="k">Flechas</span> ${esc(shots.join(", "))}` : "") + `</div>`;
+    const arc = l.x?.arc;
+    const third = thirdChargeType(l, true);
+    const locked = l.x?.charges?.[2]?.endsWith("!");
+    bow = `<div class="tip-bow"><span class="k">Tiro de arco</span> ${esc(ARC_ES[arc] || arc || "—")} · ` +
+      `<span class="k">3.ª carga</span> ${esc(SHOT_ES[third] || third || "—")}${locked ? " (Recargando)" : ""}</div>`;
   }
   return `<div class="tip-head">${classIcon(current.class, l.rar, "tip-wicon")}
       <div><div class="tip-title">${esc(name)}</div>

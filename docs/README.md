@@ -36,10 +36,10 @@ y abrir <http://127.0.0.1:8765/>. No funciona con `file://` (los módulos ES y
   del glaive, cargas/revestimientos/tiro de arco, munición/recarga/retroceso/
   desviación/disparo rápido/agachado/interna de ballestas) y línea de
   evolución navegable. Filtros: nombre, rareza, elemento, afinidad y, en la
-  clase **Arco**, tiro de arco (Foco / Amplio / Ráfaga) y tipo de flecha
-  (Salva / Perforante / Abanico / Pesada), con una casilla para incluir las
-  cargas que solo otorga la habilidad **Recargando** (Load Up). El tooltip de
-  cada nodo de arco muestra su tiro de arco y sus flechas innatas.
+  clase **Arco**, tiro de arco (Foco / Amplio / Ráfaga) y tipo de flecha de la **tercera carga**
+  (Salva / Perforante / Abanico / Pesada), con una casilla para incluir la
+  tercera carga si requiere la habilidad **Recargando** (Load Up). El tooltip de
+  cada nodo de arco muestra su tiro de arco y su tercera carga a ese nivel de mejora.
 - **Armor Collection**: 1,242 conjuntos / 5,637 piezas. Selector de tres
   paneles: lista de conjuntos con filtros (nombre, rango, rareza, tipo,
   género, monstruo, habilidad), cinco piezas del conjunto con sus ausencias
