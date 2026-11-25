@@ -542,6 +542,7 @@ export function calculateSequence(options) {
 
   const add = key => round(sum(shots.map(shot => shot.row[key] * shot.weight)));
   const rawMissionAverage = add('rawMissionAverage');
+  const rawLowCostMissionAverage = add('rawLowCostMissionAverage');
   const focusedMission = add('elementFocusedMissionCurrent');
   const focusedMission50 = add('elementFocusedMissionCapacity50');
   const liteMission = add('elementLiteMissionCurrent');
@@ -570,6 +571,7 @@ export function calculateSequence(options) {
     rawIndexNoCoat: rawIndex,
     rawIndexPowerCoated: rawCoated,
     rawMissionAverage,
+    rawLowCostMissionAverage,
     elementFocusedMissionCurrent: focusedMission,
     elementFocusedMissionCapacity50: focusedMission50,
     elementLiteMissionCurrent: liteMission,
@@ -590,6 +592,8 @@ export function calculateSequence(options) {
     elementHybridCapacity50VsRaw: round(hybridMission50 / rawMissionAverage),
     elementHybridLowCostMissionVsRaw: round(hybridLowCostMission / rawMissionAverage),
     elementHybridLowCostCapacity50VsRaw: round(hybridLowCostMission50 / rawMissionAverage),
+    elementHybridLowCostMissionVsRawLowCost: round(hybridLowCostMission / rawLowCostMissionAverage),
+    elementHybridLowCostCapacity50VsRawLowCost: round(hybridLowCostMission50 / rawLowCostMissionAverage),
     arrowHits: round(sum(shots.map(shot => shot.row.arrowHits * shot.weight))),
     mvSum: round(sum(shots.map(shot => shot.row.mvSum * shot.weight))),
     skillCosts: primary.skillCosts,
@@ -758,6 +762,7 @@ export function runMonsterMatrix(database, monsterData, options = {}) {
 
   const makeBestSet = () => Object.fromEntries(scenarios.map(({ id }) => [id, {
     raw: null,
+    rawLowCost: null,
     elementalFocused: null,
     elementalFocused50: null,
     elementalLite: null,
@@ -774,18 +779,23 @@ export function runMonsterMatrix(database, monsterData, options = {}) {
     for (const scenario of scenarios) {
       const result = bestSet[scenario.id];
       const rawDamage = result.raw?.damage || 0;
+      const rawLowCostDamage = result.rawLowCost?.damage || 0;
       for (const key of profileKeys) {
         const selected = result[key];
-        result[key] = selected && rawDamage > 0
+        const usesLowCostRaw = key === 'elementalHybridLowCost' || key === 'elementalHybridLowCost50';
+        const rawReference = usesLowCostRaw ? result.rawLowCost : result.raw;
+        const referenceDamage = usesLowCostRaw ? rawLowCostDamage : rawDamage;
+        result[key] = selected && referenceDamage > 0
           ? {
             ...selected,
-            vsRaw: round(selected.damage / rawDamage),
-            rawWeapon: result.raw.weapon,
-            rawTree: result.raw.tree,
-            rawLevel: result.raw.level,
-            rawCharge: result.raw.charge,
-            rawPart: result.raw.part,
-            rawDamage: result.raw.damage,
+            vsRaw: round(selected.damage / referenceDamage),
+            rawReference: usesLowCostRaw ? 'rawLowCost' : 'raw',
+            rawWeapon: rawReference.weapon,
+            rawTree: rawReference.tree,
+            rawLevel: rawReference.level,
+            rawCharge: rawReference.charge,
+            rawPart: rawReference.part,
+            rawDamage: referenceDamage,
           }
           : selected ? { ...selected, vsRaw: null } : null;
       }
@@ -795,6 +805,9 @@ export function runMonsterMatrix(database, monsterData, options = {}) {
   const recordCandidate = (current, row, info) => {
     if (!current.raw || row.rawMissionAverage > current.raw.damage) {
       current.raw = { ...info, damage: row.rawMissionAverage };
+    }
+    if (!current.rawLowCost || row.rawLowCostMissionAverage > current.rawLowCost.damage) {
+      current.rawLowCost = { ...info, damage: row.rawLowCostMissionAverage };
     }
     if (!row.element || row.elementHz <= 0) return;
     const choices = [
@@ -824,9 +837,9 @@ export function runMonsterMatrix(database, monsterData, options = {}) {
     return eligible.reduce((best, row) => !best || row.vsRaw > best.vsRaw ? row : best, null);
   };
 
-  const chooseBestRaw = (partRows, scenarioId) => {
+  const chooseBestRaw = (partRows, scenarioId, key = 'raw') => {
     const eligible = partRows
-      .map(partRow => partRow.scenarios[scenarioId].raw)
+      .map(partRow => partRow.scenarios[scenarioId][key])
       .filter(row => Number.isFinite(row?.damage));
     if (!eligible.length) return null;
     return eligible.reduce((best, row) => !best || row.damage > best.damage ? row : best, null);
@@ -926,7 +939,8 @@ export function runMonsterMatrix(database, monsterData, options = {}) {
       );
 
       for (const scenario of scenarios) {
-        best[scenario.id].raw = chooseBestRaw(partRows, scenario.id);
+        best[scenario.id].raw = chooseBestRaw(partRows, scenario.id, 'raw');
+        best[scenario.id].rawLowCost = chooseBestRaw(partRows, scenario.id, 'rawLowCost');
         for (const key of profileKeys) {
           best[scenario.id][key] = chooseBestComparison(partRows, scenario.id, key);
         }
@@ -935,7 +949,8 @@ export function runMonsterMatrix(database, monsterData, options = {}) {
           const typedRows = partRows.map(partRow => ({
             scenarios: partRow.byShotType[type],
           }));
-          bestByShotType[type][scenario.id].raw = chooseBestRaw(typedRows, scenario.id);
+          bestByShotType[type][scenario.id].raw = chooseBestRaw(typedRows, scenario.id, 'raw');
+          bestByShotType[type][scenario.id].rawLowCost = chooseBestRaw(typedRows, scenario.id, 'rawLowCost');
           for (const key of profileKeys) {
             bestByShotType[type][scenario.id][key] = chooseBestComparison(typedRows, scenario.id, key);
           }
