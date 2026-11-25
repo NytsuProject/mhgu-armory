@@ -180,6 +180,27 @@ test("base, A and B charge-element scenarios only alter elemental multipliers", 
   assert.ok(scenarioB.elementalDamage > scenarioA.elementalDamage);
 });
 
+
+test("Element Coat capacity 50 raises only elemental coating uptime", () => {
+  const weapon = makeWeaponCandidates(makeBow()).find(w => w.treeId === 2 && w.chargeSlot === 3);
+  const base = calculateVolley(weapon, part, {
+    profile: PROFILE.elemental,
+    elementCoatingMode: "native",
+    elementCoatingCapacity: 20,
+    shotsPerStack: 100
+  });
+  const capacity50 = calculateVolley(weapon, part, {
+    profile: PROFILE.elemental,
+    elementCoatingMode: "native",
+    elementCoatingCapacity: 50,
+    shotsPerStack: 100
+  });
+  assert.equal(base.rawDamage, capacity50.rawDamage);
+  assert.ok(capacity50.elementalDamage > base.elementalDamage);
+  assert.equal(base.coatingFactor, 1.10);
+  assert.equal(capacity50.coatingFactor, 1.25);
+});
+
 test("simulation separates LR and G, reports hitzone assumptions and normalized budgets", () => {
   const result = simulateBowBalance(makeBow(), hitzoneData, {
     loadUpPolicy: "match-c3",
@@ -200,4 +221,6 @@ test("simulation separates LR and G, reports hitzone assumptions and normalized 
   assert.deepEqual(result.meta.elementChargeScenarios.map(x => x.id), ["base", "A", "B"]);
   assert.ok(result.matchups.some(row => row.chargeScenario === "A"));
   assert.ok(result.matchups.some(row => row.chargeScenario === "B"));
+  assert.ok(result.matchups.some(row => row.coatingScenario === "native-element-50"));
+  assert.ok(result.matchups.some(row => row.coatingScenario === "unlocked-II-element-50"));
 });
