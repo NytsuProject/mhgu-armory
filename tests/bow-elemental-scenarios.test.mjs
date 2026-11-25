@@ -256,10 +256,14 @@ test('A/B scenarios receive the same coating-switch penalty as the base profile'
   assert.equal(freeRow.B_hybridPowerShots, 70);
   assert.equal(freeRow.A_hybridSwitchShots, 0);
   assert.equal(freeRow.B_hybridSwitchShots, 0);
-  assert.equal(switchedRow.A_hybridPowerShots, 50);
-  assert.equal(switchedRow.B_hybridPowerShots, 50);
+  assert.equal(switchedRow.A_hybridPowerShots, 70);
+  assert.equal(switchedRow.B_hybridPowerShots, 70);
   assert.equal(switchedRow.A_hybridSwitchShots, 20);
   assert.equal(switchedRow.B_hybridSwitchShots, 20);
+  assert.equal(switchedRow.A_hybridLowCostPowerShots, 70);
+  assert.equal(switchedRow.B_hybridLowCostPowerShots, 70);
+  assert.equal(switchedRow.A_hybridLowCostSwitchShots, 20);
+  assert.equal(switchedRow.B_hybridLowCostSwitchShots, 20);
 });
 
 test('coating switch cost reduces Power Coat coverage and accepts shot-equivalent sensitivity', () => {
@@ -275,7 +279,8 @@ test('coating switch cost reduces Power Coat coverage and accepts shot-equivalen
   assert.equal(oneShotSwitch.coatings.hybridCurrentPowerShots, 69);
   assert.equal(oneShotSwitch.coatings.hybridCurrentSwitchShots, 1);
   const observedLoss = freeSwitch.elementHybridMissionCurrent - oneShotSwitch.elementHybridMissionCurrent;
-  const expectedLoss = freeSwitch.elementPhysicalNoCoat * 0.5 / 100;
+  const expectedLoss = (freeSwitch.elementFullNoCoatBase
+    + freeSwitch.elementPhysicalNoCoat * 0.5) / 100;
   assert.ok(Math.abs(observedLoss - expectedLoss) <= 0.0001,
     'switch penalty should remove one Power-Coated shot within output precision');
   assert.throws(() => calculateShot({
