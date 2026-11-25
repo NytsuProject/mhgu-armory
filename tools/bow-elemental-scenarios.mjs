@@ -616,6 +616,7 @@ function weaponRows(trees, options = {}) {
             ammoSaverChance: options.ammoSaverChance ?? 0,
             ammoSaverEnabled: options.ammoSaverEnabled ?? (options.ammoSaverChance > 0),
             elementCoatingCapacity: options.elementCoatingCapacity ?? 20,
+            coatingSwitchShots: options.coatingSwitchShots ?? 0,
             rapidReliability: options.rapidReliability ?? 1,
             style: options.style ?? 'guild',
             powerShotUseRate: options.powerShotUseRate ?? 1,
