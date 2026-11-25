@@ -215,6 +215,14 @@ export function calculateShot(options) {
       nativePower2: hasPower2, nativeElement2: hasElement2,
       powerSkillPoints: skillCosts.raw.powerUnlock,
       elementSkillPoints: skillCosts.elementLite.elementUnlock,
+      powerExpectedUses: round(powerUses),
+      elementExpectedUsesCurrent: round(elementUsesNow),
+      elementExpectedUsesCapacity50: round(elementUsesProposed),
+      powerUptime: round(uptime(powerUses)),
+      elementUptimeCurrent: round(uptime(elementUsesNow)),
+      elementUptimeCapacity50: round(uptime(elementUsesProposed)),
+      missionShots,
+      ammoSaverChance,
     },
     skillCosts,
     sensitivity: shot === 'Rapid' ? { rapidReliability: reliability } : null,
@@ -346,7 +354,20 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   const args = process.argv.slice(2);
   const input = path.resolve(here, '../data/weapons/bow.json');
   const database = JSON.parse(readFileSync(input, 'utf8'));
-  const { rows, summary } = runMatrix(database);
+  const readNumber = (prefix, fallback) => {
+    const raw = args.find((arg) => arg.startsWith(prefix))?.slice(prefix.length);
+    if (raw === undefined) return fallback;
+    const value = Number(raw);
+    return Number.isFinite(value) ? value : fallback;
+  };
+  const options = {
+    includeLoadUp: !args.includes('--no-load-up'),
+    missionShots: readNumber('--mission-shots=', 200),
+    rapidReliability: readNumber('--rapid-reliability=', 1),
+    ammoSaverChance: readNumber('--ammo-saver-chance=', 0.20),
+    elementCoatingCapacity: readNumber('--element-coat-capacity=', 20),
+  };
+  const { rows, summary } = runMatrix(database, options);
   if (args.includes('--summary')) {
     process.stdout.write(JSON.stringify({
       metadata: {
@@ -354,6 +375,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
         elementalLevels: database.trees.reduce((n, t) => n + (t.levels || []).filter(elementOf).length, 0),
         ranks: ['LR', 'HR', 'G'],
         matchups: MATCHUPS,
+        options,
         note: 'Index comparison, not exact DPS. See docs/BOW_ELEMENTAL_SIMULATOR_STAGE5.md.',
       },
       summary,
