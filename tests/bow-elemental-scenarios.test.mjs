@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  ELEMENT_CHARGE, calculateShot, parseCharge, rankFromRarity, runMatrix, runMonsterMatrix,
+  ELEMENT_CHARGE, calculateShot, loadUpDiagnostics, normalizeLoadUpCharge, parseCharge, rankFromRarity, runMatrix, runMonsterMatrix,
 } from '../tools/bow-elemental-scenarios.mjs';
 
 const weapon = {
@@ -141,4 +141,22 @@ test('real hitzone matrix compares catalogue RAW and elemental candidates by mon
   assert.ok(g.scenarios.base.elementalFull);
   assert.equal(g.scenarios.base.elementalFull.element, 'Ice');
   assert.equal(g.scenarios.base.elementalFull50.vsRaw > 0, true);
+});
+
+test('Load Up charge keeps its level but follows the preceding arrow type', () => {
+  const charges = ['Rapid Lv3', 'Rapid Lv4', 'Spread Lv5!'];
+  assert.equal(normalizeLoadUpCharge(charges, 2), 'Rapid Lv5!');
+  assert.deepEqual(parseCharge(normalizeLoadUpCharge(charges, 2)), {
+    type: 'Rapid', level: 5, requiresLoadUp: true,
+  });
+  assert.equal(normalizeLoadUpCharge(['Pierce Lv4', 'Pierce Lv5!'], 1), 'Pierce Lv5!');
+});
+
+test('Load Up diagnostics counts catalogue mismatches without mutating source charges', () => {
+  const charges = ['Rapid Lv3', 'Spread Lv4!'];
+  const database = { trees: [{ id: 1, levels: [{ x: { charges } }] }] };
+  assert.deepEqual(loadUpDiagnostics(database), {
+    marked: 1, alreadyMatching: 0, normalized: 1, bySlot: { '2': 1 },
+  });
+  assert.deepEqual(charges, ['Rapid Lv3', 'Spread Lv4!']);
 });
