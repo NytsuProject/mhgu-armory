@@ -8,6 +8,8 @@ if (!input) throw new Error("Usage: node tools/summarize-bow-monster-matrix.mjs 
 
 const report = JSON.parse(readFileSync(resolve(input), "utf8"));
 const profiles = [
+  ["elementalFocused", "Element Focus · 5 skills"],
+  ["elementalFocused50", "Element Focus · Element Coat 50 · 5 skills"],
   ["elementalLite", "Element Core"],
   ["elementalFull", "Element Full"],
   ["elementalLite50", "Element Core · Element Coat 50"],

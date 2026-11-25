@@ -99,6 +99,20 @@ test('global charge scenarios affect uncoated elemental damage in both builds', 
   assert.ok(a.elementFullCoatedBase > base.elementFullCoatedBase);
 });
 
+test('Element Focus matches RAW on five main skill lines without shot-type boost', () => {
+  const row = calculateShot({
+    weapon, charge: 'Rapid Lv4', matchup, slotIndex: 2,
+  });
+  assert.equal(row.skillCosts.raw.skills, 5);
+  assert.equal(row.skillCosts.raw.points, 70);
+  assert.equal(row.skillCosts.elementFocused.skills, 5);
+  assert.equal(row.skillCosts.elementFocused.points, 75);
+  assert.equal(row.skillCosts.elementFocused.elementUnlock, 0);
+  assert.equal(row.elementFocusedElementNoCoat, row.elementLiteElementNoCoat);
+  assert.ok(row.elementFocusedPhysicalNoCoat < row.elementPhysicalNoCoat);
+  assert.ok(row.elementFocusedMissionCurrent < row.elementLiteMissionCurrent);
+});
+
 test('element build uses elemental coating and distinct skill package costs', () => {
   const nativeCoatings = calculateShot({
     weapon, charge: 'Rapid Lv4', matchup, slotIndex: 2,
@@ -182,7 +196,13 @@ test('real hitzone matrix compares catalogue RAW and elemental candidates by mon
   assert.equal(g.monster, 'Monstruo de prueba');
   assert.equal(g.partsEvaluated, 2);
   assert.ok(g.scenarios.base.raw);
+  assert.ok(g.scenarios.base.elementalFocused);
   assert.ok(g.scenarios.base.elementalFull);
+  assert.equal(g.scenarios.base.elementalFocused.skillCosts.elementFocused.skills, 5);
+  assert.equal(g.scenarios.base.elementalFocused.skillCosts.elementFocused.points, 75);
+  assert.ok(g.scenarios.base.elementalFocused.damage > 0);
+  assert.ok(g.byShotType.Rapid.base.elementalFocused);
+  assert.equal(g.byShotType.Rapid.base.elementalFocused.shotType, "Rapid");
   assert.equal(g.scenarios.base.elementalFull.element, 'Ice');
   assert.equal(g.scenarios.base.elementalFull.style, 'guild');
   assert.equal(g.scenarios.base.elementalFull.powerShotCount, 1);
