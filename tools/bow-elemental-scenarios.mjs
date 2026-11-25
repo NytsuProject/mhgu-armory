@@ -125,7 +125,7 @@ export function calculateShot(options) {
   } = options;
   const parsed = parseCharge(charge);
   const element = elementOf(weapon);
-  if (!parsed || !element) return null;
+  if (!parsed) return null;
   if (parsed.requiresLoadUp && !loadUp) return null;
   if (!Number.isInteger(slotIndex) || slotIndex < 0 || slotIndex > 3) {
     throw new RangeError('slotIndex must be an integer from 0 to 3.');
@@ -173,14 +173,14 @@ export function calculateShot(options) {
     * (mvSum / 100) * (matchup.shotHz / 100) * reliability);
   const rawNoCoat = physicalBase * rawCrit;
   const rawPowerCoated = rawNoCoat * 1.50;
-  const rawBuildBaseElement = (element.value / 10) * eleCharge
-    * (matchup.elementHz / 100) * arrowHits * reliability;
+  const rawBuildBaseElement = element ? (element.value / 10) * eleCharge
+    * (matchup.elementHz / 100) * arrowHits * reliability : 0;
   const rawBuildNoCoat = rawNoCoat + rawBuildBaseElement;
   const rawBuildPowerCoated = rawPowerCoated + rawBuildBaseElement;
 
   const elemPhysicalNoCoat = physicalElemBuildBase * normalCrit;
-  const elemLiteValue = Math.floor(element.value * 1.10 + 6);
-  const elemFullValue = Math.floor(element.value * 1.20 + 6);
+  const elemLiteValue = element ? Math.floor(element.value * 1.10 + 6) : 0;
+  const elemFullValue = element ? Math.floor(element.value * 1.20 + 6) : 0;
   const elemCrit = elementAffinityMultiplier(affinity, true);
   const elementalPerValue = (value) => (value / 10) * eleCharge
     * elemCrit * (matchup.elementHz / 100) * arrowHits * reliability;
@@ -209,7 +209,7 @@ export function calculateShot(options) {
   return {
     shotType: shot, shotLevel, slot: slotIndex + 1, charge,
     requiresLoadUp: parsed.requiresLoadUp,
-    arrowHits, mvSum, affinity, element: element.type, elementValue: element.value,
+    arrowHits, mvSum, affinity, element: element?.type || null, elementValue: element?.value || 0,
     shotHz: matchup.shotHz, elementHz: matchup.elementHz,
     rawIndexNoCoat: round(rawBuildNoCoat),
     rawIndexPowerCoated: round(rawBuildPowerCoated),
@@ -304,6 +304,133 @@ function weaponRows(trees, options = {}) {
     }
   }
   return rows;
+}
+
+function allWeaponCharges(database, options = {}) {
+  const candidates = [];
+  for (const tree of database.trees || []) {
+    for (const level of tree.levels || []) {
+      const weapon = { ...level, x: level.x || {}, aff: level.aff || 0 };
+      const rarity = level.rar ?? tree.rarity;
+      for (const [slotIndex, charge] of (level.x?.charges || []).entries()) {
+        const parsed = parseCharge(charge);
+        if (!parsed || (parsed.requiresLoadUp && !options.includeLoadUp)) continue;
+        candidates.push({
+          rank: rankFromRarity(rarity), rarity, treeId: tree.id,
+          treeName: tree.nameEs || tree.name, weaponName: level.nEs || level.n,
+          level: level.lv, weapon, charge, slotIndex,
+        });
+      }
+    }
+  }
+  return candidates;
+}
+
+/**
+ * Compare catalogue-wide best RAW and elemental bows against every part in
+ * the first hitzone table of each large monster. The hitzone data are supplied
+ * by the caller; only decoded numeric values are consumed.
+ *
+ * All arrows / Pierce contacts are still assumed to hit the same part, so
+ * this remains an optimistic damage index, not measured hunt DPS.
+ */
+export function runMonsterMatrix(database, monsterData, options = {}) {
+  const candidates = allWeaponCharges(database, {
+    includeLoadUp: options.includeLoadUp ?? true,
+  });
+  const scenarios = [
+    { id: 'base', multipliers: ELEMENT_CHARGE.base },
+    { id: 'A', multipliers: ELEMENT_CHARGE.A },
+    { id: 'B', multipliers: ELEMENT_CHARGE.B },
+  ];
+  const byRankMonster = [];
+  const largeMonsters = (monsterData.monsters || []).filter((monster) => monster.large);
+
+  for (const rank of ['LR', 'HR', 'G']) {
+    for (const monster of largeMonsters) {
+      const parts = monster.tables?.[0] || [];
+      let best = Object.fromEntries(scenarios.map(({ id }) => [id, {
+        raw: null, elementalLite: null, elementalFull: null,
+        elementalLite50: null, elementalFull50: null,
+      }]));
+      for (const part of parts) {
+        const shotHz = Number(part[4]) || 0;
+        for (const candidate of candidates) {
+          if (candidate.rank !== rank) continue;
+          const element = elementOf(candidate.weapon);
+          const elementHz = element ? (Number(part[ELEMENT_INDEX[element.type]]) || 0) : 0;
+          const matchup = { shotHz, elementHz };
+          for (const scenario of scenarios) {
+            const row = calculateShot({
+              weapon: candidate.weapon, charge: candidate.charge, matchup,
+              slotIndex: candidate.slotIndex, loadUp: options.includeLoadUp ?? true,
+              elementCharge: scenario.multipliers,
+              missionShots: options.missionShots ?? 200,
+              ammoSaverChance: options.ammoSaverChance ?? 0.20,
+              elementCoatingCapacity: options.elementCoatingCapacity ?? 20,
+              rapidReliability: options.rapidReliability ?? 1,
+            });
+            if (!row) continue;
+            const info = {
+              weapon: candidate.weaponName, tree: candidate.treeId,
+              level: candidate.level, charge: candidate.charge,
+              slot: candidate.slotIndex + 1, shotType: row.shotType,
+              shotLevel: row.shotLevel, part: part[1] || `Parte ${part[0]}`,
+              shotHz, elementHz: element ? elementHz : 0,
+              element: element?.type || null,
+            };
+            const current = best[scenario.id];
+            if (!current.raw || row.rawMissionAverage > current.raw.damage) {
+              current.raw = { ...info, damage: row.rawMissionAverage };
+            }
+            if (element && elementHz > 0) {
+              const choices = [
+                ['elementalLite', row.elementLiteMissionCurrent],
+                ['elementalFull', row.elementFullMissionCurrent],
+                ['elementalLite50', row.elementLiteMissionCapacity50],
+                ['elementalFull50', row.elementFullMissionCapacity50],
+              ];
+              for (const [key, damage] of choices) {
+                if (!current[key] || damage > current[key].damage) {
+                  current[key] = { ...info, damage };
+                }
+              }
+            }
+          }
+        }
+      }
+      for (const scenario of scenarios) {
+        const result = best[scenario.id];
+        const rawDamage = result.raw?.damage || 0;
+        for (const key of ['elementalLite', 'elementalFull', 'elementalLite50', 'elementalFull50']) {
+          result[key] = result[key] && rawDamage > 0
+            ? { ...result[key], vsRaw: round(result[key].damage / rawDamage) }
+            : result[key] ? { ...result[key], vsRaw: null } : null;
+        }
+      }
+      byRankMonster.push({
+        rank, monster: monster.name, tablesAvailable: monster.tables?.length || 0,
+        partsEvaluated: parts.length, scenarios: best,
+      });
+    }
+  }
+  return {
+    metadata: {
+      largeMonsters: largeMonsters.length,
+      candidates: candidates.length,
+      ranks: ['LR', 'HR', 'G'],
+      hitzoneTable: 'first table only; parallel tables remain unlabelled',
+      options: {
+        includeLoadUp: options.includeLoadUp ?? true,
+        missionShots: options.missionShots ?? 200,
+        ammoSaverChance: options.ammoSaverChance ?? 0.20,
+        elementCoatingCapacity: options.elementCoatingCapacity ?? 20,
+        rapidReliability: options.rapidReliability ?? 1,
+      },
+      note: 'Catalogue-wide best same-part damage index; theoretical hits share one part; not actual DPS.',
+    },
+    results: byRankMonster,
+  };
 }
 
 function bestBy(rows, valueKey) {
