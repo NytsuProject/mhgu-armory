@@ -204,9 +204,12 @@ export function calculateVolley(weapon, part, options = {}) {
     * rawMotionTotal * (shotHz / 100) * shotUp * rawCritFactor * rawCoatingFactor;
 
   const trueElement = elementEntry ? elementWithSkills(elementEntry.display, profile.elementalSkills) : 0;
-  const elementCoating = profile.id === "elemental"
+  let elementCoating = profile.id === "elemental"
     ? coatingForWeapon(weapon, PROFILE.elemental, options.elementCoatingMode || "none")
     : { label: "No aplica", multiplier: 1, capacity: 0, extraSkillSlots: 0, item: null };
+  if (profile.id === "elemental" && Number.isFinite(options.elementCoatingCapacity)) {
+    elementCoating = { ...elementCoating, capacity: options.elementCoatingCapacity };
+  }
   const elementCoatingFactor = averageCoatingMultiplier(elementCoating, options.shotsPerStack || 100, options.ammoSaverReturnRate || 0);
   const criticalElementFactor = profile.criticalElement ? 1 + Math.max(0, affinity) / 100 * 0.35 : 1;
   const elementalHits = mv.length;
@@ -264,9 +267,11 @@ export function simulateBowBalance(bowData, hitzoneData, options = {}) {
   const ranks = ["LR", "HR", "G"];
   const shotTypes = ["Rapid", "Pierce", "Spread", "Heavy"];
   const coatingScenarios = [
-    { id: "uncoated", label: "Sin revestimientos", coatingMode: "none", elementCoatingMode: "none" },
-    { id: "native-single-stack", label: "Revestimientos nativos, una pila por 100 disparos", coatingMode: "native", elementCoatingMode: "native" },
-    { id: "unlocked-II-single-stack", label: "Nivel II desbloqueado, una pila por 100 disparos", coatingMode: "unlock-II", elementCoatingMode: "unlock-II" }
+    { id: "uncoated", label: "Sin revestimientos", coatingMode: "none", elementCoatingMode: "none", elementCoatingCapacity: null },
+    { id: "native-single-stack", label: "Revestimientos nativos, elemento capacidad 20", coatingMode: "native", elementCoatingMode: "native", elementCoatingCapacity: 20 },
+    { id: "native-element-50", label: "Revestimientos nativos, elemento capacidad 50", coatingMode: "native", elementCoatingMode: "native", elementCoatingCapacity: 50 },
+    { id: "unlocked-II-single-stack", label: "Nivel II desbloqueado, elemento capacidad 20", coatingMode: "unlock-II", elementCoatingMode: "unlock-II", elementCoatingCapacity: 20 },
+    { id: "unlocked-II-element-50", label: "Nivel II desbloqueado, elemento capacidad 50", coatingMode: "unlock-II", elementCoatingMode: "unlock-II", elementCoatingCapacity: 50 }
   ];
   const chargeScenarioIds = options.chargeScenarios || ["base", "A", "B"];
   for (const id of chargeScenarioIds) {
@@ -296,7 +301,8 @@ export function simulateBowBalance(bowData, hitzoneData, options = {}) {
                   elementCoatingMode: coatingScenario.elementCoatingMode,
                   shotsPerStack,
                   ammoSaverReturnRate: returnRate,
-                  chargeElementMultipliers: chargeScenario.multipliers
+                  chargeElementMultipliers: chargeScenario.multipliers,
+                  elementCoatingCapacity: coatingScenario.elementCoatingCapacity
                 };
                 const raw = bestForWeaponAndPart(weapon, part, PROFILE.raw, shared);
                 const element = weapon.elements.length
