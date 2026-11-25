@@ -173,6 +173,7 @@ test('matrix enumerates every elemental slot and synthetic matchup', () => {
   assert.equal(summary.length, 4); // one group per matchup
   assert.ok(summary.every(row => row.bestLite.skillCosts.raw.points >= 70));
   assert.ok(rows.every(row => Number.isFinite(row.elementHybridLowCostMissionVsRaw)));
+  assert.ok(rows.every(row => Number.isFinite(row.elementHybridLowCostMissionVsRawLowCost)));
   assert.ok(rows.some(row => Number.isFinite(row.A_hybridLowCostMissionVsRaw)));
 });
 
@@ -288,6 +289,70 @@ test('coating switch cost reduces Power Coat coverage and accepts shot-equivalen
   }), /coatingSwitchShots/);
 });
 
+test('Seregios Close Range coating boost follows Power Coat and adds 40 boosted shots', () => {
+  const seregios = {
+    ...weapon,
+    x: {
+      ...weapon.x,
+      coatings: ['Power Coating 2', 'Close Range Coating'],
+      coatingBoost: 'Close Range Coating',
+    },
+  };
+  const ordinary = {
+    ...seregios,
+    x: { ...seregios.x, coatingBoost: undefined },
+  };
+  const boosted = calculateShot({
+    weapon: seregios, charge: 'Rapid Lv4', matchup, slotIndex: 2,
+    missionShots: 200,
+  });
+  const unboosted = calculateShot({
+    weapon: ordinary, charge: 'Rapid Lv4', matchup, slotIndex: 2,
+    missionShots: 200,
+  });
+  assert.equal(boosted.coatings.closeRangeCoatingBoost, true);
+  assert.equal(boosted.coatings.closeRangeBoostExpectedUses, 40);
+  assert.equal(boosted.coatings.rawPowerCoatedShots, 70);
+  assert.equal(boosted.coatings.rawCloseRangeBoostedShots, 40);
+  assert.equal(boosted.coatings.rawCoatingSwitchShots, 0);
+  assert.ok(boosted.rawMissionAverage > unboosted.rawMissionAverage);
+  assert.equal(boosted.rawLowCostMissionAverage, boosted.rawMissionAverage);
+
+  const switched = calculateShot({
+    weapon: seregios, charge: 'Rapid Lv4', matchup, slotIndex: 2,
+    missionShots: 200, coatingSwitchShots: 5,
+  });
+  assert.equal(switched.coatings.rawCoatingSwitchShots, 5);
+  assert.equal(switched.coatings.rawCloseRangeBoostedShots, 40);
+  assert.ok(Math.abs(
+    (boosted.rawMissionAverage - switched.rawMissionAverage)
+      - (boosted.rawIndexNoCoat * 5 / 200),
+  ) <= 0.0001);
+});
+
+test('RAW low-cost package retains native Power I or unlocks it at C+ +10', () => {
+  const powerOne = {
+    ...weapon,
+    x: { ...weapon.x, coatings: ['Power Coating', 'Element Coating 2'] },
+  };
+  const row = calculateShot({
+    weapon: powerOne, charge: 'Rapid Lv4', matchup, slotIndex: 2,
+  });
+  assert.equal(row.skillCosts.raw.powerUnlock, 15);
+  assert.equal(row.skillCosts.rawLowCost.powerUnlock, 0);
+  assert.equal(row.skillCosts.rawLowCost.points, row.skillCosts.raw.points - 15);
+  assert.equal(row.skillCosts.rawLowCost.skills, row.skillCosts.raw.skills - 1);
+  assert.equal(row.coatings.rawLowCostPowerMultiplier, 1.35);
+  assert.ok(row.rawMissionAverage > row.rawLowCostMissionAverage);
+
+  const noCoatings = { ...powerOne, x: { ...powerOne.x, coatings: [] } };
+  const fallback = calculateShot({
+    weapon: noCoatings, charge: 'Rapid Lv4', matchup, slotIndex: 2,
+  });
+  assert.equal(fallback.skillCosts.rawLowCost.powerUnlock, 10);
+  assert.equal(fallback.skillCosts.rawLowCost.skills, fallback.skillCosts.raw.skills);
+});
+
 test('hybrid unlocks Power Coat II at Power C+ +15 when the bow lacks native Power II', () => {
   const withoutNativePower2 = {
     ...weapon,
@@ -362,6 +427,8 @@ test('real hitzone matrix compares catalogue RAW and elemental candidates by mon
   assert.ok(g.scenarios.base.elementalHybrid50);
   assert.ok(g.scenarios.base.elementalHybridLowCost);
   assert.ok(g.scenarios.base.elementalHybridLowCost50);
+  assert.equal(g.scenarios.base.elementalHybridLowCost.rawReference, 'rawLowCost');
+  assert.ok(g.scenarios.base.rawLowCost);
   assert.equal(g.scenarios.base.elementalHybrid.skillCosts.elementHybrid.powerUnlock, 15);
   // The best G-rank water candidate lacks native Power I/II, so it needs +10 for Power Coat I.
   assert.equal(g.scenarios.base.elementalHybridLowCost.skillCosts.elementHybridLowCost.powerUnlock, 10);
