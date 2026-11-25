@@ -77,7 +77,7 @@ Además de la comparación global que permite que gane cualquier tipo de flecha,
 
 La comparación también se empareja por **la misma parte del monstruo**. Para cada parte se buscan el mejor candidato RAW y el mejor elemental con el mismo tipo de flecha; la relación elemental/RAW se calcula usando ese par. El resultado por monstruo selecciona la parte con la relación más favorable al elemento, pero conserva el desglose de todas las partes. El resumen incluye dos métricas distintas: la mejor relación por monstruo y la distribución de relaciones sobre todas las partes. No se divide el mejor daño elemental de una parte entre el mejor RAW de otra.
 
-El modo de hitzones ofrece ahora seis perfiles elementales: Element Focus, Core y Full con Element Coat actual o capacidad 50, más dos perfiles **híbridos Element Coat → Power Coat** (capacidad elemental actual o 50). La build RAW incluye el daño elemental innato del propio arco, pero no Element Coat ni las habilidades elementales. Esto evita regalarle al lado RAW un arco con elemento sin contabilizar su pequeña contribución, y permite descubrir si una build física sigue ganando con un arco elemental.
+El modo de hitzones ofrece ahora diez perfiles elementales: Element Focus, Core y Full con Element Coat actual o capacidad 50; el híbrido máximo Element Coat II → Power Coat II (stock actual o Element Coat 50); y el híbrido económico, que usa coating I o II según el soporte nativo del arco (stock actual o Element Coat 50). La build RAW incluye el daño elemental innato del propio arco, pero no Element Coat ni las habilidades elementales. Esto evita regalarle al lado RAW un arco con elemento sin contabilizar su pequeña contribución, y permite descubrir si una build física sigue ganando con un arco elemental.
 
 La fuente externa advierte que los nombres de partes solo están confirmados para algunos monstruos; donde no hay nombre, el archivo conserva índices. La herramienta usa el nombre publicado o un fallback `Parte N`, no intenta inferir si una tabla corresponde a enfurecido, roto u otro estado. No se descarga la fuente automáticamente: el usuario conserva control sobre los archivos externos y su licencia.
 
@@ -136,15 +136,28 @@ El modelo usa los MV publicados para MHXX/MHGen:
 
 Los modificadores de carga elemental de base, A y B son los definidos en `docs/BOW_ELEMENTAL_REBALANCE_STAGE5.md`. Cuando se prueba A o B, el cambio se aplica tanto al elemento innato de la build RAW como a la build elemental: el multiplicador del juego es global, no un bonus exclusivo de la build.
 
-**Coatings durante 200 disparos:** el modelo incluye Power Coat II (50 + 20 de combinaciones), Element Coat II actual (20 + 10) y la propuesta de Element Coat II de capacidad 50 (50 + 10). La línea base no asume devolución por Ammo Saver: se usan stocks sin dividir por una probabilidad no verificada. En la sensibilidad, Ammo Saver se equipa explícitamente y se aplica la tasa introducida por CLI a RAW y a los perfiles elementales que lo incluyen. El modelo pondera los disparos con y sin revestimiento; no cuenta el tiempo de recarga/combinar ni asegura el número exacto de usos.
+**Coatings durante 200 disparos:** el modelo incluye Power Coat I/II (50 + 20 de combinaciones) y Element Coat I/II (20 + 10). Las dos categorías mantienen el mismo stock entre sus niveles I y II; cambia el multiplicador, no la capacidad. También se compara la propuesta de Element Coat con capacidad 50 (50 + 10). La línea base no asume devolución por Ammo Saver: se usan stocks sin dividir por una probabilidad no verificada. En la sensibilidad, Ammo Saver se equipa explícitamente y se aplica la tasa introducida por CLI a RAW y a los perfiles elementales que lo incluyen. El modelo pondera los disparos con y sin revestimiento; no cuenta el tiempo de recarga/combinar ni asegura el número exacto de usos.
 
 ### Secuencia híbrida Element Coat → Power Coat
 
 El escenario híbrido consume primero el stock de Element Coat II (20 + 10 combinables en la línea base) para multiplicar solo el componente elemental por ×1,50. Cuando se agota, cambia a Power Coat II (50 + 20 combinables) y multiplica solo el componente físico por ×1,50. No aplica ambos revestimientos a un mismo disparo ni duplica sus efectos. Los Power Shots también cuentan como descargas y consumen coating, igual que en los demás perfiles.
 
-El paquete híbrido conserva Elemental Full y, si el arco no admite Power Coat II de forma nativa, suma Power C+ a +15 puntos y una línea de habilidad. Elem C+ sigue sumándose a +15 cuando no hay Element Coat II nativo. Esto evita que la simulación obtenga Power Coat II gratis en un arco que no lo permite por defecto. El coste añadido se expone en `skillCosts.elementHybrid`; los resultados siguen siendo benchmarks de umbrales de habilidad, no builds optimizadas con armaduras/joyas reales.
+El paquete híbrido máximo conserva Elemental Full y siempre busca los dos coating II. Si el arco no admite Power Coat II de forma nativa, suma Power C+ a +15 puntos y una línea; Elem C+ suma +15 cuando no hay Element Coat II nativo. El coste se expone en `skillCosts.elementHybrid`.
 
-La capacidad 50 de Element Coat es un escenario separado: Element Coat 50 +10 se gasta primero y después se intenta usar el mismo stock Power Coat II 50 +20. En una misión de 200 descargas, las capacidades actuales modelan hasta 30 descargas elementales y 70 físicas con coating, antes de Ammo Saver. Una mejora a Element Coat 50 elevaría la primera fase a 60, no a 50, porque se modela también el +10 de combinación.
+### Híbrido económico: coating I cuando ahorra habilidades
+
+El perfil `elementHybridLowCost` conserva Elemental Full, pero evita pagar +15 para subir de I a II cuando el arco ya tiene acceso natural al nivel I. Su selección es determinista: mantiene nivel II si el arco lo trae; si no, usa nivel I cuando está disponible; y solo si no trae ningún nivel de ese coating, añade C+ a +10 para desbloquear nivel I. Aplica la misma regla de forma independiente a Element Coat y Power Coat.
+
+Los multiplicadores siguen el juego: coating I = ×1,35 y coating II = ×1,50. Las capacidades permanecen iguales entre niveles: Element Coat I/II = 20 + 10 combinables; Power Coat I/II = 50 + 20. Por tanto, la variante económica no consigue más usos; sacrifica parte del bonus por disparo y puede ahorrar puntos y una línea de habilidad. Los costes y niveles elegidos quedan visibles en `skillCosts.elementHybridLowCost` y `coatings.lowCostElementCoatingLevel` / `lowCostPowerCoatingLevel`.
+
+Ejemplos del coste extra respecto al paquete Element Full:
+- Si el arco trae Element Coat I y Power Coat I, ambos coatings se usan a ×1,35 sin añadir Elem C+ ni Power C+.
+- Si no trae ninguno, Elem C+ +10 y Power C+ +10 desbloquean ambos a nivel I.
+- Si trae Element Coat II o Power Coat II, el modelo conserva el nivel II de forma nativa para ese coating, aunque el otro pueda quedar en nivel I.
+
+La variante máxima y la económica son comparaciones de umbrales de habilidad; no se presentan como builds optimizadas con armaduras/joyas reales. El consejo de priorizar Power Coat II en los arcos de alto rango también se puede contrastar con la alternativa Power Coat I cuando no se tiene acceso al nivel II.
+
+La capacidad 50 de Element Coat es un escenario separado: Element Coat 50 +10 se gasta primero y después se intenta usar el mismo stock Power Coat II 50 +20. En una misión de 200 descargas, las capacidades actuales modelan hasta 30 descargas elementales y 70 físicas con coating, antes de Ammo Saver. Una mejora a Element Coat 50 elevaría la primera fase a 60, no a 50, porque se modela también el +10 de combinación. Los perfiles I y II comparten estos stocks.
 
 `--coating-switch-shots=N` descuenta N descargas equivalentes durante la transición entre los coatings. El valor 0 es neutral y no afirma que cambiar sea instantáneo; 1 o 2 son sensibilidades para medir cuánto altera el resultado. No se ha fijado una duración en frames ni se descuenta una cantidad arbitraria de segundos: ese coste necesita validación in-game.
 
