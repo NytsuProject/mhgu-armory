@@ -14,7 +14,9 @@ const profiles = [
   ["elementalFull50", "Element Full · Element Coat 50"],
 ];
 const scenarios = ["base", "A", "B"];
+const shotTypes = ["Rapid", "Pierce", "Spread", "Heavy"];
 const ranks = report.metadata.ranks || ["LR", "HR", "G"];
+
 const median = values => {
   if (!values.length) return null;
   const sorted = [...values].sort((a, b) => a - b);
@@ -25,65 +27,67 @@ const average = values => values.length
   ? values.reduce((sum, value) => sum + value, 0) / values.length
   : null;
 
+function summarizeGroup({ rank, scenario, profile, label, shotType, chosen }) {
+  const ratios = chosen.map(item => item.value.vsRaw);
+  const band = (predicate) => {
+    const items = chosen.filter(item => predicate(item.value.elementHz));
+    const values = items.map(item => item.value.vsRaw);
+    return {
+      count: values.length,
+      meanRatio: average(values),
+      medianRatio: median(values),
+      wins: values.filter(value => value > 1).length,
+    };
+  };
+  return {
+    rank, scenario, profile, label, shotType,
+    matchups: ratios.length,
+    meanRatio: average(ratios),
+    medianRatio: median(ratios),
+    elementalWins: ratios.filter(value => value > 1).length,
+    favorable25Plus: band(value => value >= 25),
+    medium15To24: band(value => value >= 15 && value < 25),
+    poor10OrLess: band(value => value <= 10),
+    candidates: chosen.map(item => ({
+      monster: item.monster,
+      elementalWeapon: item.value.weapon,
+      elementalTree: item.value.tree,
+      elementalLevel: item.value.level,
+      elementalCharge: item.value.charge,
+      elementalPart: item.value.part,
+      elementalHz: item.value.elementHz,
+      rawWeapon: item.value.rawWeapon || null,
+      rawTree: item.value.rawTree ?? null,
+      rawLevel: item.value.rawLevel ?? null,
+      rawCharge: item.value.rawCharge || null,
+      rawPart: item.value.rawPart || null,
+      ratio: item.value.vsRaw,
+    })),
+  };
+}
+
 const rows = [];
 for (const rank of ranks) {
   const monsters = report.results.filter(row => row.rank === rank);
   for (const scenario of scenarios) {
     for (const [key, label] of profiles) {
-      const chosen = monsters.map(monster => ({
+      const all = monsters.map(monster => ({
         monster: monster.monster,
         value: monster.scenarios?.[scenario]?.[key] || null,
       })).filter(item => Number.isFinite(item.value?.vsRaw));
-      const ratios = chosen.map(item => item.value.vsRaw);
-      for (const shotType of ["Rapid", "Pierce", "Spread", "Heavy"]) {
-        const group = chosen.filter(item => item.value.shotType === shotType);
-        const groupRatios = group.map(item => item.value.vsRaw);
-        rows.push({
-          rank, scenario, profile: key, label, shotType,
-          matchups: group.length,
-          meanRatio: average(groupRatios),
-          medianRatio: median(groupRatios),
-          elementalWins: groupRatios.filter(value => value > 1).length,
-          meanRatioAllTypes: shotType === "Rapid" ? average(ratios) : undefined,
-          favorable25Plus: (() => {
-            const items = group.filter(item => item.value.elementHz >= 25);
-            const values = items.map(item => item.value.vsRaw);
-            return { count: items.length, meanRatio: average(values), wins: values.filter(value => value > 1).length };
-          })(),
-          medium15To24: (() => {
-            const items = group.filter(item => item.value.elementHz >= 15 && item.value.elementHz < 25);
-            const values = items.map(item => item.value.vsRaw);
-            return { count: items.length, meanRatio: average(values), wins: values.filter(value => value > 1).length };
-          })(),
-          poor10OrLess: (() => {
-            const items = group.filter(item => item.value.elementHz <= 10);
-            const values = items.map(item => item.value.vsRaw);
-            return { count: items.length, meanRatio: average(values), wins: values.filter(value => value > 1).length };
-          })(),
-        });
+      rows.push(summarizeGroup({
+        rank, scenario, profile: key, label, shotType: "ALL", chosen: all,
+      }));
+
+      for (const shotType of shotTypes) {
+        const chosen = monsters.map(monster => ({
+          monster: monster.monster,
+          value: monster.byShotType?.[shotType]?.[scenario]?.[key] || null,
+        })).filter(item => Number.isFinite(item.value?.vsRaw));
+        rows.push(summarizeGroup({
+          rank, scenario, profile: key, label, shotType, chosen,
+        }));
       }
-      rows.push({
-        rank, scenario, profile: key, label, shotType: "ALL",
-        matchups: ratios.length,
-        meanRatio: average(ratios),
-        medianRatio: median(ratios),
-        elementalWins: ratios.filter(value => value > 1).length,
-        favorable25Plus: (() => {
-          const items = chosen.filter(item => item.value.elementHz >= 25);
-          const values = items.map(item => item.value.vsRaw);
-          return { count: items.length, meanRatio: average(values), wins: values.filter(value => value > 1).length };
-        })(),
-        medium15To24: (() => {
-          const items = chosen.filter(item => item.value.elementHz >= 15 && item.value.elementHz < 25);
-          const values = items.map(item => item.value.vsRaw);
-          return { count: items.length, meanRatio: average(values), wins: values.filter(value => value > 1).length };
-        })(),
-        poor10OrLess: (() => {
-          const items = chosen.filter(item => item.value.elementHz <= 10);
-          const values = items.map(item => item.value.vsRaw);
-          return { count: items.length, meanRatio: average(values), wins: values.filter(value => value > 1).length };
-        })(),
-      });
     }
   }
 }
@@ -91,7 +95,7 @@ for (const rank of ranks) {
 const result = {
   source: resolve(input),
   metadata: report.metadata,
-  note: "A ratio above 1 means the best elemental candidate's theoretical same-part mission average exceeds the best RAW candidate. This is not measured hunt DPS.",
+  note: "ALL compares the best candidates across all shot types. A named shotType compares the best elemental and RAW candidates restricted to that same type. Ratio above 1 means the elemental candidate's theoretical same-part mission average exceeds the RAW candidate. This is not measured hunt DPS.",
   rows,
 };
 const json = JSON.stringify(result, null, 2) + "\n";
