@@ -136,26 +136,27 @@ Los porcentajes del cuadro anterior con Ammo Saver son un **escenario hipotétic
 
 Fuente: `data/weapons/bow.json`, SHA `ec48bf9390a2eaa1123bfdea11b76bb359483b3b`.
 
-El grafo contiene 107 segmentos en 59 familias raíz. Al reconstruir cada parent link hasta su punto de bifurcación se obtienen 78 ramas terminales. La clasificación correcta por arma final es:
-- 41 ramas elementales naturales (Fuego, Agua, Rayo, Hielo o Dragón).
-- 33 ramas RAW / sin elemento natural.
-- 4 ramas de Explosión.
+El catálogo contiene 107 segmentos de línea en 59 familias raíz. Hay 78 segmentos sin hijos, pero los segmentos padre conservan su propia continuidad hasta su último nivel: cada uno de los 107 segmentos tiene un extremo de línea que se debe incluir en la comparación. La clasificación por el último nivel de esos 107 segmentos es:
+- 55 líneas elementales naturales (Fuego, Agua, Rayo, Hielo o Dragón).
+- 46 líneas RAW / sin elemento natural.
+- 6 líneas de Explosión.
 
 Por rango final:
-- LR: 10 elementales, 9 RAW y 1 Explosión.
-- HR: 17 elementales y 13 RAW.
+- LR: 22 elementales, 18 RAW y 2 Explosión.
+- HR: 19 elementales, 17 RAW y 1 Explosión.
 - G: 14 elementales, 11 RAW y 3 Explosión.
 
-Entre las 41 ramas elementales terminales, 28 tienen Power Coating 2, 26 tienen Element Coating 2 y 19 tienen ambos en el último nivel. Entre las 33 ramas RAW terminales, 24 tienen Power Coating 2 y ninguna Element Coating 2. Estas cifras miden la compatibilidad del nivel final; el informe completo distingue también si un coating estuvo disponible en niveles anteriores de la ruta.
+Entre las 55 líneas elementales, 51 permiten algún Power Coating, 46 algún Element Coating y 43 permiten ambos grupos. En sus niveles finales, 35 tienen Power Coating 2, 35 Element Coating 2 y 24 tienen ambos niveles II. Entre las 46 líneas RAW, 39 permiten algún Power Coating, ninguna permite Element Coating y 31 tienen Power Coating 2. Estas cifras miden compatibilidad del extremo de línea; el informe también registra si un coating aparece en niveles anteriores de cada ruta.
 
-Solo tres familias raíz contienen ramas terminales de identidades distintas:
-- Arco petrificado: ramas elementales y RAW.
-- Arco recio de cazador: ramas elementales, RAW y Explosión.
-- Arco de cazador: ramas elementales y RAW.
+Cuatro familias raíz contienen líneas de identidades distintas:
+- Arco petrificado: líneas elementales y RAW.
+- Arco de cazador: líneas elementales y RAW.
+- Arco recio de cazador: líneas elementales, RAW y Explosión.
+- Arco gastado: líneas elementales y RAW.
 
-**Corrección de recuento:** los valores anteriores de 55 elementales, 46 RAW y 6 Explosión contaban segmentos intermedios y fueron etiquetados erróneamente como ramas finales. No se deben usar para decidir el rol de cada árbol terminal. La reconstrucción completa, los estados de cada nivel heredado y los 674 slots Recargando (441 desalineados con su carga anterior) están documentados en [BOW_BRANCH_PROGRESSION_AUDIT_STAGE5.md](BOW_BRANCH_PROGRESSION_AUDIT_STAGE5.md).
+**Corrección de interpretación:** los valores 55 elementales, 46 RAW y 6 Explosión sí corresponden a los 107 extremos de línea del catálogo. El recuento alternativo de 78 representa solo los segmentos sin hijos en el grafo y no debe usarse como número total de líneas finales. La auditoría completa, los linajes, los estados de coating y los 674 slots Recargando (441 desalineados con su carga anterior) están documentados en [BOW_BRANCH_PROGRESSION_AUDIT_STAGE5.md](BOW_BRANCH_PROGRESSION_AUDIT_STAGE5.md).
 
-**Dirección de diseño para revisar por rama:** preservar las bifurcaciones existentes. En cada rama elemental final, revisar coating, RAW y elemento a través de toda su progresión; en cada rama RAW, mantener un camino físico claro. No se eliminará ni convertirá automáticamente una rama alternativa en híbrida.
+**Dirección de diseño para revisar por línea:** preservar las bifurcaciones existentes. En cada línea elemental final, revisar coating, RAW y elemento a través de toda su progresión; en cada línea RAW, mantener un camino físico claro. No se eliminará ni convertirá automáticamente una línea alternativa en híbrida.
 
 ## 7. Cobertura de debilidades elementales en los monstruos grandes
 
