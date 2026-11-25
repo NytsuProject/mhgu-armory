@@ -79,13 +79,28 @@ La matriz Guild con `--element-cap=30` reproduce casi el mismo orden y los mismo
 
 El híbrido máximo conserva Element Full y añade Power C+ a +15 puntos y una línea adicional cuando el arco no trae Power Coat II de fábrica. Si tampoco tiene Element Coat II, el paquete elemental ya incorpora Elem C+ a +15. Es una inversión de habilidades relevante y desigual entre armas.
 
-Por eso el híbrido máximo no debe ser la única variante que usemos para decidir el balance. La siguiente variante económica conserva el nivel II cuando es nativo, usa nivel I si el arco lo ofrece y desbloquea solo nivel I con +10 cuando no tiene coating nativo. Los multiplicadores de nivel I son ×1,35 frente a ×1,50 de nivel II. Su matriz todavía debe validarse por separado antes de comparar sus ganadores y costes reales.
+La variante económica ya pasó la matriz Guild de 93 monstruos y usa el mejor nivel de coating disponible sin forzar nivel II: conserva II si es nativo, utiliza I si el arco lo ofrece y solo desbloquea nivel I con +10 cuando no existe coating nativo. Los multiplicadores son ×1,35 para nivel I y ×1,50 para nivel II. En el comparador, esta build elemental se empareja con un RAW que sigue la política de desbloqueo de coatings de menor coste (`rawLowCost`); **no** significa que ambos tengan los mismos puntos de habilidad o el mismo número de líneas.
+
+La matriz Guild del híbrido económico, con los valores base actuales, dio estos ratios:
+| Rango | Media por mejor parte de cada monstruo | Media de todas las partes | Partes favorables (elemento ≥25) | Partes que superan a RAW |
+|---|---:|---:|---:|---:|
+| LR | 0,870 | 0,841 | 0,869 | 2 / 631 |
+| HR | 0,920 | 0,887 | 0,918 | 2 / 631 |
+| G | 0,987 | 0,954 | 0,973 | 31 / 631 |
+
+En G, 22 de los 93 monstruos tienen al menos una parte donde el híbrido económico supera a su RAW de referencia. Esto es una señal de especialización, no una afirmación de que toda la cacería o todas las partes rindan mejor. La agregación por “mejor parte de cada monstruo” no debe confundirse con la media de todas las partes.
+
+### Advertencia: todavía no es un duelo de builds con presupuesto idéntico
+
+La comparación de coatings de bajo coste controla cómo se desbloquea el coating, pero no iguala el presupuesto total de puntos ni las líneas de habilidad de RAW y elemento. En un ejemplo G de Agua/Abanico, el arco de Herm. Pétreo en el escenario económico requiere 105 puntos / 8 líneas para Element Full híbrido, frente a 80 puntos / 6 líneas de la referencia RAW low-cost: +25 puntos / +2 líneas. Por ello un ratio superior a 1 en un matchup concreto todavía favorece a una build elemental que puede estar invirtiendo más.
+
+El simulador ahora expone `skillCostComparison` para cada ganador por monstruo: perfil de referencia RAW, puntos y líneas de ambos perfiles, y sus diferencias. El resumen añade `skillCostDelta` con media, mediana, mínimo y máximo. Estos campos permiten auditar el sesgo, pero no sustituyen un optimizador de sets. La comparación final justa debe construir armaduras, talismanes y joyas reales bajo presupuestos y ranuras equivalentes, incluyendo los costes de Elem C+, Power C+ y Recargando.
 
 ### Qué significa para el rebalance
 
 1. No aprobar todavía aumentos grandes de valores elementales base: el relevo de coating explica una parte importante de la brecha observada en el primer análisis.
 2. Mantener la variante de Element Coat 50 como sensibilidad, no como solución principal: su ganancia adicional es pequeña frente a usar Power Coat después.
-3. Comparar el híbrido máximo y el económico con presupuestos de habilidad equiparables; el híbrido máximo puede gastar +15 puntos en Power C+ por arma.
+3. Mantener separados los resultados del híbrido máximo y del económico; el último usa un RAW low-cost como referencia, pero no iguala automáticamente puntos ni líneas. Usar `skillCostComparison` para cuantificar las diferencias, y no convertir sus ratios en balance aprobado hasta optimizar sets reales.
 4. Medir en juego los segundos/frames de cambiar y aplicar coating, los menús y la oportunidad perdida. Hasta esa medición, `--coating-switch-shots=0` es un techo y 1–2 son solo sensibilidades.
 5. No cambiar Abanico ni sus valores. Los resultados por tipo siguen siendo una matriz teórica por parte; la dispersión de las flechas y el riesgo de combate cercano no se simulan aquí.
 
@@ -93,7 +108,7 @@ Por eso el híbrido máximo no debe ser la única variante que usemos para decid
 
 Element Focus sacrifica el potenciador del tipo de flecha en su componente físico para mantener solo cinco líneas principales; su rendimiento es mucho peor. En Guild, sus ratios agregados base son 0,588 LR, 0,648 HR y 0,691 G. Element Core y Element Full, que conservan el potenciador del tipo de flecha, funcionan mejor. Esto respalda mantener la habilidad del tipo de flecha en la build elemental cuando el presupuesto de habilidades lo permite.
 
-Las cifras de los paquetes son benchmarks de habilidades, no sets reales optimizados pieza por pieza. Element Full utiliza más líneas/puntos de habilidad que el paquete RAW de referencia; por ello esta matriz no constituye todavía una comparación de armaduras con slots idénticos. El resultado es una señal fuerte de desventaja, pero la fase de aprobación debe incluir un optimizador de builds o una comparación de presupuestos realmente equivalentes.
+Las cifras de los paquetes son benchmarks de habilidades, no sets reales optimizados pieza por pieza. Element Full y el híbrido económico pueden consumir más puntos/líneas que la referencia RAW low-cost; por ello esta matriz no constituye todavía una comparación de armaduras con slots idénticos. El resultado es una señal de especialización por hitzone, pero la fase de aprobación debe incluir un optimizador de builds o una comparación de presupuestos realmente equivalentes.
 
 ## Diferencias por tipo de flecha (Guild, Elemental Full, base)
 
