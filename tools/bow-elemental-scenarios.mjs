@@ -427,16 +427,19 @@ function weaponRows(trees, options = {}) {
         if (!parsed) continue;
         if (parsed.requiresLoadUp && !options.includeLoadUp) continue;
         for (const matchup of MATCHUPS) {
-          const base = calculateShot({
+          const base = calculateSequence({
             weapon, charge, matchup, slotIndex, loadUp: options.includeLoadUp,
             elementCharge: ELEMENT_CHARGE.base,
             missionShots: options.missionShots ?? 200,
             ammoSaverChance: options.ammoSaverChance ?? 0.20,
             elementCoatingCapacity: options.elementCoatingCapacity ?? 20,
             rapidReliability: options.rapidReliability ?? 1,
+            style: options.style ?? 'guild',
+            powerShotUseRate: options.powerShotUseRate ?? 1,
+            trueShotUp: options.trueShotUp ?? false,
           });
           if (!base) continue;
-          const scenarioA = calculateShot({
+          const scenarioA = calculateSequence({
             weapon, charge, matchup, slotIndex, loadUp: options.includeLoadUp,
             elementCharge: ELEMENT_CHARGE.A,
             missionShots: options.missionShots ?? 200,
@@ -444,7 +447,7 @@ function weaponRows(trees, options = {}) {
             elementCoatingCapacity: options.elementCoatingCapacity ?? 20,
             rapidReliability: options.rapidReliability ?? 1,
           });
-          const scenarioB = calculateShot({
+          const scenarioB = calculateSequence({
             weapon, charge, matchup, slotIndex, loadUp: options.includeLoadUp,
             elementCharge: ELEMENT_CHARGE.B,
             missionShots: options.missionShots ?? 200,
@@ -532,7 +535,7 @@ export function runMonsterMatrix(database, monsterData, options = {}) {
           const elementHz = element ? (Number(part[ELEMENT_INDEX[element.type]]) || 0) : 0;
           const matchup = { shotHz, elementHz };
           for (const scenario of scenarios) {
-            const row = calculateShot({
+            const row = calculateSequence({
               weapon: candidate.weapon, charge: candidate.charge, matchup,
               slotIndex: candidate.slotIndex, loadUp: options.includeLoadUp ?? true,
               elementCharge: scenario.multipliers,
@@ -540,6 +543,9 @@ export function runMonsterMatrix(database, monsterData, options = {}) {
               ammoSaverChance: options.ammoSaverChance ?? 0.20,
               elementCoatingCapacity: options.elementCoatingCapacity ?? 20,
               rapidReliability: options.rapidReliability ?? 1,
+              style: options.style ?? 'guild',
+              powerShotUseRate: options.powerShotUseRate ?? 1,
+              trueShotUp: options.trueShotUp ?? false,
             });
             if (!row) continue;
             const info = {
@@ -549,6 +555,8 @@ export function runMonsterMatrix(database, monsterData, options = {}) {
               loadUpTypeCorrected: candidate.loadUpTypeCorrected,
               slot: candidate.slotIndex + 1, shotType: row.shotType,
               shotLevel: row.shotLevel, part: part[1] || `Parte ${part[0]}`,
+              style: row.style, powerShotCharge: row.powerShotCharge,
+              powerShotSlot: row.powerShotSlot, breakdown: row.breakdown,
               shotHz, elementHz: element ? elementHz : 0,
               element: element?.type || null,
               skillCosts: row.skillCosts,
@@ -601,6 +609,9 @@ export function runMonsterMatrix(database, monsterData, options = {}) {
         ammoSaverChance: options.ammoSaverChance ?? 0.20,
         elementCoatingCapacity: options.elementCoatingCapacity ?? 20,
         rapidReliability: options.rapidReliability ?? 1,
+        style: options.style ?? 'guild',
+        powerShotUseRate: options.powerShotUseRate ?? 1,
+        trueShotUp: options.trueShotUp ?? false,
       },
       note: 'Catalogue-wide best same-part damage index; theoretical hits share one part; not actual DPS.',
     },
@@ -689,6 +700,9 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
     rapidReliability: readNumber('--rapid-reliability=', 1),
     ammoSaverChance: readNumber('--ammo-saver-chance=', 0.20),
     elementCoatingCapacity: readNumber('--element-coat-capacity=', 20),
+    powerShotUseRate: readNumber('--power-shot-use-rate=', 1),
+    style: args.find((arg) => arg.startsWith('--style='))?.slice(8) || 'guild',
+    trueShotUp: args.includes('--true-shot-up'),
   };
   const hitzonesPath = args.find((arg) => arg.startsWith('--hitzones='))?.slice(11);
   if (hitzonesPath) {
