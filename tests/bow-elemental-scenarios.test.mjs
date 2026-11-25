@@ -429,6 +429,15 @@ test('real hitzone matrix compares catalogue RAW and elemental candidates by mon
   assert.ok(g.scenarios.base.elementalHybridLowCost50);
   assert.equal(g.scenarios.base.elementalHybridLowCost.rawReference, 'rawLowCost');
   assert.ok(g.scenarios.base.rawLowCost);
+  const lowCostDelta = g.scenarios.base.elementalHybridLowCost.skillCostComparison;
+  assert.equal(lowCostDelta.rawReference, 'rawLowCost');
+  assert.equal(lowCostDelta.pointDelta,
+    lowCostDelta.elementalPoints - lowCostDelta.rawPoints);
+  assert.equal(lowCostDelta.skillDelta,
+    lowCostDelta.elementalSkills - lowCostDelta.rawSkills);
+  assert.ok(Number.isFinite(lowCostDelta.pointDelta));
+  assert.ok(Number.isFinite(lowCostDelta.skillDelta));
+  assert.match(lowCostDelta.note, /not optimized full armor builds/);
   assert.equal(g.scenarios.base.elementalHybrid.skillCosts.elementHybrid.powerUnlock, 15);
   // The best G-rank water candidate lacks native Power I/II, so it needs +10 for Power Coat I.
   assert.equal(g.scenarios.base.elementalHybridLowCost.skillCosts.elementHybridLowCost.powerUnlock, 10);
