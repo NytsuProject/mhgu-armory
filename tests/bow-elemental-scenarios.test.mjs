@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  ELEMENT_CHARGE, calculateShot, parseCharge, rankFromRarity, runMatrix,
+  ELEMENT_CHARGE, calculateShot, parseCharge, rankFromRarity, runMatrix, runMonsterMatrix,
 } from '../tools/bow-elemental-scenarios.mjs';
 
 const weapon = {
@@ -98,4 +98,47 @@ test('rejects invalid coating-uptime probabilities', () => {
   assert.throws(() => calculateShot({
     weapon, charge: 'Rapid Lv4', matchup, ammoSaverChance: 1,
   }), /ammoSaverChance/);
+});
+
+test('real hitzone matrix compares catalogue RAW and elemental candidates by monster and rank', () => {
+  const database = {
+    trees: [
+      {
+        id: 1, name: 'Raw Test Bow', rarity: 8,
+        levels: [{
+          lv: 1, rar: 8, nEs: 'Arco RAW de prueba', raw: 360, aff: 0,
+          x: { charges: ['Rapid Lv2', 'Rapid Lv3', 'Rapid Lv4', 'Rapid Lv5!'],
+            coatings: ['Power Coating 2'] },
+        }],
+      },
+      {
+        id: 2, name: 'Element Test Bow', rarity: 8,
+        levels: [{
+          lv: 1, rar: 8, nEs: 'Arco de hielo de prueba', raw: 240, aff: 0,
+          ele: [['Hielo', 'Ice', 45]],
+          x: { charges: ['Rapid Lv2', 'Rapid Lv3', 'Rapid Lv4', 'Rapid Lv5!'],
+            coatings: ['Element Coating 2'] },
+        }],
+      },
+    ],
+  };
+  const monsterData = {
+    monsters: [{
+      name: 'Monstruo de prueba', large: true,
+      tables: [[
+        [0, 'Cabeza', 65, 65, 45, 0, 0, 0, 0, 30, 100, 100],
+        [1, 'Ala', 20, 20, 20, 0, 0, 0, 0, 45, 0, 100],
+      ]],
+    }],
+  };
+  const result = runMonsterMatrix(database, monsterData, { includeLoadUp: true });
+  assert.equal(result.metadata.largeMonsters, 1);
+  assert.equal(result.results.length, 3);
+  const g = result.results.find(row => row.rank === 'G');
+  assert.equal(g.monster, 'Monstruo de prueba');
+  assert.equal(g.partsEvaluated, 2);
+  assert.ok(g.scenarios.base.raw);
+  assert.ok(g.scenarios.base.elementalFull);
+  assert.equal(g.scenarios.base.elementalFull.element, 'Ice');
+  assert.equal(g.scenarios.base.elementalFull50.vsRaw > 0, true);
 });
