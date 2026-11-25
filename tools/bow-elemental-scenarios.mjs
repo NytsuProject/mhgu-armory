@@ -129,8 +129,13 @@ function skillCost(weapon, requiresLoadUp, trueShotUp = false, ammoSaverEnabled 
     skills: 5 + Number(ammoSaverEnabled) + Number(!nativePower2) + Number(requiresLoadUp),
     powerUnlock, loadUp,
   };
-  // Element Core retains the physical affinity/Attack foundation, drops physical Critical Boost,
-  // and spends one additional line on Critical Element / element +2.
+  // Element Focus matches the five main skill lines of RAW by dropping shot-type Up.
+  const elementFocused = {
+    points: 20 + 20 + 10 + 10 + 15 + elementUnlock + loadUp,
+    skills: 5 + Number(!nativeElement2) + Number(requiresLoadUp),
+    elementUnlock, loadUp,
+  };
+  // Element Core retains shot-type Up and spends one extra line on Element +2.
   const elementLite = {
     points: 20 + 20 + 10 + 10 + 10 + 15 + elementUnlock + loadUp,
     skills: 6 + Number(!nativeElement2) + Number(requiresLoadUp),
@@ -148,7 +153,7 @@ function skillCost(weapon, requiresLoadUp, trueShotUp = false, ammoSaverEnabled 
       build.skills += 1;
     }
   }
-  return { raw, elementLite, elementFull };
+  return { raw, elementFocused, elementLite, elementFull };
 }
 
 /**
@@ -220,13 +225,17 @@ export function calculateShot(options) {
   const rawBuildPowerCoated = rawPowerCoated + rawBuildBaseElement;
 
   const elemPhysicalNoCoat = physicalElemBuildBase * normalCrit;
+  // Element Focus drops shot-type Up from the physical component, but keeps the same elemental skills.
+  const elemFocusedPhysicalNoCoat = (physicalElemBuildBase / shotUp) * normalCrit;
   const elemLiteValue = element ? Math.floor(element.value * 1.10 + 6) : 0;
   const elemFullValue = element ? Math.floor(element.value * 1.20 + 6) : 0;
   const elemCrit = elementAffinityMultiplier(affinity, true);
   const elementalPerValue = (value) => (value / 10) * eleCharge
     * elemCrit * (matchup.elementHz / 100) * arrowHits * reliability;
+  const elemFocusedNoCoat = elementalPerValue(elemLiteValue);
   const elemLiteNoCoat = elementalPerValue(elemLiteValue);
   const elemFullNoCoat = elementalPerValue(elemFullValue);
+  const elemFocusedCoated = elemFocusedNoCoat * 1.50;
   const elemLiteCoated = elemLiteNoCoat * 1.50;
   const elemFullCoated = elemFullNoCoat * 1.50;
 
@@ -240,6 +249,11 @@ export function calculateShot(options) {
   const elementUsesFullProposed = expectedUses(50, 10, activeAmmoSaverChance);
   const missionAverage = (base, coated, ratio) => base + (coated - base) * ratio;
   const rawMissionAverage = missionAverage(rawBuildNoCoat, rawBuildPowerCoated, uptime(powerUses));
+  // Element Focus uses Core's element skills, but has no shot-type Up on its physical component.
+  const focusedMissionNow = missionAverage(elemFocusedPhysicalNoCoat + elemFocusedNoCoat,
+    elemFocusedPhysicalNoCoat + elemFocusedCoated, uptime(elementUsesCoreNow));
+  const focusedMissionProposed = missionAverage(elemFocusedPhysicalNoCoat + elemFocusedNoCoat,
+    elemFocusedPhysicalNoCoat + elemFocusedCoated, uptime(elementUsesCoreProposed));
   // Element Core omits Ammo Saver; Full adds one general elemental skill and optionally Ammo Saver.
   const liteMissionNow = missionAverage(elemPhysicalNoCoat + elemLiteNoCoat,
     elemPhysicalNoCoat + elemLiteCoated, uptime(elementUsesCoreNow));
@@ -260,11 +274,16 @@ export function calculateShot(options) {
     rawElementNoCoat: round(rawBuildBaseElement),
     rawIndexNoCoat: round(rawBuildNoCoat),
     elementPhysicalNoCoat: round(elemPhysicalNoCoat),
+    elementFocusedPhysicalNoCoat: round(elemFocusedPhysicalNoCoat),
+    elementFocusedElementNoCoat: round(elemFocusedNoCoat),
+    elementFocusedElementCoated: round(elemFocusedCoated),
     elementLiteElementNoCoat: round(elemLiteNoCoat),
     elementLiteElementCoated: round(elemLiteCoated),
     elementFullElementNoCoat: round(elemFullNoCoat),
     elementFullElementCoated: round(elemFullCoated),
     rawIndexPowerCoated: round(rawBuildPowerCoated),
+    elementFocusedNoCoatBase: round(elemFocusedPhysicalNoCoat + elemFocusedNoCoat),
+    elementFocusedCoatedBase: round(elemFocusedPhysicalNoCoat + elemFocusedCoated),
     elementLiteNoCoatBase: round(elemPhysicalNoCoat + elemLiteNoCoat),
     elementLiteCoatedBase: round(elemPhysicalNoCoat + elemLiteCoated),
     elementFullNoCoatBase: round(elemPhysicalNoCoat + elemFullNoCoat),
@@ -272,10 +291,14 @@ export function calculateShot(options) {
     liteVsRawCoated: round((elemPhysicalNoCoat + elemLiteCoated) / rawBuildPowerCoated),
     fullVsRawCoated: round((elemPhysicalNoCoat + elemFullCoated) / rawBuildPowerCoated),
     rawMissionAverage: round(rawMissionAverage),
+    elementFocusedMissionCurrent: round(focusedMissionNow),
+    elementFocusedMissionCapacity50: round(focusedMissionProposed),
     elementLiteMissionCurrent: round(liteMissionNow),
     elementLiteMissionCapacity50: round(liteMissionProposed),
     elementFullMissionCurrent: round(fullMissionNow),
     elementFullMissionCapacity50: round(fullMissionProposed),
+    focusedMissionVsRaw: round(focusedMissionNow / rawMissionAverage),
+    focusedCapacity50VsRaw: round(focusedMissionProposed / rawMissionAverage),
     liteMissionVsRaw: round(liteMissionNow / rawMissionAverage),
     liteCapacity50VsRaw: round(liteMissionProposed / rawMissionAverage),
     fullMissionVsRaw: round(fullMissionNow / rawMissionAverage),
@@ -383,6 +406,8 @@ export function calculateSequence(options) {
 
   const add = key => round(sum(shots.map(shot => shot.row[key] * shot.weight)));
   const rawMissionAverage = add('rawMissionAverage');
+  const focusedMission = add('elementFocusedMissionCurrent');
+  const focusedMission50 = add('elementFocusedMissionCapacity50');
   const liteMission = add('elementLiteMissionCurrent');
   const liteMission50 = add('elementLiteMissionCapacity50');
   const fullMission = add('elementFullMissionCurrent');
@@ -405,10 +430,14 @@ export function calculateSequence(options) {
     rawIndexNoCoat: rawIndex,
     rawIndexPowerCoated: rawCoated,
     rawMissionAverage,
+    elementFocusedMissionCurrent: focusedMission,
+    elementFocusedMissionCapacity50: focusedMission50,
     elementLiteMissionCurrent: liteMission,
     elementLiteMissionCapacity50: liteMission50,
     elementFullMissionCurrent: fullMission,
     elementFullMissionCapacity50: fullMission50,
+    focusedMissionVsRaw: round(focusedMission / rawMissionAverage),
+    focusedCapacity50VsRaw: round(focusedMission50 / rawMissionAverage),
     liteMissionVsRaw: round(liteMission / rawMissionAverage),
     liteCapacity50VsRaw: round(liteMission50 / rawMissionAverage),
     fullMissionVsRaw: round(fullMission / rawMissionAverage),
@@ -553,12 +582,14 @@ export function runMonsterMatrix(database, monsterData, options = {}) {
     { id: "B", multipliers: ELEMENT_CHARGE.B },
   ];
   const shotTypes = ["Rapid", "Pierce", "Spread", "Heavy"];
-  const profileKeys = ["elementalLite", "elementalFull", "elementalLite50", "elementalFull50"];
+  const profileKeys = ["elementalFocused", "elementalFocused50", "elementalLite", "elementalFull", "elementalLite50", "elementalFull50"];
   const byRankMonster = [];
   const largeMonsters = (monsterData.monsters || []).filter(monster => monster.large);
 
   const makeBestSet = () => Object.fromEntries(scenarios.map(({ id }) => [id, {
     raw: null,
+    elementalFocused: null,
+    elementalFocused50: null,
     elementalLite: null,
     elementalFull: null,
     elementalLite50: null,
@@ -593,6 +624,8 @@ export function runMonsterMatrix(database, monsterData, options = {}) {
     }
     if (!row.element || row.elementHz <= 0) return;
     const choices = [
+      ["elementalFocused", row.elementFocusedMissionCurrent],
+      ["elementalFocused50", row.elementFocusedMissionCapacity50],
       ["elementalLite", row.elementLiteMissionCurrent],
       ["elementalFull", row.elementFullMissionCurrent],
       ["elementalLite50", row.elementLiteMissionCapacity50],
