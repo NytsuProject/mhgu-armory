@@ -190,7 +190,7 @@ test("simulation separates LR and G, reports hitzone assumptions and normalized 
   assert.ok(result.meta.weaponsByRank.LR > 0);
   assert.ok(result.meta.weaponsByRank.G > 0);
   const lr = result.matchups.find(row => row.rank === "LR" && row.shotType === "Rapid" && row.coatingScenario === "uncoated" && row.skillBudget === 5);
-  const g = result.matchups.find(row => row.rank === "G" && row.shotType === "Rapid" && row.scenario === "uncoated" && row.skillBudget === 5);
+  const g = result.matchups.find(row => row.rank === "G" && row.shotType === "Rapid" && row.coatingScenario === "uncoated" && row.skillBudget === 5);
   assert.ok(lr?.rawBest);
   assert.ok(lr?.elementBest);
   assert.ok(g?.rawBest);
