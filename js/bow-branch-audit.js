@@ -166,8 +166,11 @@ export function auditBowBranches(database) {
     }
   }
 
-  for (const leaf of graph.leaves) {
-    const segments = graph.pathFor(leaf.id);
+  // Every rendered segment is a line with its own endpoint level, even when
+  // that segment also has outgoing child branches. A leaf-only traversal
+  // would silently discard the continuation of parent lines.
+  for (const line of trees) {
+    const segments = graph.pathFor(line.id);
     const pathStates = [];
     let pathIndex = 0;
 
@@ -203,7 +206,7 @@ export function auditBowBranches(database) {
     const branch = {
       rootTreeId: root.id,
       rootName: root.nameEs || root.name,
-      leafTreeId: leaf.id,
+      leafTreeId: line.id,
       branchName: finalState.name,
       role: finalState.role,
       finalRank: finalState.rank,
@@ -258,7 +261,9 @@ export function auditBowBranches(database) {
       totalLevelRecords,
       uniqueLevelRecords: uniqueLevels.size,
       rootFamilyCount: trees.filter(tree => !tree.parent).length,
-      terminalBranchCount: graph.leaves.length,
+      lineEndpointCount: trees.length,
+      graphLeafSegmentCount: graph.leaves.length,
+      terminalBranchCount: trees.length,
       branchRoles: roleCounts,
       branchRolesByFinalRank: roleByFinalRank,
       loadUp: {
