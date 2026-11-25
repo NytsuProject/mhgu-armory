@@ -118,6 +118,34 @@ test("one stack over 100 volleys gives separate 50-use Power and 20-use Element 
   assert.equal(averageCoatingMultiplier(elementII, 100, 0.2), 1.125);
 });
 
+
+test("hitzone source accepts the external MHGU window global format", () => {
+  const parsed = parseHitzones('window.MONSTER_DATA = {"version":2,"monsters":[{"name":"Rathian","large":true,"tables":[[[0,"Head",90,80,70,0,15,15,20,35,100,100]]]}]};');
+  assert.equal(parsed.monsters[0].name, "Rathian");
+  assert.equal(parsed.monsters[0].tables[0][0][4], 70);
+});
+
+test("unlocking missing coating II and Load Up are charged as extra skill slots", () => {
+  const bow = makeWeaponCandidates(makeBow(), { loadUpPolicy: "match-c3" })
+    .find(w => w.treeId === 2 && w.chargeSlot === 4);
+  const result = calculateVolley(bow, part, {
+    profile: PROFILE.elemental,
+    coatingMode: "none",
+    elementCoatingMode: "unlock-II"
+  });
+  assert.equal(result.loadUpSkillSlots, 1);
+  assert.equal(result.coatingSkillSlots, 0); // this test bow has native Element Coating II
+  assert.equal(result.totalSkillSlots, 6);
+  const noCoatingBow = { ...bow, coatings: [] };
+  const unlock = calculateVolley(noCoatingBow, part, {
+    profile: PROFILE.elemental,
+    coatingMode: "none",
+    elementCoatingMode: "unlock-II"
+  });
+  assert.equal(unlock.coatingSkillSlots, 1);
+  assert.equal(unlock.totalSkillSlots, 7);
+});
+
 test("simulation separates LR and G, reports hitzone assumptions and normalized budgets", () => {
   const result = simulateBowBalance(makeBow(), hitzoneData, {
     loadUpPolicy: "match-c3",
