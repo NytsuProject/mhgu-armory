@@ -135,6 +135,11 @@ function skillCost(weapon, requiresLoadUp, trueShotUp = false, ammoSaverEnabled 
     skills: 5 + Number(ammoSaverEnabled) + Number(!nativePower2) + Number(requiresLoadUp),
     powerUnlock, loadUp,
   };
+  const rawLowCost = {
+    points: raw.points - powerUnlock + lowCostPowerUnlock,
+    skills: raw.skills - Number(!nativePower2) + Number(lowCostPowerUnlock > 0),
+    powerUnlock: lowCostPowerUnlock, loadUp,
+  };
   // Element Focus matches the five main skill lines of RAW by dropping shot-type Up.
   const elementFocused = {
     points: 20 + 20 + 10 + 10 + 15 + elementUnlock + loadUp,
@@ -172,12 +177,12 @@ function skillCost(weapon, requiresLoadUp, trueShotUp = false, ammoSaverEnabled 
     loadUp,
   };
   if (trueShotUp) {
-    for (const build of [raw, elementLite, elementFull, elementHybrid, elementHybridLowCost]) {
+    for (const build of [raw, rawLowCost, elementLite, elementFull, elementHybrid, elementHybridLowCost]) {
       build.points += 10;
       build.skills += 1;
     }
   }
-  return { raw, elementFocused, elementLite, elementFull, elementHybrid, elementHybridLowCost };
+  return { raw, rawLowCost, elementFocused, elementLite, elementFull, elementHybrid, elementHybridLowCost };
 }
 
 /**
@@ -241,6 +246,8 @@ export function calculateShot(options) {
   const hasPower1 = weaponCoatings.includes('Power Coating');
   const hasElement2 = weaponCoatings.includes('Element Coating 2');
   const hasElement1 = weaponCoatings.includes('Element Coating');
+  const hasCloseRange = weaponCoatings.includes('Close Range Coating');
+  const hasCloseRangeBoost = weapon.x?.coatingBoost === 'Close Range Coating' && hasCloseRange;
   const skillCosts = skillCost(weapon, loadUpForPackage ?? parsed.requiresLoadUp, trueShotUp, ammoSaverEnabled);
   const activeAmmoSaverChance = ammoSaverEnabled ? ammoSaverChance : 0;
 
@@ -254,10 +261,13 @@ export function calculateShot(options) {
     * (mvSum / 100) * (matchup.shotHz / 100) * reliability * rawShotMultiplier);
   const rawNoCoat = physicalBase * rawCrit;
   const rawPowerCoated = rawNoCoat * 1.50;
+  const rawLowCostPowerMultiplier = hasPower2 ? 1.50 : 1.35;
+  const rawLowCostPowerCoated = rawNoCoat * rawLowCostPowerMultiplier;
   const rawBuildBaseElement = element ? (effectiveElementValue / 10) * eleCharge
     * (matchup.elementHz / 100) * arrowHits * reliability : 0;
   const rawBuildNoCoat = rawNoCoat + rawBuildBaseElement;
   const rawBuildPowerCoated = rawPowerCoated + rawBuildBaseElement;
+  const rawBuildLowCostPowerCoated = rawLowCostPowerCoated + rawBuildBaseElement;
 
   const elemPhysicalNoCoat = physicalElemBuildBase * normalCrit;
   // Element Focus drops shot-type Up from the physical component, but keeps the same elemental skills.
@@ -278,12 +288,29 @@ export function calculateShot(options) {
     (capacity + combineBonus) / (1 - saverChance);
   const uptime = (uses) => clamp(uses / missionShots, 0, 1);
   const powerUses = expectedUses(50, 20, activeAmmoSaverChance);
+  const closeRangeBoostUses = hasCloseRangeBoost ? expectedUses(20, 20, activeAmmoSaverChance) : 0;
   const elementUsesCoreNow = expectedUses(elementCoatingCapacity, 10, 0);
   const elementUsesCoreProposed = expectedUses(50, 10, 0);
   const elementUsesFullNow = expectedUses(elementCoatingCapacity, 10, activeAmmoSaverChance);
   const elementUsesFullProposed = expectedUses(50, 10, activeAmmoSaverChance);
   const missionAverage = (base, coated, ratio) => base + (coated - base) * ratio;
-  const rawMissionAverage = missionAverage(rawBuildNoCoat, rawBuildPowerCoated, uptime(powerUses));
+  const rawSequentialAverage = (powerCoatingMultiplier) => {
+    const powerShots = Math.min(powerUses, missionShots);
+    const switchShots = hasCloseRangeBoost && powerShots > 0 && closeRangeBoostUses > 0
+      && powerShots < missionShots
+      ? Math.min(coatingSwitchShots, missionShots - powerShots) : 0;
+    const closeRangeShots = Math.min(closeRangeBoostUses,
+      Math.max(0, missionShots - powerShots - switchShots));
+    const activeShotShare = (missionShots - switchShots) / missionShots;
+    const damage = rawBuildNoCoat * activeShotShare
+      + rawNoCoat * (powerCoatingMultiplier - 1) * (powerShots / missionShots)
+      + rawNoCoat * (hasCloseRangeBoost ? 0.50 : 0) * (closeRangeShots / missionShots);
+    return { damage, powerShots, closeRangeShots, switchShots, activeShotShare };
+  };
+  const rawSequential = rawSequentialAverage(1.50);
+  const rawLowCostSequential = rawSequentialAverage(rawLowCostPowerMultiplier);
+  const rawMissionAverage = rawSequential.damage;
+  const rawLowCostMissionAverage = rawLowCostSequential.damage;
   // Element Focus uses Core's element skills, but has no shot-type Up on its physical component.
   const focusedMissionNow = missionAverage(elemFocusedPhysicalNoCoat + elemFocusedNoCoat,
     elemFocusedPhysicalNoCoat + elemFocusedCoated, uptime(elementUsesCoreNow));
@@ -337,6 +364,7 @@ export function calculateShot(options) {
     shotHz: matchup.shotHz, elementHz: matchup.elementHz,
     rawPhysicalNoCoat: round(rawNoCoat),
     rawPhysicalPowerCoated: round(rawNoCoat * 1.50),
+    rawPhysicalLowCostPowerCoated: round(rawLowCostPowerCoated),
     rawElementNoCoat: round(rawBuildBaseElement),
     rawIndexNoCoat: round(rawBuildNoCoat),
     elementPhysicalNoCoat: round(elemPhysicalNoCoat),
@@ -357,6 +385,7 @@ export function calculateShot(options) {
     liteVsRawCoated: round((elemPhysicalNoCoat + elemLiteCoated) / rawBuildPowerCoated),
     fullVsRawCoated: round((elemPhysicalNoCoat + elemFullCoated) / rawBuildPowerCoated),
     rawMissionAverage: round(rawMissionAverage),
+    rawLowCostMissionAverage: round(rawLowCostMissionAverage),
     elementFocusedMissionCurrent: round(focusedMissionNow),
     elementFocusedMissionCapacity50: round(focusedMissionProposed),
     elementLiteMissionCurrent: round(liteMissionNow),
@@ -380,6 +409,16 @@ export function calculateShot(options) {
     coatings: {
       nativePower1: hasPower1, nativePower2: hasPower2,
       nativeElement1: hasElement1, nativeElement2: hasElement2,
+      closeRangeCoating: hasCloseRange,
+      closeRangeCoatingBoost: hasCloseRangeBoost,
+      closeRangeBoostExpectedUses: round(closeRangeBoostUses),
+      rawPowerCoatedShots: round(rawSequential.powerShots),
+      rawCloseRangeBoostedShots: round(rawSequential.closeRangeShots),
+      rawCoatingSwitchShots: round(rawSequential.switchShots),
+      rawLowCostPowerMultiplier,
+      rawLowCostPowerCoatedShots: round(rawLowCostSequential.powerShots),
+      rawLowCostCloseRangeBoostedShots: round(rawLowCostSequential.closeRangeShots),
+      rawLowCostCoatingSwitchShots: round(rawLowCostSequential.switchShots),
       lowCostElementCoatingLevel: skillCosts.elementHybridLowCost.elementCoatingLevel,
       lowCostPowerCoatingLevel: skillCosts.elementHybridLowCost.powerCoatingLevel,
       lowCostElementMultiplier,
