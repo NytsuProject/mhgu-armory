@@ -87,7 +87,7 @@ test("Load Up fourth charge can be projected to C3 arrow type without changing i
 
 test("element damage does not depend on physical MV values", () => {
   const weapon = makeWeaponCandidates(makeBow()).find(w => w.treeId === 2 && w.chargeSlot === 3);
-  const changedMVs = { ...weapon, rawMotionValues: [100, 100, 100, 100, 100] };
+  const changedMVs = { ...weapon, rawMotionValues: [100, 100, 100] };
   const a = calculateVolley(weapon, part, { profile: PROFILE.elemental, coatingMode: "none", elementCoatingMode: "none" });
   const b = calculateVolley(changedMVs, part, { profile: PROFILE.elemental, coatingMode: "none", elementCoatingMode: "none" });
   assert.equal(a.elementalDamage, b.elementalDamage);
