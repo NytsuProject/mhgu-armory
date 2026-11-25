@@ -84,7 +84,7 @@ La build elemental necesita invertir en:
 - Acceso y capacidad de los revestimientos elementales.
 - La habilidad del tipo de flecha seguirá siendo útil para su componente físico, pero no debe contarse como multiplicador elemental.
 
-El cálculo actual del Builder aplica un límite conjunto de +20 % a las bonificaciones porcentuales positivas de Ataque elemental general y elemento específico, conservando el +6 plano del nivel +2. Crítico elemental para arco se documenta como ×1,35 en impactos críticos. Potenciador crítico, en cambio, potencia el crítico físico, no el elemento. Son efectos de sistemas distintos; no se deben sumar como si todos multiplicaran el daño total.
+El cálculo actual del Builder usa los efectos de referencia: elemento específico +1 = ×1,05 y +4; elemento específico +2 = ×1,10 y +6; Ataque elemental general = ×1,10. Cuando se combinan las bonificaciones porcentuales positivas, aplica un límite conjunto de +20 % y conserva el +6 plano del nivel específico +2. Crítico elemental de arco aumenta un 35 % el elemento en impactos críticos (×1,35 en ese impacto). Potenciador crítico, en cambio, potencia el crítico físico, no el elemento. Son efectos de sistemas distintos; no se deben sumar como si todos multiplicaran el daño total. Referencias: https://laxgg.blogspot.com/p/mhgen-armour-skills.html y https://mhgu.kiranico.com/skill/47ab4.
 
 La guía de MHGen observa que los aumentos de elemento suelen aportar solo unos pocos puntos a la descarga y resultan menos atractivos que las habilidades de crítico/RAW para el arco. Esa es precisamente la desventaja que la revisión debe corregir, pero sin convertir las habilidades elementales en una mejora descontrolada para todas las armas.
 
@@ -125,6 +125,7 @@ En los 55 árboles cuyo nivel final tiene Fuego, Agua, Rayo, Hielo o Dragón:
 - 46 permiten algún revestimiento Elemental.
 - 43 permiten ambos grupos.
 - 35 tienen Potencia II y 35 tienen Elemental II.
+- 24 tienen ambos niveles II (Power Coating 2 y Element Coating 2) disponibles en el mismo arco.
 
 Por rango, contando niveles con elemento:
 - LR: 159 niveles elementales; 129 tienen ambos grupos de revestimientos.
