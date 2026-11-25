@@ -1,12 +1,12 @@
 # Análisis del daño de Abanico — MHXX / MHGU
 
-Estado: criterio de balance documentado para la Etapa 5. No se modifican MVs del juego ni las estadísticas de armas en este documento.
+Estado: referencia de mecánicas únicamente. Abanico conserva todos sus valores originales; no forma parte de los cambios de balance de esta etapa.
 
 ## Decisión de diseño
 
 Abanico debe ofrecer una recompensa de daño ligeramente superior a Salva y Perforante cuando el jugador mantiene una ejecución eficaz a corta distancia. Esa ventaja compensa el riesgo de colocarse cerca del monstruo y la dificultad de permanecer en su distancia crítica.
 
-**Objetivo de balance práctico:** en escenarios comparables y con una ejecución buena, Abanico debe quedar aproximadamente un 5% por encima del mejor perfil alternativo en daño físico sostenido. Es una meta de ajuste, no un multiplicador adicional que se aplique automáticamente.
+**Decisión del proyecto:** no se busca una ventaja adicional para Abanico. Se conservan sus Motion Values, multiplicador de Pellet/Abanico Up, cargas, RAW y elemento tal como están en MHXX. Este análisis solo sirve para modelar correctamente sus impactos durante las comparaciones; no genera propuestas de modificación.
 
 No se debe confundir:
 - Daño teórico de una descarga con todas las flechas conectando la misma zona.
@@ -76,12 +76,10 @@ Perforante aplica elemento por cada impacto de su recorrido. Abanico no necesita
 
 ## Regla de balance que se aplicará
 
-1. **No añadir un ×1,10 global a Abanico.** Ya tiene ×1,30 en Pellet/Abanico Up y MV agregado elevado.
-2. **No subir automáticamente el RAW base de todos los arcos Abanico.** Eso también haría rentable una build física en arcos cuyo objetivo sea elemental.
-3. **Calibrar una ventaja real aproximada de +5% en daño sostenido** sobre el mejor perfil alternativo, después de aplicar impactos útiles, hitzones y posicionamiento.
-4. **En builds elementales**, Abanico puede aprovechar sus cinco impactos para competir en elemento, pero no se vuelve híbrido: mantiene el RAW base inferior de la familia elemental y su ventaja depende de habilidades elementales.
-5. **En builds RAW**, el extra debe venir principalmente de MV, habilidad Pellet/Abanico Up y una ventana de uso más peligrosa. La ventaja final no debe crecer sin control respecto a Salva/Perforante.
-6. El modelo de simulación separará los perfiles:
+1. **No modificar Abanico.** No añadir multiplicadores, no cambiar MVs, no tocar RAW, elemento, cargas ni habilidades.
+2. Usar sus valores originales únicamente como entrada de la simulación, igual que los demás perfiles.
+3. No fijar una meta de daño adicional frente a Salva o Perforante.
+4. El modelo de simulación separará los perfiles:
    - Salva: concentra impactos sobre una zona débil.
    - Perforante: aprovecha cuerpos largos y varias zonas útiles en línea.
    - Abanico: reparte impactos horizontalmente a corta distancia.
@@ -97,7 +95,7 @@ Para cada monstruo no se asumirá que todos los impactos tienen el mismo hitzone
 - Proporción del tiempo de ataque dentro de la distancia crítica.
 - Tiempo de ataque perdido por evasión/recolocación (solo cuando haya datos o un escenario explícito).
 
-Mientras no exista evidencia sobre dispersión/impactos reales por monstruo, se reportará un rango de eficiencia (conservador/medio/óptimo), no una cifra ficticia de DPS exacto.
+Mientras no exista evidencia sobre dispersión/impactos reales por monstruo, se reportará un rango de eficiencia (conservador/medio/óptimo), no una cifra ficticia de DPS exacto. Esta medición no autoriza cambios a Abanico: sus parámetros permanecen intactos.
 
 ## Fuentes
 
