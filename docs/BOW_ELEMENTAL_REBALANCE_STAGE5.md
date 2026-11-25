@@ -84,6 +84,10 @@ A y B son escenarios para simulación, no valores aprobados. Deben medirse por c
 
 Esta corrección afecta a la cifra de elemento que muestra el Builder cuando se equipa el conjunto de habilidades. No modifica armas, daño real del juego ni estadísticas de `bow.json`.
 
+## Regla adicional: Abanico
+
+La recompensa de Abanico debe medirse como daño práctico sostenido, no con un multiplicador universal añadido. Su MV agregado ya es alto y Pellet/Abanico Up ya aplica ×1,30 RAW. La meta inicial es alrededor de +5% práctico sobre el mejor perfil alternativo después de ajustar por impactos útiles, hitzones y posicionamiento. Análisis completo: [BOW_SPREAD_DAMAGE_ANALYSIS.md](BOW_SPREAD_DAMAGE_ANALYSIS.md).
+
 ## Pendiente de validación antes de tocar los 735 niveles
 
 1. Contrastar en juego los multiplicadores de carga y el tope de buffs.
