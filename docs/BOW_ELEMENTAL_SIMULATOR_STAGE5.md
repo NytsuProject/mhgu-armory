@@ -65,7 +65,7 @@ node tools/bow-elemental-scenarios.mjs --hitzones=../MHGU-Monster-Info/docs/data
 
 Este modo evalúa los niveles de **todo el catálogo**, incluidos arcos RAW y elementales. Para cada monstruo usa solo la primera tabla de hitzones (66 monstruos tienen tablas paralelas sin etiqueta verificada), recorre cada parte y selecciona por separado el mayor índice RAW y el mayor índice elemental dentro de cada rango (LR/HR/G). En cada arma, las flechas teóricas siguen suponiéndose conectadas a la misma parte. El arco elemental se compara con el mejor arco RAW del catálogo para esa parte/monstruo/rango, no solo contra su propio RAW.
 
-El resultado tiene cinco opciones elementales: Core/Full con capacidad Element Coat actual y Core/Full con capacidad 50 (además de la variante Lite/Saver que se informa en el resumen sintético). La build RAW incluye el daño elemental innato del propio arco, pero no Element Coat ni las habilidades elementales. Esto evita regalarle al lado RAW un arco con elemento sin contabilizar su pequeña contribución, y permite descubrir si una build física sigue ganando con un arco elemental.
+El modo de hitzones ofrece cuatro resultados elementales: Elemental Core/Full con capacidad Element Coat actual y Elemental Core/Full con capacidad 50. La build RAW incluye el daño elemental innato del propio arco, pero no Element Coat ni las habilidades elementales. Esto evita regalarle al lado RAW un arco con elemento sin contabilizar su pequeña contribución, y permite descubrir si una build física sigue ganando con un arco elemental.
 
 La fuente externa advierte que los nombres de partes solo están confirmados para algunos monstruos; donde no hay nombre, el archivo conserva índices. La herramienta usa el nombre publicado o un fallback `Parte N`, no intenta inferir si una tabla corresponde a enfurecido, roto u otro estado. No se descarga la fuente automáticamente: el usuario conserva control sobre los archivos externos y su licencia.
 
@@ -95,7 +95,7 @@ El modelo usa los MV publicados para MHXX/MHGen:
 
 Los modificadores de carga elemental de base, A y B son los definidos en `docs/BOW_ELEMENTAL_REBALANCE_STAGE5.md`. Cuando se prueba A o B, el cambio se aplica tanto al elemento innato de la build RAW como a la build elemental: el multiplicador del juego es global, no un bonus exclusivo de la build.
 
-**Coatings durante 200 disparos:** el modelo incluye Power Coat II (50 + 20 de combinaciones), Element Coat II actual (20 + 10) y la propuesta de Element Coat II de capacidad 50 (50 + 10). Con Ahorramunic al 20 %, el uso esperado se calcula como stock / 0,8. El modelo pondera los disparos con y sin revestimiento; no cuenta el tiempo de recarga/combinar ni asegura el número exacto de usos.
+**Coatings durante 200 disparos:** el modelo incluye Power Coat II (50 + 20 de combinaciones), Element Coat II actual (20 + 10) y la propuesta de Element Coat II de capacidad 50 (50 + 10). RAW y Elemental Full llevan Ahorramunic. al 20 %; Elemental Core no lo lleva para mantener seis líneas principales comparables. Por eso RAW usa stock/0,8, Elemental Core stock/1 y Elemental Full stock/0,8. El modelo pondera los disparos con y sin revestimiento; no cuenta el tiempo de recarga/combinar ni asegura el número exacto de usos.
 
 ## Qué no afirma esta herramienta
 
