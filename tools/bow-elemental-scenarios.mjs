@@ -386,8 +386,8 @@ export function calculateSequence(options) {
     valorStateUptime,
     effectivePowerShotUseRate,
     expectedVolleysPerSequence: round(expectedVolleys),
-    powerShotCharge: powerShotCount ? powerCharge : null,
-    powerShotSlot: powerShotCount ? powerSlotIndex + 1 : null,
+    powerShotCharge: effectivePowerShotUseRate > 0 ? powerCharge : null,
+    powerShotSlot: effectivePowerShotUseRate > 0 ? powerSlotIndex + 1 : null,
     powerShotRequiresLoadUp: effectivePowerShotUseRate > 0 ? powerRequiresLoadUp : false,
     sequenceRequiresLoadUp,
     trueShotUp: activeTrueShotUp,
@@ -457,6 +457,7 @@ function weaponRows(trees, options = {}) {
             rapidReliability: options.rapidReliability ?? 1,
             style: options.style ?? 'guild',
             powerShotUseRate: options.powerShotUseRate ?? 1,
+            valorStateUptime: options.valorStateUptime ?? 1,
             trueShotUp: options.trueShotUp ?? false,
           });
           const scenarioB = calculateSequence({
@@ -468,6 +469,7 @@ function weaponRows(trees, options = {}) {
             rapidReliability: options.rapidReliability ?? 1,
             style: options.style ?? 'guild',
             powerShotUseRate: options.powerShotUseRate ?? 1,
+            valorStateUptime: options.valorStateUptime ?? 1,
             trueShotUp: options.trueShotUp ?? false,
           });
           rows.push({
@@ -572,6 +574,9 @@ export function runMonsterMatrix(database, monsterData, options = {}) {
               slot: candidate.slotIndex + 1, shotType: row.shotType,
               shotLevel: row.shotLevel, part: part[1] || `Parte ${part[0]}`,
               style: row.style, powerShotCount: row.powerShotCount,
+              powerShotUseRate: row.powerShotUseRate,
+              valorStateUptime: row.valorStateUptime,
+              effectivePowerShotUseRate: row.effectivePowerShotUseRate,
               powerShotCharge: row.powerShotCharge,
               powerShotSlot: row.powerShotSlot, breakdown: row.breakdown,
               shotHz, elementHz: element ? elementHz : 0,
@@ -661,6 +666,7 @@ export function summarizeRows(rows) {
       rank: first.rank, element: first.element, shotType: first.shotType, matchup: first.matchup,
       style: first.style, powerShotCount: first.powerShotCount,
       powerShotUseRate: first.powerShotUseRate,
+      valorStateUptime: first.valorStateUptime,
       candidates: group.length,
       bestLite: bLite ? { weapon: bLite.weaponName, lv: bLite.level, slot: bLite.slot,
         ratioCurrent: bLite.liteMissionVsRaw, skillCosts: bLite.skillCosts } : null,
