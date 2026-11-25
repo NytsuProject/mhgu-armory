@@ -387,6 +387,7 @@ export function runMonsterMatrix(database, monsterData, options = {}) {
               shotLevel: row.shotLevel, part: part[1] || `Parte ${part[0]}`,
               shotHz, elementHz: element ? elementHz : 0,
               element: element?.type || null,
+              skillCosts: row.skillCosts,
             };
             const current = best[scenario.id];
             if (!current.raw || row.rawMissionAverage > current.raw.damage) {
