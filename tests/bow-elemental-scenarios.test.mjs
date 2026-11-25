@@ -172,6 +172,8 @@ test('matrix enumerates every elemental slot and synthetic matchup', () => {
   assert.ok(rows.every(row => row.rank === 'G'));
   assert.equal(summary.length, 4); // one group per matchup
   assert.ok(summary.every(row => row.bestLite.skillCosts.raw.points >= 70));
+  assert.ok(rows.every(row => Number.isFinite(row.elementHybridLowCostMissionVsRaw)));
+  assert.ok(rows.some(row => Number.isFinite(row.A_hybridLowCostMissionVsRaw)));
 });
 
 test('elemental hybrid spends Element Coat first, then Power Coat on physical damage', () => {
@@ -185,6 +187,75 @@ test('elemental hybrid spends Element Coat first, then Power Coat on physical da
   assert.equal(row.skillCosts.elementHybrid.powerUnlock, 0);
   assert.equal(row.skillCosts.elementHybrid.points, row.skillCosts.elementFull.points);
   assert.ok(row.elementHybridMissionCurrent > row.elementFullMissionCurrent);
+  assert.equal(row.skillCosts.elementHybridLowCost.elementUnlock, 0);
+  assert.equal(row.skillCosts.elementHybridLowCost.powerUnlock, 0);
+  assert.equal(row.coatings.lowCostElementCoatingLevel, 2);
+  assert.equal(row.coatings.lowCostPowerCoatingLevel, 2);
+  assert.equal(row.coatings.lowCostElementMultiplier, 1.50);
+  assert.equal(row.coatings.lowCostPowerMultiplier, 1.50);
+  assert.equal(row.elementHybridLowCostMissionCurrent, row.elementHybridMissionCurrent);
+});
+
+test('low-cost hybrid uses native level I Element and Power coatings without unlock skills', () => {
+  const levelOneBow = {
+    ...weapon,
+    x: { ...weapon.x, coatings: ['Power Coating', 'Element Coating'] },
+  };
+  const row = calculateShot({
+    weapon: levelOneBow, charge: 'Rapid Lv4', matchup, slotIndex: 2,
+    missionShots: 100,
+  });
+  const low = row.skillCosts.elementHybridLowCost;
+  assert.equal(low.elementCoatingLevel, 1);
+  assert.equal(low.powerCoatingLevel, 1);
+  assert.equal(low.elementUnlock, 0);
+  assert.equal(low.powerUnlock, 0);
+  assert.equal(low.points, row.skillCosts.elementFull.points - 15);
+  assert.equal(low.skills, row.skillCosts.elementFull.skills - 1);
+  assert.equal(row.coatings.lowCostElementMultiplier, 1.35);
+  assert.equal(row.coatings.lowCostPowerMultiplier, 1.35);
+  assert.ok(row.elementHybridMissionCurrent > row.elementHybridLowCostMissionCurrent);
+});
+
+test('low-cost hybrid unlocks only level I at +10 when neither coating is native', () => {
+  const noCoatingsBow = {
+    ...weapon,
+    x: { ...weapon.x, coatings: [] },
+  };
+  const row = calculateShot({
+    weapon: noCoatingsBow, charge: 'Rapid Lv4', matchup, slotIndex: 2,
+    missionShots: 100,
+  });
+  const low = row.skillCosts.elementHybridLowCost;
+  assert.equal(low.elementCoatingLevel, 1);
+  assert.equal(low.powerCoatingLevel, 1);
+  assert.equal(low.elementUnlock, 10);
+  assert.equal(low.powerUnlock, 10);
+  assert.equal(low.points, row.skillCosts.elementHybrid.points - 10);
+  assert.equal(row.coatings.lowCostElementMultiplier, 1.35);
+  assert.equal(row.coatings.lowCostPowerMultiplier, 1.35);
+});
+
+test('A/B scenarios receive the same coating-switch penalty as the base profile', () => {
+  const database = {
+    trees: [{
+      id: 1, name: 'Switch Test', rarity: 8,
+      levels: [{
+        lv: 1, rar: 8, nEs: 'Arco de prueba', raw: 240, aff: 0,
+        ele: [['Hielo', 'Ice', 33]],
+        x: { charges: ['Rapid Lv2', 'Rapid Lv3', 'Rapid Lv4', 'Rapid Lv5!'],
+          coatings: ['Power Coating 2', 'Element Coating 2'] },
+      }],
+    }],
+  };
+  const free = runMatrix(database, { missionShots: 100, coatingSwitchShots: 0 });
+  const switched = runMatrix(database, { missionShots: 100, coatingSwitchShots: 1 });
+  const freeRow = free.rows.find(row => row.slot === 3 && row.matchupId === 'favorable');
+  const switchedRow = switched.rows.find(row => row.slot === 3 && row.matchupId === 'favorable');
+  assert.ok(freeRow.A_hybridMissionVsRaw > switchedRow.A_hybridMissionVsRaw);
+  assert.ok(freeRow.B_hybridMissionVsRaw > switchedRow.B_hybridMissionVsRaw);
+  assert.ok(freeRow.A_hybridLowCostMissionVsRaw > switchedRow.A_hybridLowCostMissionVsRaw);
+  assert.ok(freeRow.B_hybridLowCostMissionVsRaw > switchedRow.B_hybridLowCostMissionVsRaw);
 });
 
 test('coating switch cost reduces Power Coat coverage and accepts shot-equivalent sensitivity', () => {
@@ -280,7 +351,10 @@ test('real hitzone matrix compares catalogue RAW and elemental candidates by mon
   assert.ok(g.scenarios.base.elementalFull);
   assert.ok(g.scenarios.base.elementalHybrid);
   assert.ok(g.scenarios.base.elementalHybrid50);
+  assert.ok(g.scenarios.base.elementalHybridLowCost);
+  assert.ok(g.scenarios.base.elementalHybridLowCost50);
   assert.equal(g.scenarios.base.elementalHybrid.skillCosts.elementHybrid.powerUnlock, 15);
+  assert.equal(g.scenarios.base.elementalHybridLowCost.skillCosts.elementHybridLowCost.powerUnlock, 0);
   // The winning slot uses C4! and includes the additional Load Up line (+10).
   assert.equal(g.scenarios.base.elementalFocused.skillCosts.elementFocused.skills, 6);
   assert.equal(g.scenarios.base.elementalFocused.skillCosts.elementFocused.points, 85);
