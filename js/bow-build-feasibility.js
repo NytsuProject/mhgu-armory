@@ -242,7 +242,7 @@ export function auditBowBuildSkillAvailability({
 
   const armorPieces = Object.entries(armorData.pieces)
     .map(([id, piece]) => ({ id: Number(id), ...piece }))
-    .filter(piece => piece.rank === rank && GUNNER_CLASSES.has(piece.cls));
+    .filter(piece => piece.rank === rank && (piece.slot === "head" || GUNNER_CLASSES.has(piece.cls)));
 
   const packages = makeBowSkillPackages();
   const optionalRequirements = buildBowSkillRequirements({
@@ -285,12 +285,12 @@ export function auditBowBuildSkillAvailability({
 
   return {
     metadata: {
-      model: "MHGU bow skill-source availability audit v1",
+      model: "MHGU bow skill-source availability audit v2",
       rank,
-      eligibleGunnerArmorPieces: armorPieces.length,
+      eligibleBowArmorPieces: armorPieces.length,
       decorations: decorations.length,
       talismanSkillEntries: talismanSkills.length,
-      armorClassPolicy: "Gunner (G) and All (A) pieces only",
+      armorClassPolicy: "Head: Blademaster (B), Gunner (G) or All (A); body: Gunner (G) or All (A)",
       armorRankPolicy: "Only armor rows matching the selected rank are included",
       buildStatus: "Source availability audit only; it does not claim a complete five-piece build is feasible.",
     },

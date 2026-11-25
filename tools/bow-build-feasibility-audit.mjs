@@ -41,7 +41,7 @@ function main() {
 
   console.log("MHGU bow build skill-source audit");
   console.log("Rango de armadura: " + rank);
-  console.log("Piezas artillero/ambos: " + result.metadata.eligibleGunnerArmorPieces);
+  console.log("Piezas compatibles con arco: " + result.metadata.eligibleBowArmorPieces);
   console.log("Joyas: " + result.metadata.decorations + " | habilidades de talismán: " + result.metadata.talismanSkillEntries);
   console.log("Arcos: " + result.weaponCatalog.levelRecords + " niveles en " + result.weaponCatalog.treeSegments + " segmentos");
   for (const [skill, data] of Object.entries(result.skillAvailability)) {

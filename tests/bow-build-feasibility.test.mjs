@@ -75,6 +75,7 @@ test("availability audit filters rank and class, and reports armor, jewels and c
         1: { slot: "head", rank: "G", cls: "G", gender: 2, deco: 1, nameEs: "Gorro de prueba", sk: [["Attack", "Ataque", 12]] },
         2: { slot: "arms", rank: "G", cls: "B", gender: 2, deco: 2, nameEs: "Brazales espada", sk: [["Attack", "Ataque", 20]] },
         3: { slot: "waist", rank: "HR", cls: "G", gender: 2, deco: 2, nameEs: "Faja alta", sk: [["Attack", "Ataque", 20]] },
+        4: { slot: "head", rank: "G", cls: "B", gender: 2, deco: 0, nameEs: "Casco de espadachín", sk: [["Normal Up", "Normal/salva+", 10]] },
       },
     },
     decorations: [
@@ -87,7 +88,7 @@ test("availability audit filters rank and class, and reports armor, jewels and c
     rank: "G",
   });
   const attack = result.skillAvailability.Attack.targets.find(row => row.targetPoints === 20);
-  assert.equal(result.metadata.eligibleGunnerArmorPieces, 1);
+  assert.equal(result.metadata.eligibleBowArmorPieces, 2);
   assert.equal(result.packages.length, 68);
   assert.equal(attack.armor.pieceCount, 1);
   assert.equal(attack.armor.bySlot.head.maxPoints, 12);
@@ -99,6 +100,10 @@ test("availability audit filters rank and class, and reports armor, jewels and c
   assert.equal(attack.talisman.secondaryCanReachThreshold, false);
   assert.ok(result.skillAvailability.Loading);
   assert.ok(result.skillAvailability["Ammo Saver"]);
+  const normalUp = result.skillAvailability["Normal Up"].targets.find(row => row.targetPoints === 10);
+  assert.equal(normalUp.armor.bySlot.head.bestPiece.cls, "B");
+  assert.equal(normalUp.armor.pieceCount, 1);
+  assert.equal(result.metadata.armorClassPolicy, "Head: Blademaster (B), Gunner (G) or All (A); body: Gunner (G) or All (A)");
 });
 
 test("audit rejects requested thresholds that are not real skill activations", () => {
