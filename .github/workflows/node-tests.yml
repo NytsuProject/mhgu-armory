@@ -67,4 +67,5 @@ jobs:
             ${{ runner.temp }}/bow-elemental-monsters-valor.json
             ${{ runner.temp }}/bow-elemental-summary-guild.json
             ${{ runner.temp }}/bow-elemental-summary-valor.json
+            ${{ runner.temp }}/bow-branch-audit-stage5.json
           retention-days: 14
