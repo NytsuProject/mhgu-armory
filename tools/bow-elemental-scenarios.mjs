@@ -330,7 +330,8 @@ export function calculateSequence(options) {
       powerRequiresLoadUp = nextParsed.requiresLoadUp;
     }
   }
-  const sequenceRequiresLoadUp = main.requiresLoadUp || powerRequiresLoadUp;
+  const sequenceRequiresLoadUp = main.requiresLoadUp
+    || (effectivePowerShotUseRate > 0 && powerRequiresLoadUp);
   const activeTrueShotUp = trueShotUp && powerShotCount > 0 && effectivePowerShotUseRate > 0;
   const expectedVolleys = 1 + effectivePowerShotUseRate * powerShotCount;
   const effectiveMissionShots = missionShots * expectedVolleys;
@@ -346,7 +347,7 @@ export function calculateSequence(options) {
   if (!primary) return null;
 
   const shots = [{ role: 'primary', weight: 1, multiplier: 1, row: primary }];
-  if (powerShotCount && powerShotUseRate > 0) {
+  if (powerShotCount && effectivePowerShotUseRate > 0) {
     const firstPowerMultiplier = activeTrueShotUp ? 1.20 : 1;
     const power1 = calculateShot({
       ...shared, charge: powerCharge, slotIndex: powerSlotIndex,
@@ -387,7 +388,7 @@ export function calculateSequence(options) {
     expectedVolleysPerSequence: round(expectedVolleys),
     powerShotCharge: powerShotCount ? powerCharge : null,
     powerShotSlot: powerShotCount ? powerSlotIndex + 1 : null,
-    powerShotRequiresLoadUp: powerShotCount ? powerRequiresLoadUp : false,
+    powerShotRequiresLoadUp: effectivePowerShotUseRate > 0 ? powerRequiresLoadUp : false,
     sequenceRequiresLoadUp,
     trueShotUp: activeTrueShotUp,
     rawIndexNoCoat: rawIndex,
