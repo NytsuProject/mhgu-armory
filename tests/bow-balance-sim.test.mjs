@@ -85,6 +85,19 @@ test("Load Up fourth charge can be projected to C3 arrow type without changing i
   assert.equal(projectedC4.projectedLoadUpType, true);
 });
 
+
+test("every Load Up-marked slot follows its immediately preceding arrow type", () => {
+  const bow = makeBow();
+  bow.trees[1].levels[0].x.charges = ["Rapid Lv2", "Spread Lv3!", "Pierce Lv4", "Heavy Lv5!"];
+  const projected = makeWeaponCandidates(bow, { loadUpPolicy: "match-c3" })
+    .filter(w => w.treeId === 2 && w.requiresLoadUp)
+    .sort((a, b) => a.chargeSlot - b.chargeSlot);
+  assert.deepEqual(projected.map(w => [w.chargeSlot, w.chargeType, w.chargeLevel]), [
+    [2, "Rapid", 3],
+    [4, "Pierce", 5]
+  ]);
+});
+
 test("element damage does not depend on physical MV values", () => {
   const weapon = makeWeaponCandidates(makeBow()).find(w => w.treeId === 2 && w.chargeSlot === 3);
   const changedMVs = { ...weapon, rawMotionValues: [100, 100, 100] };
