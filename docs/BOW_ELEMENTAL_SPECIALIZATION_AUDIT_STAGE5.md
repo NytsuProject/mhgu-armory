@@ -98,6 +98,24 @@ La guía de MHGen observa que los aumentos de elemento suelen aportar solo unos 
 
 Esto significa que no basta con comparar ×1,50 contra ×1,50. Hay que comparar también el coste en puntos de habilidad y los usos disponibles. Referencias MHGU: https://mhgu.kiranico.com/skill/48364 y https://mhgu.kiranico.com/skill/40554. Guía de arco: https://laxgg.blogspot.com/p/mhgen-armour-skills.html.
 
+
+### Cuánto aportan ya las habilidades elementales al componente elemental
+
+Con la combinación positiva actual documentada en el Builder (tope porcentual conjunto de +20 % y +6 planos del elemento específico +2), el valor mostrado pasa de `E` a `1,20 × E + 6`. Crítico elemental de arco es ×1,35 en impactos críticos; con afinidad estable del 50 % equivale a ×1,175 medio en el componente elemental, y con 80 % equivale a ×1,28.
+
+| Elemento base mostrado | Solo habilidades elementales (+20 % y +6) | Con Crítico elemental a 50 % afinidad | Con Crítico elemental a 80 % afinidad |
+|---:|---:|---:|---:|
+| 20 | ×1,50 | ×1,76 | ×1,92 |
+| 30 | ×1,40 | ×1,65 | ×1,79 |
+| 40 | ×1,35 | ×1,59 | ×1,73 |
+| 60 | ×1,30 | ×1,53 | ×1,66 |
+
+Esto es el crecimiento del **componente elemental**, no del daño total del disparo. El físico sigue sumándose aparte y puede ser una fracción muy grande del resultado. También muestra que el +6 plano pesa mucho más en LR/HR con elemento base bajo que en un arco con 60 de elemento.
+
+Para estimar duración de Element Coat II durante los primeros 200 impactos: sin Ammo Saver, capacidad 20 da una media idealizada de ×1,05 sobre el total de impactos; capacidad 50 da ×1,125. Si Ammo Saver evita el consumo en 20 % de los usos, la expectativa teórica pasa aproximadamente a ×1,063 y ×1,156 respectivamente. Son promedios de disponibilidad, no DPS medido; en cacería real influyen cambios de coating, tiempo de recarga y pérdida de impactos.
+
+**Decisión provisional sobre las habilidades:** no voy a inflar todavía los porcentajes de las habilidades elementales globales. El paquete actual ya puede multiplicar aproximadamente ×1,5 el componente elemental en un arco de E=20, antes de coatings y hitzones. Primero aislaremos el problema de especialización del arco (RAW base, coating compatible y multiplicador de carga). Si después de eso el elemento no cumple la ventana de rendimiento, entonces se prueba un ajuste adicional de habilidad y se mide su impacto colateral en las demás armas.
+
 ## 6. Auditoría del catálogo actual: coating híbrido
 
 Fuente: `data/weapons/bow.json`, SHA `ec48bf9390a2eaa1123bfdea11b76bb359483b3b`.
