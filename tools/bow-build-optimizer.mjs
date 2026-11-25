@@ -5,11 +5,21 @@ import { optimizeBowBuild, resolveBowBuildRequirements } from "../js/bow-build-o
 
 const args = {};
 for (let i = 2; i < process.argv.length; i++) {
-  const key = process.argv[i];
-  if (!key.startsWith("--") || !process.argv[i + 1] || process.argv[i + 1].startsWith("--")) {
-    throw new Error("Argumento inválido: " + key);
+  const token = process.argv[i];
+  if (!token.startsWith("--")) throw new Error("Argumento inesperado: " + token);
+  const body = token.slice(2);
+  const equals = body.indexOf("=");
+  if (equals >= 0) {
+    const key = body.slice(0, equals);
+    const value = body.slice(equals + 1);
+    if (!key || !value) throw new Error("Argumento inválido: " + token);
+    args[key] = value;
+    continue;
   }
-  args[key.slice(2)] = process.argv[++i];
+  const value = process.argv[i + 1];
+  if (!value || value.startsWith("--")) throw new Error("Falta el valor de --" + body);
+  args[body] = value;
+  i++;
 }
 const readJson = path => JSON.parse(readFileSync(resolve(path), "utf8"));
 function rankForRarity(value) { return value >= 8 ? "G" : value >= 4 ? "HR" : "LR"; }
