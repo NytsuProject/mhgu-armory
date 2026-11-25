@@ -55,6 +55,17 @@ Multiplicadores por slot de carga:
 
 Los MVs físicos se suman para el RAW. El elemento se calcula aparte, por impacto, con hitzone elemental y modificador de carga; **el MV físico nunca multiplica el elemento**.
 
+Además del valor actual, la matriz ejecuta los dos candidatos de prueba:
+
+| Escenario | C1 | C2 | C3 | C4 |
+|---|---:|---:|---:|---:|
+| Actual | 0,70 | 0,85 | 1,00 | 1,125 |
+| A | 0,70 | 0,90 | 1,05 | 1,25 |
+| B | 0,70 | 0,95 | 1,10 | 1,30 |
+
+Los tres escenarios se cruzan con los tres escenarios de revestimiento y los tres presupuestos por defecto, así que se puede distinguir cuánto aporta cambiar la carga elemental de cuánto aporta dar más disponibilidad al coating. A y B siguen siendo hipótesis; ninguna se ha aplicado a armas ni a parámetros del juego. Se pueden seleccionar con `--charge-scenarios base,A,B` o ejecutar uno solo para aislarlo.
+
+
 Se corrigió Salva Lv5 a cuatro flechas (12+4+3+3, 22 MV total). Perforante cuenta 3/4/5/5/5 impactos; Abanico 3/3/5/5/5; Pesada uno. Las tablas de MVs se basan en la guía de MHGen: https://laxgg.blogspot.com/p/mhgen-damage-calculation-motion-values.html. Son referencia de fórmula antigua, no confirmación binaria de todos los valores internos de MHXX.
 
 ### Load Up y C4
