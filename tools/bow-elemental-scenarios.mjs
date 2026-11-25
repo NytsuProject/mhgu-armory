@@ -636,7 +636,16 @@ export function runMonsterMatrix(database, monsterData, options = {}) {
           const rawDamage = result.raw?.damage || 0;
           for (const key of ['elementalLite', 'elementalFull', 'elementalLite50', 'elementalFull50']) {
             result[key] = result[key] && rawDamage > 0
-              ? { ...result[key], vsRaw: round(result[key].damage / rawDamage) }
+              ? {
+                ...result[key],
+                vsRaw: round(result[key].damage / rawDamage),
+                rawWeapon: result.raw.weapon,
+                rawTree: result.raw.tree,
+                rawLevel: result.raw.level,
+                rawCharge: result.raw.charge,
+                rawPart: result.raw.part,
+                rawDamage: result.raw.damage,
+              }
               : result[key] ? { ...result[key], vsRaw: null } : null;
           }
         }
