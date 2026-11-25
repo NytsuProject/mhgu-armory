@@ -759,6 +759,38 @@ export function runMonsterMatrix(database, monsterData, options = {}) {
         }
       }
 
+      // Keep the full per-part ratio distribution compact. Serializing every
+      // candidate row (all skill fields, volleys and breakdowns) for every part
+      // made the JSON exceed Node's maximum string length in CI.
+      const makePartStatSet = () => Object.fromEntries(
+        scenarios.map(({ id }) => [id, Object.fromEntries(profileKeys.map(key => [key, []]))])
+      );
+      const partStats = {
+        scenarios: makePartStatSet(),
+        byShotType: Object.fromEntries(shotTypes.map(type => [type, makePartStatSet()])),
+      };
+      const collectPartStats = (target, partRow, selector) => {
+        for (const scenario of scenarios) {
+          for (const key of profileKeys) {
+            const selected = selector(partRow, scenario.id, key);
+            if (!Number.isFinite(selected?.vsRaw)) continue;
+            target[scenario.id][key].push({
+              part: partRow.part,
+              elementHz: selected.elementHz,
+              ratio: selected.vsRaw,
+            });
+          }
+        }
+      };
+      for (const partRow of partRows) {
+        collectPartStats(partStats.scenarios, partRow,
+          (row, scenarioId, key) => row.scenarios[scenarioId][key]);
+        for (const type of shotTypes) {
+          collectPartStats(partStats.byShotType[type], partRow,
+            (row, scenarioId, key) => row.byShotType[type][scenarioId][key]);
+        }
+      }
+
       byRankMonster.push({
         rank,
         monster: monster.name,
@@ -766,7 +798,7 @@ export function runMonsterMatrix(database, monsterData, options = {}) {
         partsEvaluated: parts.length,
         scenarios: best,
         byShotType: bestByShotType,
-        parts: partRows,
+        partStats,
       });
     }
   }

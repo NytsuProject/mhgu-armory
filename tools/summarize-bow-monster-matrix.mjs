@@ -88,10 +88,10 @@ for (const rank of ranks) {
         monster: monster.monster,
         value: monster.scenarios?.[scenario]?.[key] || null,
       })).filter(item => Number.isFinite(item.value?.vsRaw));
-      const allParts = monsters.flatMap(monster => (monster.parts || []).map(part => ({
+      const allParts = monsters.flatMap(monster => (monster.partStats?.scenarios?.[scenario]?.[key] || []).map(stat => ({
         monster: monster.monster,
-        part: part.part,
-        value: part.scenarios?.[scenario]?.[key] || null,
+        part: stat.part,
+        value: { vsRaw: stat.ratio, elementHz: stat.elementHz },
       }))).filter(item => Number.isFinite(item.value?.vsRaw));
       rows.push(summarizeGroup({
         rank, scenario, profile: key, label, shotType: "ALL",
@@ -104,10 +104,10 @@ for (const rank of ranks) {
           monster: monster.monster,
           value: monster.byShotType?.[shotType]?.[scenario]?.[key] || null,
         })).filter(item => Number.isFinite(item.value?.vsRaw));
-        const typeParts = monsters.flatMap(monster => (monster.parts || []).map(part => ({
+        const typeParts = monsters.flatMap(monster => (monster.partStats?.byShotType?.[shotType]?.[scenario]?.[key] || []).map(stat => ({
           monster: monster.monster,
-          part: part.part,
-          value: part.byShotType?.[shotType]?.[scenario]?.[key] || null,
+          part: stat.part,
+          value: { vsRaw: stat.ratio, elementHz: stat.elementHz },
         }))).filter(item => Number.isFinite(item.value?.vsRaw));
         rows.push(summarizeGroup({
           rank, scenario, profile: key, label, shotType,

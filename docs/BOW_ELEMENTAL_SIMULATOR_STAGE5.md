@@ -125,7 +125,7 @@ Los costes reportados son umbrales de activación sumados y número de líneas d
 
 **Elemento:** el elemento verdadero (valor mostrado /10) se multiplica por elemento tras habilidades, multiplicador elemental de carga, hitzone elemental, número de impactos y afinidad promedio cuando Crítico elemental está activo. El revestimiento Element Coat II aplica ×1,5. Los MV físicos no se utilizan en el componente elemental.
 
-En el JSON completo, cada fila de monstruo contiene `parts`, con los candidatos RAW/elementales emparejados en cada parte y sus resultados por tipo de flecha; `scenarios` y `byShotType` resumen por monstruo la parte con la mayor relación elemental/RAW. Una relación mayor que 1 significa que la build elemental gana en esa parte concreta bajo los supuestos del modelo; no significa que el DPS real de la cacería sea mayor.
+El JSON conserva `partStats`: por cada parte, escenario, build y tipo de flecha guarda la relación emparejada elemental/RAW y la hitzone elemental, sin repetir todo el desglose de candidatos y Power Shots. `scenarios` y `byShotType` conservan además el arco elemental ganador y su arco RAW emparejado en la parte seleccionada por la mayor relación. Esta representación compacta evita que el archivo completo supere el límite de serialización de Node y mantiene el agregado de todas las partes. Una relación mayor que 1 significa que la build elemental gana en esa parte concreta bajo los supuestos del modelo; no significa que el DPS real de la cacería sea mayor.
 
 El modelo usa los MV publicados para MHXX/MHGen:
 - Salva Lv1–5: 12 / 12+4 / 12+4+3 / 12+4+3+2 / 12+4+3+3; por tanto tiene 1, 2, 3, 4 y **4** flechas.

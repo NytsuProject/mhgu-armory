@@ -195,6 +195,9 @@ test('real hitzone matrix compares catalogue RAW and elemental candidates by mon
   const g = result.results.find(row => row.rank === 'G');
   assert.equal(g.monster, 'Monstruo de prueba');
   assert.equal(g.partsEvaluated, 2);
+  assert.equal(g.partStats.scenarios.base.elementalFull.length, 2);
+  assert.ok(g.partStats.byShotType.Rapid.base.elementalFull.length > 0);
+  assert.equal(g.parts, undefined);
   assert.ok(g.scenarios.base.raw);
   assert.ok(g.scenarios.base.elementalFocused);
   assert.ok(g.scenarios.base.elementalFull);
