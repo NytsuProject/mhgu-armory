@@ -293,6 +293,125 @@ export function calculateShot(options) {
   };
 }
 
+export function calculateSequence(options) {
+  const {
+    weapon, charge, slotIndex = 2, style = 'none', loadUp = false,
+    powerShotUseRate = 1, trueShotUp = false, missionShots = 200,
+    ...damageOptions
+  } = options;
+  const supportedStyles = new Set(['none', 'guild', 'adept', 'valor', 'striker', 'alchemy', 'aerial']);
+  if (!supportedStyles.has(style)) throw new RangeError('Unsupported bow style: ' + style);
+  if (!Number.isFinite(powerShotUseRate) || powerShotUseRate < 0 || powerShotUseRate > 1) {
+    throw new RangeError('powerShotUseRate must be between 0 and 1.');
+  }
+  const main = parseCharge(charge);
+  if (!main) return null;
+  if (main.requiresLoadUp && !loadUp) return null;
+
+  const powerShotCount = style === 'valor' ? 2
+    : (style === 'guild' || style === 'adept') ? 1 : 0;
+  const chargeSlots = (weapon.x?.charges || []).map((value, index, all) =>
+    normalizeLoadUpCharge(all, index));
+  let powerCharge = charge;
+  let powerSlotIndex = slotIndex;
+  let powerRequiresLoadUp = main.requiresLoadUp;
+  if (powerShotCount && powerShotUseRate > 0) {
+    const nextIndex = slotIndex + 1;
+    const nextCharge = chargeSlots[nextIndex];
+    const nextParsed = parseCharge(nextCharge);
+    if (nextParsed && (!nextParsed.requiresLoadUp || loadUp)) {
+      powerCharge = nextCharge;
+      powerSlotIndex = nextIndex;
+      powerRequiresLoadUp = nextParsed.requiresLoadUp;
+    }
+  }
+  const sequenceRequiresLoadUp = main.requiresLoadUp || powerRequiresLoadUp;
+  const activeTrueShotUp = trueShotUp && powerShotCount > 0 && powerShotUseRate > 0;
+  const expectedVolleys = 1 + powerShotUseRate * powerShotCount;
+  const effectiveMissionShots = missionShots * expectedVolleys;
+  const shared = {
+    ...damageOptions, weapon, matchup: options.matchup, loadUp,
+    missionShots: effectiveMissionShots,
+    loadUpForPackage: sequenceRequiresLoadUp,
+    trueShotUp: activeTrueShotUp,
+  };
+  const primary = calculateShot({
+    ...shared, charge, slotIndex, rawShotMultiplier: 1,
+  });
+  if (!primary) return null;
+
+  const shots = [{ role: 'primary', weight: 1, multiplier: 1, row: primary }];
+  if (powerShotCount && powerShotUseRate > 0) {
+    const firstPowerMultiplier = activeTrueShotUp ? 1.20 : 1;
+    const power1 = calculateShot({
+      ...shared, charge: powerCharge, slotIndex: powerSlotIndex,
+      rawShotMultiplier: firstPowerMultiplier,
+    });
+    if (power1) shots.push({
+      role: 'powerShot', weight: powerShotUseRate,
+      multiplier: firstPowerMultiplier, row: power1,
+    });
+    if (style === 'valor') {
+      const secondMultiplier = firstPowerMultiplier * 1.30;
+      const power2 = calculateShot({
+        ...shared, charge: powerCharge, slotIndex: powerSlotIndex,
+        rawShotMultiplier: secondMultiplier,
+      });
+      if (power2) shots.push({
+        role: 'valorPowerShot', weight: powerShotUseRate,
+        multiplier: secondMultiplier, row: power2,
+      });
+    }
+  }
+
+  const add = key => round(sum(shots.map(shot => shot.row[key] * shot.weight)));
+  const rawMissionAverage = add('rawMissionAverage');
+  const liteMission = add('elementLiteMissionCurrent');
+  const liteMission50 = add('elementLiteMissionCapacity50');
+  const fullMission = add('elementFullMissionCurrent');
+  const fullMission50 = add('elementFullMissionCapacity50');
+  const rawIndex = add('rawIndexNoCoat');
+  const rawCoated = add('rawIndexPowerCoated');
+  return {
+    ...primary,
+    style,
+    powerShotCount,
+    powerShotUseRate,
+    expectedVolleysPerSequence: round(expectedVolleys),
+    powerShotCharge: powerShotCount ? powerCharge : null,
+    powerShotSlot: powerShotCount ? powerSlotIndex + 1 : null,
+    powerShotRequiresLoadUp: powerShotCount ? powerRequiresLoadUp : false,
+    sequenceRequiresLoadUp,
+    trueShotUp: activeTrueShotUp,
+    rawIndexNoCoat: rawIndex,
+    rawIndexPowerCoated: rawCoated,
+    rawMissionAverage,
+    elementLiteMissionCurrent: liteMission,
+    elementLiteMissionCapacity50: liteMission50,
+    elementFullMissionCurrent: fullMission,
+    elementFullMissionCapacity50: fullMission50,
+    liteMissionVsRaw: round(liteMission / rawMissionAverage),
+    liteCapacity50VsRaw: round(liteMission50 / rawMissionAverage),
+    fullMissionVsRaw: round(fullMission / rawMissionAverage),
+    fullCapacity50VsRaw: round(fullMission50 / rawMissionAverage),
+    arrowHits: round(sum(shots.map(shot => shot.row.arrowHits * shot.weight))),
+    mvSum: round(sum(shots.map(shot => shot.row.mvSum * shot.weight))),
+    skillCosts: primary.skillCosts,
+    coatings: {
+      ...primary.coatings,
+      missionShots,
+      expectedVolleysPerSequence: round(expectedVolleys),
+      effectiveMissionVolleys: round(effectiveMissionShots),
+    },
+    breakdown: shots.map(shot => ({
+      role: shot.role, weight: shot.weight, charge: shot.row.charge,
+      slot: shot.row.slot, arrowHits: shot.row.arrowHits,
+      mvSum: shot.row.mvSum, rawMultiplier: shot.multiplier,
+    })),
+    assumptions: 'sequence index; expected Power Shot frequency; all theoretical hits share same part; no frame-by-frame hit distribution',
+  };
+}
+
 function weaponRows(trees, options = {}) {
   const rows = [];
   for (const tree of trees) {
