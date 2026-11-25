@@ -99,8 +99,9 @@ export function makeWeaponCandidates(bowData, options = {}) {
         const charge = parsed[index];
         if (!charge) continue;
         let type = charge.type;
-        const projectedLoadUpType = loadUpPolicy === "match-c3" && index === 3 && charge.requiresLoadUp && c3?.type;
-        if (projectedLoadUpType) type = c3.type;
+        const previousCharge = index > 0 ? parsed[index - 1] : null;
+        const projectedLoadUpType = loadUpPolicy === "match-c3" && charge.requiresLoadUp && previousCharge?.type;
+        if (projectedLoadUpType) type = previousCharge.type;
         result.push({
           treeId: tree.id,
           treeName: level.nEs || tree.finalNameEs || tree.nameEs || tree.name || ("Árbol " + tree.id),
