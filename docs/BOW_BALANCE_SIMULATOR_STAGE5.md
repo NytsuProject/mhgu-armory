@@ -78,8 +78,10 @@ Se corrigió Salva Lv5 a cuatro flechas (12+4+3+3, 22 MV total). Perforante cuen
 
 Escenarios:
 1. `uncoated`: sin revestimientos.
-2. `native-single-stack`: mejor revestimiento nativo del tipo correspondiente.
-3. `unlocked-II-single-stack`: Nivel II; si no está en el arco, añade una habilidad activa de C+ +15 al presupuesto.
+2. `native-single-stack`: revestimientos nativos; Element Coat conserva su capacidad actual de 20.
+3. `native-element-50`: revestimientos nativos; Element Coat se prueba con capacidad hipotética de 50.
+4. `unlocked-II-single-stack`: Nivel II; si no está en el arco, añade una habilidad activa de C+ +15 al presupuesto y mantiene capacidad elemental 20.
+5. `unlocked-II-element-50`: igual que el anterior, pero Element Coat se prueba con capacidad hipotética de 50.
 
 | Revestimiento | Multiplicador | Capacidad por pila |
 |---|---:|---:|
@@ -88,7 +90,7 @@ Escenarios:
 | Elemental I | ×1,35 elemento | 20 |
 | Elemental II | ×1,50 elemento | 20 |
 
-El modelo promedia el efecto sobre `--shots-per-stack` descargas (100 por defecto): una pila de 50 Power Coat II sobre 100 descargas produce ×1,25 de media en RAW; una pila de 20 Element Coat II produce ×1,10 de media en elemento. Se consume una unidad por descarga, no por flecha/impacto. El cálculo no incluye combinaciones ni reabastecimiento: para evaluar más consumibles se cambia `--shots-per-stack` y se amplía el modelo explícitamente, no se asume disponibilidad infinita.
+El modelo promedia el efecto sobre `--shots-per-stack` descargas (100 por defecto): una pila de 50 Power Coat II sobre 100 descargas produce ×1,25 de media en RAW; una pila de 20 Element Coat II produce ×1,10 de media en elemento. En el escenario hipotético de 50 Element Coat II, el promedio elemental también sería ×1,25, sin cambiar su multiplicador por impacto de ×1,50. Se consume una unidad por descarga, no por flecha/impacto. El cálculo no incluye combinaciones ni reabastecimiento: para evaluar más consumibles se cambia `--shots-per-stack` y se amplía el modelo explícitamente, no se asume disponibilidad infinita.
 
 Ammo Saver está desactivado por defecto. Kiranico solo dice que devuelve revestimientos ocasionalmente, sin publicar una probabilidad. El 20 % es una hipótesis comunitaria secundaria; se puede estudiar opcionalmente con `--ammo-saver-return-rate 0.2`, y en ese caso se añade una habilidad activa al presupuesto solo si el perfil realmente usa revestimiento.
 
@@ -118,4 +120,4 @@ Por ello:
 - coste extra de Load Up, C+ y Ammo Saver;
 - separación LR/HR/G y parsing del hitzone global.
 
-GitHub Actions ejecuta `npm test`, el smoke test del catálogo y la matriz contra un snapshot fijo de hitzones extraído del repositorio de referencia. El snapshot se fija por commit para evitar que cambios ajenos alteren silenciosamente los resultados.
+GitHub Actions ejecuta `npm test`, el smoke test del catálogo y la matriz contra un snapshot fijo de hitzones extraído del repositorio de referencia. El snapshot se fija por commit para evitar que cambios ajenos alteren silenciosamente los resultados. Los JSON completos de cada ejecución se archivan como un artifact de GitHub Actions durante 14 días para permitir revisar cada matchup, los candidatos RAW/elementales y las distintas cargas/coatings.
