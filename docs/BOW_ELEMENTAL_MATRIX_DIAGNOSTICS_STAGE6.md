@@ -4,9 +4,10 @@ Estado: línea base reproducible completada. Este documento recoge la matriz Gui
 
 ## Ejecución de referencia
 
-- GitHub Actions: [run #80 — completo y exitoso](https://github.com/NytsuProject/mhgu-armory/actions/runs/45652008067).
-- Commit evaluado: `b4de60e4502ae6cc3589e9d95a1969eea19697ed`.
-- Artifact: `bow-balance-stage5-results`, contiene la matriz completa de Guild, Valor y sus resúmenes.
+- GitHub Actions: [run #80 — línea base sin cambio de coatings](https://github.com/NytsuProject/mhgu-armory/actions/runs/45652008067).
+- GitHub Actions: [run #111 — matriz híbrida completa, exitosa](https://github.com/NytsuProject/mhgu-armory/actions/runs/45657032192).
+- Commit de la matriz híbrida: `2a60950450feb8035b791d344f810f81e0abea5c`.
+- Artifact híbrido: `bow-balance-stage5-results`, contiene Guild, Guild con cap 30, Valor, auditoría de ramas y resumen del catálogo. Incluye Element Coat → Power Coat II; la variante económica I/II se añadió después y está en validación separada.
 - Fuente de hitzones fijada en el workflow: 93 monstruos grandes; se usa la primera tabla, que deja 631 comparaciones de partes por rango. Las 66 segundas tablas paralelas no se han etiquetado como estados concretos.
 - Opciones: Recargando normalizado en memoria; 200 disparos de misión; sin Ammo Saver; 20 unidades base de Element Coat; Power Shot frecuencia 1; Valor uptime 1.0. Este último es un techo teórico optimista, no una estimación de uso medio.
 
@@ -44,6 +45,50 @@ Esto no demuestra que A/B o la capacidad 50 sean inútiles. Sí demuestra que **
 
 Valor usa dos Power Shots y la ejecución configuró uptime 1.0. En Elemental Full, los ratios agregados fueron 0,777 LR, 0,855 HR y 0,908 G. El mejor resultado se acerca a la paridad en G, pero continúa por debajo de 1; además, supone el estado Valor activo y el aprovechamiento de Power Shot en cada oportunidad. No se debe tratar como rendimiento esperado de una cacería normal.
 
+## Nueva lectura: cambiar de Element Coat a Power Coat
+
+El segundo escenario completo modeló una misión de 200 disparos en dos fases: agotar primero Element Coat II (20 + 10 combinables) y cambiar después a Power Coat II (50 + 20). El coating elemental aumenta el componente elemental ×1,50; el coating de poder aumenta el físico ×1,50. No se aplican ambos al mismo disparo. El cambio se fijó a **0 disparos equivalentes perdidos** para medir el techo máximo; no significa que la transición in-game sea instantánea ni gratuita en tiempo.
+
+### Guild: Element Full frente al híbrido máximo
+
+| Rango | Element Full ratio | Híbrido Element II → Power II | Híbrido con Element Coat 50 | Híbrido en hitzones elementales ≥25 | Partes que ganan: Full → híbrido |
+|---|---:|---:|---:|---:|---:|
+| LR | 0,759 | 0,823 | 0,824 | 0,854 | 0 → 2 / 631 |
+| HR | 0,835 | 0,906 | 0,907 | 0,932 | 0 → 4 / 631 |
+| G | 0,887 | 0,961 | 0,963 | 0,975 | 5 → 34 / 631 |
+
+El efecto es consistente: el relevo de coating eleva el índice por partes entre 6,4 y 7,4 puntos porcentuales, según rango. En G, el resumen por monstruo encuentra al menos una parte favorable al híbrido en 25 de los 93 monstruos grandes, frente a 4 con Element Full. Esto no significa que el híbrido supere RAW en todas las partes: su media total G queda todavía en 0,961 y su media en partes con hitzone elemental ≥25 en 0,975.
+
+Aumentar Element Coat de 20 a 50 aporta mucho menos que permitir el relevo a Power Coat: el híbrido G sube de 0,961 a 0,963; HR de 0,906 a 0,907 y LR de 0,823 a 0,824. La prioridad de investigación pasa a ser el coste real de cambio y la posibilidad de tener Power Coat II, no elevar sin más la capacidad elemental.
+
+### Valor: la misma secuencia, con dos Power Shots
+
+| Rango | Element Full ratio | Híbrido Element II → Power II | Híbrido en hitzones elementales ≥25 | Partes que ganan: Full → híbrido |
+|---|---:|---:|---:|---:|
+| LR | 0,777 | 0,821 | 0,847 | 0 → 2 / 631 |
+| HR | 0,855 | 0,903 | 0,926 | 0 → 3 / 631 |
+| G | 0,908 | 0,959 | 0,971 | 5 → 22 / 631 |
+
+Valor se mantiene como límite superior: uptime 1,0 y Power Shot usado en cada oportunidad. Aun así, el híbrido eleva el ratio G de 0,908 a 0,959 sin alcanzar paridad media con RAW.
+
+### Capacidad 50 y límite elemental 30
+
+La matriz Guild con `--element-cap=30` reproduce casi el mismo orden y los mismos valores agregados del híbrido máximo. La caída del ratio híbrido al aplicar el cap es prácticamente nula en LR, de aproximadamente 0,0003 en HR y nula a tres decimales en G. Esto indica que las armas/candidatos que ganan la comparación no dependen, en promedio, de los valores naturales superiores a 30 para que funcione el relevo de coatings. No significa que el cap sea inocuo para cada rama individual; sí que no invalida la conclusión de esta matriz.
+
+### Coste de habilidades: no confundir el techo con una build barata
+
+El híbrido máximo conserva Element Full y añade Power C+ a +15 puntos y una línea adicional cuando el arco no trae Power Coat II de fábrica. Si tampoco tiene Element Coat II, el paquete elemental ya incorpora Elem C+ a +15. Es una inversión de habilidades relevante y desigual entre armas.
+
+Por eso el híbrido máximo no debe ser la única variante que usemos para decidir el balance. La siguiente variante económica conserva el nivel II cuando es nativo, usa nivel I si el arco lo ofrece y desbloquea solo nivel I con +10 cuando no tiene coating nativo. Los multiplicadores de nivel I son ×1,35 frente a ×1,50 de nivel II. Su matriz todavía debe validarse por separado antes de comparar sus ganadores y costes reales.
+
+### Qué significa para el rebalance
+
+1. No aprobar todavía aumentos grandes de valores elementales base: el relevo de coating explica una parte importante de la brecha observada en el primer análisis.
+2. Mantener la variante de Element Coat 50 como sensibilidad, no como solución principal: su ganancia adicional es pequeña frente a usar Power Coat después.
+3. Comparar el híbrido máximo y el económico con presupuestos de habilidad equiparables; el híbrido máximo puede gastar +15 puntos en Power C+ por arma.
+4. Medir en juego los segundos/frames de cambiar y aplicar coating, los menús y la oportunidad perdida. Hasta esa medición, `--coating-switch-shots=0` es un techo y 1–2 son solo sensibilidades.
+5. No cambiar Abanico ni sus valores. Los resultados por tipo siguen siendo una matriz teórica por parte; la dispersión de las flechas y el riesgo de combate cercano no se simulan aquí.
+
 ## Diferencia entre los paquetes elementales
 
 Element Focus sacrifica el potenciador del tipo de flecha en su componente físico para mantener solo cinco líneas principales; su rendimiento es mucho peor. En Guild, sus ratios agregados base son 0,588 LR, 0,648 HR y 0,691 G. Element Core y Element Full, que conservan el potenciador del tipo de flecha, funcionan mejor. Esto respalda mantener la habilidad del tipo de flecha en la build elemental cuando el presupuesto de habilidades lo permite.
@@ -69,7 +114,7 @@ En el resumen por monstruo (mejor parte de cada monstruo, no el agregado de toda
 1. Mantener intactos los valores base originales por ahora y medir el cap 30 como escenario aparte. El inventario mostró que el cap reduciría el total de los valores naturales un 4,06 %, pero afectaría a 11 de las 55 líneas terminales.
 2. No aprobar A ni B como solución final: la mejora observada en la línea base es demasiado pequeña frente a la diferencia que debe cerrarse.
 3. No tratar la capacidad 50 de Element Coat como solución completa: en esta matriz la mejora agregada es pequeña.
-4. Revisar el reparto del coating a lo largo de una misión: Elemental y Power Coating no tienen la misma capacidad, y un modelo más realista debe declarar explícitamente si permite cambiar de revestimiento cuando se agota el Element Coat y cómo cobra el tiempo de cambio.
+4. La secuencia Element Coat → Power Coat ya está modelada y mejora de forma sustancial el índice elemental. Antes de convertirla en una premisa de balance, validar el coste real de transición y comparar la versión máxima con la económica.
 5. Optimizar builds con presupuestos reales comparables de habilidades/ranuras antes de convertir índices en cambios de stats.
 6. Desglosar por elemento, tipo, rango y familias con RAW/elemento extremo. La progresión compartida y las bifurcaciones deben mantenerse; no se escalan los 735 niveles linealmente.
 7. Repetir el resultado con el cap 30 en la matriz Guild y comparar con esta línea base. No usar la media global para ocultar ramas concretas.
