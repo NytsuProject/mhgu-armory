@@ -195,7 +195,13 @@ test('real hitzone matrix compares catalogue RAW and elemental candidates by mon
   const g = result.results.find(row => row.rank === 'G');
   assert.equal(g.monster, 'Monstruo de prueba');
   assert.equal(g.partsEvaluated, 2);
-  assert.equal(g.partStats.scenarios.base.elementalFull.length, 2);
+  // Only the head has an Ice hitzone; the wing's Dragon 45 does not
+  // qualify for this Ice bow's elemental matchup distribution.
+  assert.equal(g.partStats.scenarios.base.elementalFull.length, 1);
+  assert.deepEqual(
+    g.partStats.scenarios.base.elementalFull.map(stat => stat.part),
+    ['Cabeza'],
+  );
   assert.ok(g.partStats.byShotType.Rapid.base.elementalFull.length > 0);
   assert.equal(g.parts, undefined);
   assert.ok(g.scenarios.base.raw);
