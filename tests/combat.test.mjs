@@ -19,6 +19,7 @@ test('base, umbrales, zona débil, rendimientos negativos y tope',()=>{
 test('elemento doble, estado no elemental y afinidad caótica separada',()=>{
   const w={...weapon,ele:[['Fuego','Fire',20],['Parálisis','Paralysis',10]]};
   assert.deepEqual(calc({'Fire Atk':15},w).attributes,['Fuego 28 (arma: 20)','Parálisis 10']);
+  assert.deepEqual(calc({Elemental:10,'Fire Atk':15},w).attributes,['Fuego 30 (arma: 20)','Parálisis 10']);
   const c=calc({}, {...weapon,tree:123});assert.equal(c.affinity,'-45% / 20%');assert.equal(c.potential,'80%');
 });
 test('arma compartida: clase, árbol, nivel, ranuras locales y compatibilidad con armadura',()=>{
