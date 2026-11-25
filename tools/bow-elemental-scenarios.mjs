@@ -99,14 +99,17 @@ function skillCost(weapon, requiresLoadUp) {
     skills: 6 + Number(!nativePower2) + Number(requiresLoadUp),
     powerUnlock, loadUp,
   };
+  // Element Core keeps the same six core skill lines as RAW and retains Attack +3.
+  // It trades Critical Boost / Ammo Saver for Critical Element / element +2.
   const elementLite = {
-    points: 20 + 10 + 10 + 10 + 15 + 10 + elementUnlock + loadUp,
+    points: 20 + 20 + 10 + 10 + 10 + 15 + elementUnlock + loadUp,
     skills: 6 + Number(!nativeElement2) + Number(requiresLoadUp),
     elementUnlock, loadUp,
   };
+  // Full adds Ammo Saver and general Elemental +1 (two extra skill lines).
   const elementFull = {
-    points: elementLite.points + 10,
-    skills: elementLite.skills + 1,
+    points: elementLite.points + 10 + 10,
+    skills: elementLite.skills + 2,
     elementUnlock, loadUp,
   };
   return { raw, elementLite, elementFull };
@@ -169,7 +172,7 @@ export function calculateShot(options) {
   const normalCrit = expectedCriticalMultiplier(affinity, 1.25);
   const physicalBase = (rawTrue * rawCharge * distance * shotUp
     * (mvSum / 100) * (matchup.shotHz / 100) * reliability);
-  const physicalElemBuildBase = (rawWithoutAttack * rawCharge * distance * shotUp
+  const physicalElemBuildBase = (rawTrue * rawCharge * distance * shotUp
     * (mvSum / 100) * (matchup.shotHz / 100) * reliability);
   const rawNoCoat = physicalBase * rawCrit;
   const rawPowerCoated = rawNoCoat * 1.50;
@@ -189,22 +192,25 @@ export function calculateShot(options) {
   const elemLiteCoated = elemLiteNoCoat * 1.50;
   const elemFullCoated = elemFullNoCoat * 1.50;
 
-  const expectedUses = (capacity, combineBonus) =>
-    (capacity + combineBonus) / (1 - ammoSaverChance);
+  const expectedUses = (capacity, combineBonus, saverChance) =>
+    (capacity + combineBonus) / (1 - saverChance);
   const uptime = (uses) => clamp(uses / missionShots, 0, 1);
-  const powerUses = expectedUses(50, 20);
-  const elementUsesNow = expectedUses(elementCoatingCapacity, 10);
-  const elementUsesProposed = expectedUses(50, 10);
+  const powerUses = expectedUses(50, 20, ammoSaverChance);
+  const elementUsesCoreNow = expectedUses(elementCoatingCapacity, 10, 0);
+  const elementUsesCoreProposed = expectedUses(50, 10, 0);
+  const elementUsesFullNow = expectedUses(elementCoatingCapacity, 10, ammoSaverChance);
+  const elementUsesFullProposed = expectedUses(50, 10, ammoSaverChance);
   const missionAverage = (base, coated, ratio) => base + (coated - base) * ratio;
   const rawMissionAverage = missionAverage(rawBuildNoCoat, rawBuildPowerCoated, uptime(powerUses));
+  // Element Core has Attack +3 but no Ammo Saver; Full adds Ammo Saver and Elemental +1.
   const liteMissionNow = missionAverage(elemPhysicalNoCoat + elemLiteNoCoat,
-    elemPhysicalNoCoat + elemLiteCoated, uptime(elementUsesNow));
+    elemPhysicalNoCoat + elemLiteCoated, uptime(elementUsesCoreNow));
   const liteMissionProposed = missionAverage(elemPhysicalNoCoat + elemLiteNoCoat,
-    elemPhysicalNoCoat + elemLiteCoated, uptime(elementUsesProposed));
+    elemPhysicalNoCoat + elemLiteCoated, uptime(elementUsesCoreProposed));
   const fullMissionNow = missionAverage(elemPhysicalNoCoat + elemFullNoCoat,
-    elemPhysicalNoCoat + elemFullCoated, uptime(elementUsesNow));
+    elemPhysicalNoCoat + elemFullCoated, uptime(elementUsesFullNow));
   const fullMissionProposed = missionAverage(elemPhysicalNoCoat + elemFullNoCoat,
-    elemPhysicalNoCoat + elemFullCoated, uptime(elementUsesProposed));
+    elemPhysicalNoCoat + elemFullCoated, uptime(elementUsesFullProposed));
 
   return {
     shotType: shot, shotLevel, slot: slotIndex + 1, charge,
@@ -233,11 +239,15 @@ export function calculateShot(options) {
       powerSkillPoints: skillCosts.raw.powerUnlock,
       elementSkillPoints: skillCosts.elementLite.elementUnlock,
       powerExpectedUses: round(powerUses),
-      elementExpectedUsesCurrent: round(elementUsesNow),
-      elementExpectedUsesCapacity50: round(elementUsesProposed),
+      elementCoreExpectedUsesCurrent: round(elementUsesCoreNow),
+      elementCoreExpectedUsesCapacity50: round(elementUsesCoreProposed),
+      elementFullExpectedUsesCurrent: round(elementUsesFullNow),
+      elementFullExpectedUsesCapacity50: round(elementUsesFullProposed),
       powerUptime: round(uptime(powerUses)),
-      elementUptimeCurrent: round(uptime(elementUsesNow)),
-      elementUptimeCapacity50: round(uptime(elementUsesProposed)),
+      elementCoreUptimeCurrent: round(uptime(elementUsesCoreNow)),
+      elementCoreUptimeCapacity50: round(uptime(elementUsesCoreProposed)),
+      elementFullUptimeCurrent: round(uptime(elementUsesFullNow)),
+      elementFullUptimeCapacity50: round(uptime(elementUsesFullProposed)),
       missionShots,
       ammoSaverChance,
     },
