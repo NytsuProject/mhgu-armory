@@ -174,6 +174,55 @@ test('matrix enumerates every elemental slot and synthetic matchup', () => {
   assert.ok(summary.every(row => row.bestLite.skillCosts.raw.points >= 70));
 });
 
+test('elemental hybrid spends Element Coat first, then Power Coat on physical damage', () => {
+  const row = calculateShot({
+    weapon, charge: 'Rapid Lv4', matchup, slotIndex: 2,
+    missionShots: 100,
+  });
+  assert.equal(row.coatings.hybridCurrentElementShots, 30);
+  assert.equal(row.coatings.hybridCurrentPowerShots, 70);
+  assert.equal(row.coatings.hybridCurrentSwitchShots, 0);
+  assert.equal(row.skillCosts.elementHybrid.powerUnlock, 0);
+  assert.equal(row.skillCosts.elementHybrid.points, row.skillCosts.elementFull.points);
+  assert.ok(row.elementHybridMissionCurrent > row.elementFullMissionCurrent);
+});
+
+test('coating switch cost reduces Power Coat coverage and accepts shot-equivalent sensitivity', () => {
+  const freeSwitch = calculateShot({
+    weapon, charge: 'Rapid Lv4', matchup, slotIndex: 2,
+    missionShots: 100, coatingSwitchShots: 0,
+  });
+  const oneShotSwitch = calculateShot({
+    weapon, charge: 'Rapid Lv4', matchup, slotIndex: 2,
+    missionShots: 100, coatingSwitchShots: 1,
+  });
+  assert.equal(oneShotSwitch.coatings.hybridCurrentElementShots, 30);
+  assert.equal(oneShotSwitch.coatings.hybridCurrentPowerShots, 69);
+  assert.equal(oneShotSwitch.coatings.hybridCurrentSwitchShots, 1);
+  assert.equal(
+    Number((freeSwitch.elementHybridMissionCurrent - oneShotSwitch.elementHybridMissionCurrent).toFixed(4)),
+    Number((freeSwitch.elementPhysicalNoCoat * 0.5 / 100).toFixed(4)),
+  );
+  assert.throws(() => calculateShot({
+    weapon, charge: 'Rapid Lv4', matchup, coatingSwitchShots: -1,
+  }), /coatingSwitchShots/);
+});
+
+test('hybrid unlocks Power Coat II at Power C+ +15 when the bow lacks native Power II', () => {
+  const withoutNativePower2 = {
+    ...weapon,
+    x: { ...weapon.x, coatings: ['Element Coating 2'] },
+  };
+  const row = calculateShot({
+    weapon: withoutNativePower2, charge: 'Rapid Lv4', matchup, slotIndex: 2,
+  });
+  assert.equal(row.skillCosts.elementFull.powerUnlock, undefined);
+  assert.equal(row.skillCosts.elementHybrid.powerUnlock, 15);
+  assert.equal(row.skillCosts.elementHybrid.points, row.skillCosts.elementFull.points + 15);
+  assert.equal(row.skillCosts.elementHybrid.skills, row.skillCosts.elementFull.skills + 1);
+  assert.equal(row.coatings.hybridPowerExpectedUses, 70);
+});
+
 test('rejects invalid coating-uptime probabilities', () => {
   assert.throws(() => calculateShot({
     weapon, charge: 'Rapid Lv4', matchup, ammoSaverChance: 1,
@@ -229,6 +278,9 @@ test('real hitzone matrix compares catalogue RAW and elemental candidates by mon
   assert.ok(g.scenarios.base.raw);
   assert.ok(g.scenarios.base.elementalFocused);
   assert.ok(g.scenarios.base.elementalFull);
+  assert.ok(g.scenarios.base.elementalHybrid);
+  assert.ok(g.scenarios.base.elementalHybrid50);
+  assert.equal(g.scenarios.base.elementalHybrid.skillCosts.elementHybrid.powerUnlock, 0);
   // The winning slot uses C4! and includes the additional Load Up line (+10).
   assert.equal(g.scenarios.base.elementalFocused.skillCosts.elementFocused.skills, 6);
   assert.equal(g.scenarios.base.elementalFocused.skillCosts.elementFocused.points, 85);
