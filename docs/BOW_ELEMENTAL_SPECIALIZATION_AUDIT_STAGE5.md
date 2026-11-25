@@ -209,9 +209,11 @@ El mod MHGU Rebalanced indica que el «ailment modifier» afecta tanto elemento 
 
 ## 10. Protocolo de simulación y validación
 
-Cada build se comparará con un presupuesto comparable de habilidades, no con armas desnudas:
+Cada build debe compararse con un presupuesto comparable de habilidades, no con armas desnudas:
 1. Build RAW: Attack, afinidad/Punto débil, Potenciador crítico, habilidad del tipo de flecha y uso sostenible de Power Coat.
 2. Build elemental: Ataque elemental + habilidad del elemento, Crítico elemental cuando compense, acceso/revestimiento elemental y habilidad del tipo de flecha solo para el componente físico.
+
+El simulador ya añade `skillCostComparison` para cada ganador por monstruo y `skillCostDelta` en el resumen, con los puntos y líneas usados por el perfil elemental y su referencia RAW. El perfil `elementalHybridLowCost` toma como denominador `rawLowCost`, pero esa política de coating no iguala por sí sola el coste total de habilidades. Es una auditoría de umbrales, no un set final con armadura, joyas y talismán optimizados.
 3. Mismo nivel de carga, tipo de flecha, zona física y zona elemental cuando la geometría lo permita.
 4. Contabilizar número realista de impactos, coating disponible y duración de cada coating.
 5. Hitzones separados; 66 de los 93 monstruos grandes de la fuente tienen varias tablas paralelas sin etiqueta confirmada. Se utilizará la primera tabla como línea de base y no se etiquetarán las otras como enfurecido/roto sin prueba.
@@ -222,7 +224,7 @@ Objetivo de rendimiento acordado:
 - Debilidad media: elemental en paridad o ligeramente por encima.
 - Debilidad pobre: RAW debe conservar ventaja clara.
 
-No se publican porcentajes de victoria de una simulación hasta modelar correctamente los presupuestos de habilidad, acceso a coatings, impactos efectivos y las tablas múltiples de hitzones. Las comparaciones preliminares simplificadas no son una medición de DPS real y no se usarán para aprobar valores.
+Los ratios y recuentos de victoria que aparecen en las matrices son índices teóricos por parte, no una medición de DPS real ni una aprobación de nuevos valores. La matriz de hitzones usa la primera tabla disponible y supone que los impactos teóricos conectan la misma parte. Aunque ahora se informan diferencias de puntos/líneas, todavía falta optimizar builds reales con armaduras, talismanes y joyas bajo presupuestos equivalentes, y validar distribución de impactos/tiempos dentro del juego.
 
 ## 11. Abanico preservado
 
