@@ -446,6 +446,9 @@ function weaponRows(trees, options = {}) {
             ammoSaverChance: options.ammoSaverChance ?? 0.20,
             elementCoatingCapacity: options.elementCoatingCapacity ?? 20,
             rapidReliability: options.rapidReliability ?? 1,
+            style: options.style ?? 'guild',
+            powerShotUseRate: options.powerShotUseRate ?? 1,
+            trueShotUp: options.trueShotUp ?? false,
           });
           const scenarioB = calculateSequence({
             weapon, charge, matchup, slotIndex, loadUp: options.includeLoadUp,
@@ -454,6 +457,9 @@ function weaponRows(trees, options = {}) {
             ammoSaverChance: options.ammoSaverChance ?? 0.20,
             elementCoatingCapacity: options.elementCoatingCapacity ?? 20,
             rapidReliability: options.rapidReliability ?? 1,
+            style: options.style ?? 'guild',
+            powerShotUseRate: options.powerShotUseRate ?? 1,
+            trueShotUp: options.trueShotUp ?? false,
           });
           rows.push({
             rank: rankFromRarity(rarity), rarity, treeId: tree.id, treeName: tree.nameEs || tree.name,
