@@ -30,8 +30,8 @@ Opciones:
 - `--summary`: imprime un JSON resumido.
 - `--csv=RUTA`: escribe las filas detalladas en CSV (por defecto, `tools/out/bow-elemental-scenarios.csv`).
 - `--mission-shots=N`: número de descargas de referencia para la disponibilidad de revestimientos (por defecto 200).
-- `--ammo-saver-chance=0.20`: probabilidad de no consumir el revestimiento al disparar. Por defecto 0,20.
-- `--element-coat-capacity=20`: capacidad actual de Element Coat II; el reporte compara también la propuesta de 50.
+- `--ammo-saver-chance=0.20`: escenario opcional de probabilidad de devolver el revestimiento. Por defecto 0 (sin devolución asumida); al introducir un valor mayor que cero, Ammo Saver se considera equipado y su coste se suma al paquete.
+- `--element-coat-capacity=20`: capacidad usada como línea base de Element Coat II; el reporte compara también la propuesta de 50.
 - `--rapid-reliability=1`: fiabilidad supuesta de impactos de Salva. 0,90 sirve como escenario de sensibilidad, no como medición comprobada por carga.
 - `--no-load-up`: omite las cargas marcadas `!`; por defecto se incluyen con Recargando activo.
 - `--style=none|guild|adept|valor|striker|alchemy|aerial`: estilo a simular. Por defecto `guild`. Guild/Adepto generan un Power Shot; Valor genera dos; Striker/Alquimia/Aéreo no generan Power Shot.
@@ -103,17 +103,17 @@ El modelo aplica `TrueShot Up ×1,20` y el segundo Power Shot de Valor `×1,30` 
 
 Las dos bases comparten Ojo crítico +3 (+30 % afinidad), Maza (+50 % si hitzone de disparo ≥45), Ataque +3 (+20 ataque mostrado) y el potenciador del tipo de flecha. La carga marcada `!` se activa con Recargando en ambos paquetes.
 
-**RAW de referencia (seis líneas principales):** Ataque +3, Ojo crítico +3, Maza, Potenciador crítico (crítico físico ×1,40), potenciador del tipo de flecha y Ahorramunic. Usa Power Coat II; si no está disponible de forma natural, el coste incluye Power C+ a +15.
+**RAW de referencia (cinco líneas principales, sin Ammo Saver):** Ataque +3, Ojo crítico +3, Maza, Potenciador crítico (crítico físico ×1,40) y potenciador del tipo de flecha. Usa Power Coat II; si no está disponible de forma natural, el coste incluye Power C+ a +15. Ammo Saver es una sensibilidad opcional, no parte de la línea base.
 
-**Elemental Core (seis líneas principales, comparación de presupuesto):** Ataque +3, Ojo crítico +3, Maza, potenciador del tipo de flecha, Crítico elemental (×1,35 en críticos de arco) y elemento específico +2 (+10 % y +6 planos). No lleva Potenciador crítico ni Ahorramunic.; usa Element Coat II y, si no está disponible de forma natural, incluye Elem C+ a +15. Su suma de umbrales es 85 puntos antes de C+/Recargando, frente a 80 de RAW; ambos tienen seis líneas principales.
+**Elemental Core (seis líneas principales):** Ataque +3, Ojo crítico +3, Maza, potenciador del tipo de flecha, Crítico elemental (×1,35 en críticos de arco) y elemento específico +2 (+10 % y +6 planos). No lleva Potenciador crítico ni Ahorramunic.; usa Element Coat II y, si no está disponible de forma natural, incluye Elem C+ a +15. Su suma de umbrales es 85 puntos antes de C+/Recargando, frente a 70 de RAW; tiene una línea principal adicional y 15 puntos más.
 
-**Elemental Full (paquete ampliado):** añade Ahorramunic. y Elemental +1 (+10 % general) a Elemental Core. Tiene dos líneas adicionales (ocho en total) y suma 105 puntos antes de C+/Recargando. En el modelo del Builder las bonificaciones porcentuales positivas general y específica se suman hasta +20 %, y se conserva el +6 plano; el elemento mostrado se redondea hacia abajo antes del cálculo.
+**Elemental Full (paquete ampliado):** añade Elemental +1 (+10 % general) a Elemental Core. Tiene una línea adicional (siete en total) y suma 95 puntos antes de C+/Recargando. En el modelo del Builder las bonificaciones porcentuales positivas general y específica se suman hasta +20 %, y se conserva el +6 plano; el elemento mostrado se redondea hacia abajo antes del cálculo.
 
-Los costes reportados son umbrales de activación sumados y número de líneas de habilidad. No equivalen exactamente a huecos de joya ni demuestran que exista un set concreto con ese reparto. Los paquetes son benchmarks explícitos para entender las diferencias, no builds in-game probadas; los costes de desbloqueo C+ y Recargando se informan por separado.
+Los costes reportados son umbrales de activación sumados y número de líneas de habilidad. RAW base = 70 puntos / 5 líneas; Element Core = 85 / 6; Element Full = 95 / 7, antes de C+ y Recargando. Si Ammo Saver se activa con `--ammo-saver-chance=0.20`, RAW pasa a 80 / 6 y Element Full a 105 / 8; Element Core no lo equipa. No se presenta el 20 % como dato verificado: Kiranico solo habla de devolución ocasional. No equivalen exactamente a huecos de joya ni demuestran que exista un set concreto con ese reparto. Los paquetes son benchmarks explícitos para entender las diferencias, no builds in-game probadas; los costes de desbloqueo C+ y Recargando se informan por separado.
 
 ## Fórmulas y límites
 
-**RAW:** el índice suma MV físicos por cada flecha, multiplica por RAW verdadero (ataque mostrado del arco / 1,2), multiplicador RAW de carga, distancia crítica ×1,5, potenciador del tipo de flecha, hitzone de disparo, afinidad promedio con Potenciador crítico y revestimiento Power Coat II ×1,5.
+**RAW:** el índice suma MV físicos por cada flecha, multiplica por RAW verdadero (ataque mostrado del arco / 1,2), multiplicador RAW de carga, distancia crítica ×1,5, potenciador del tipo de flecha, hitzone de disparo, afinidad promedio con Potenciador crítico y revestimiento Power Coat II ×1,5. Power Coat II multiplica **solo el componente físico**; el elemento innato del arco se suma aparte y no recibe ese ×1,5.
 
 **Elemento:** el elemento verdadero (valor mostrado /10) se multiplica por elemento tras habilidades, multiplicador elemental de carga, hitzone elemental, número de impactos y afinidad promedio cuando Crítico elemental está activo. El revestimiento Element Coat II aplica ×1,5. Los MV físicos no se utilizan en el componente elemental.
 
@@ -125,7 +125,7 @@ El modelo usa los MV publicados para MHXX/MHGen:
 
 Los modificadores de carga elemental de base, A y B son los definidos en `docs/BOW_ELEMENTAL_REBALANCE_STAGE5.md`. Cuando se prueba A o B, el cambio se aplica tanto al elemento innato de la build RAW como a la build elemental: el multiplicador del juego es global, no un bonus exclusivo de la build.
 
-**Coatings durante 200 disparos:** el modelo incluye Power Coat II (50 + 20 de combinaciones), Element Coat II actual (20 + 10) y la propuesta de Element Coat II de capacidad 50 (50 + 10). RAW y Elemental Full llevan Ahorramunic. al 20 %; Elemental Core no lo lleva para mantener seis líneas principales comparables. Por eso RAW usa stock/0,8, Elemental Core stock/1 y Elemental Full stock/0,8. El modelo pondera los disparos con y sin revestimiento; no cuenta el tiempo de recarga/combinar ni asegura el número exacto de usos.
+**Coatings durante 200 disparos:** el modelo incluye Power Coat II (50 + 20 de combinaciones), Element Coat II actual (20 + 10) y la propuesta de Element Coat II de capacidad 50 (50 + 10). La línea base no asume devolución por Ammo Saver: se usan stocks sin dividir por una probabilidad no verificada. En la sensibilidad, Ammo Saver se equipa explícitamente y se aplica la tasa introducida por CLI a RAW y Elemental Full; Element Core no lo lleva. El modelo pondera los disparos con y sin revestimiento; no cuenta el tiempo de recarga/combinar ni asegura el número exacto de usos.
 
 ## Qué no afirma esta herramienta
 
@@ -142,5 +142,5 @@ Los modificadores de carga elemental de base, A y B son los definidos en `docs/B
 - [Yet Another Weapon Guide — Bow, Coating Compendium](https://docs.google.com/document/d/1vuDNCYYhNvSPHMqPwoC2cyjF-qcuXztYsipi9jUZHa0/mobilebasic) — capacidad y combinaciones de los revestimientos, además de mecánicas de estilo.
 - [Kiranico MHGU — Elem C+](https://mhgu.kiranico.com/skill/48364) y [Power C+](https://mhgu.kiranico.com/skill/40554) — umbrales de +10 / +15 para desbloquear revestimientos.
 - [MHXX: Crítico elemental](https://game8.jp/mh-xx/831012) — Bow ×1,35 en críticos elementales.
-- [MHGU: Ammo Saver](https://mhgu.kiranico.com/skill/43ae4) — habilita la devolución ocasional de revestimientos; la estimación de 20 % procede de la guía comunitaria MHGU Skill Details y se deja parametrizable.
+- [MHGU: Ammo Saver](https://mhgu.kiranico.com/skill/43ae4) — habilita la devolución ocasional de revestimientos. No se toma una tasa exacta como dato base; 20 % es una sensibilidad comunitaria y se activa explícitamente.
 - [Rapid Bow Bug explanation](https://www.reddit.com/r/MonsterHunter/comments/1brwdus) — la guía de arco de MHGU describe la pérdida potencial de impactos que coinciden en un frame; se trata como sensibilidad, no como corrección fija.
