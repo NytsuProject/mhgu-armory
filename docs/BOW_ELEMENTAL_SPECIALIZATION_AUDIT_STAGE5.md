@@ -171,7 +171,16 @@ No significa que cada arco de ese elemento sea automáticamente bueno en esos mo
 
 ## 8. Herramienta reproducible de escenarios
 
-Los slots marcados `!` requieren Recargando. Una auditoría del catálogo completo encontró 674 slots `!`: 233 ya coinciden con el tipo anterior y 441 no lo hacen. El simulador normaliza esos 441 casos solo en memoria para aplicar la regla ya acordada (conserva nivel y `!`, cambia solo el tipo al de la carga anterior), y reporta tanto el cargo fuente como el normalizado. No se ha escrito ningún cambio en `bow.json`; la corrección permanente sigue pendiente de una revisión y una etapa de datos separada.
+Los slots marcados `!` requieren Recargando. Una auditoría del catálogo completo encontró 674 slots `!`: 233 ya coinciden con el tipo anterior y 441 no lo hacen.
+
+| Rango | Slots `!` | Coinciden | Necesitan alinear el tipo |
+|---|---:|---:|---:|
+| LR | 286 | 99 | 187 |
+| HR | 170 | 53 | 117 |
+| G | 218 | 81 | 137 |
+| **Total** | **674** | **233** | **441** |
+
+De los 674 slots, 656 son slot 4 (C4) y 18 son slot 3. El simulador normaliza esos 441 casos solo en memoria para aplicar la regla ya acordada (conserva nivel y `!`, cambia solo el tipo al de la carga anterior), y reporta tanto el cargo fuente como el normalizado. No se ha escrito ningún cambio en `bow.json`; la corrección permanente sigue pendiente de una revisión y una etapa de datos separada.
 
 Se añadió `tools/bow-elemental-scenarios.mjs` y su prueba `tests/bow-elemental-scenarios.test.mjs`. La herramienta recorre los niveles elementales de `bow.json`, calcula los cuatro tipos de flecha y slots C1–C4, y compara tres escenarios elementales (base, A y B). Ahora evalúa secuencias con estilos `none`, Guild, Adepto, Valor, Striker, Alquimia y Aéreo: Guild/Adepto incluyen un Power Shot; Valor, dos (el segundo con +30 % RAW provisional); los otros estilos no. El seguimiento usa el slot siguiente y requiere Recargando si el slot lleva `!`. Hay cuatro perfiles de hitzone sintéticos: favorable (disparo 45 / elemento 30), medio (45 / 15), pobre (45 / 5) y zona elemental sin Maza (35 / 30).
 
