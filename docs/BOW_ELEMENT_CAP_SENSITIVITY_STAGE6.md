@@ -15,7 +15,26 @@ El catálogo contiene 735 registros de nivel en 107 segmentos de árbol. Al reco
 | G | 108 | 9 | 1 | 40 | 17,54 |
 | **Total** | **368** | **30** | **7** | **60** | — |
 
-Un tope global de 30 afectaría al 8,2 % de los registros de nivel elementales, pero su impacto no se distribuye uniformemente: **11 de las 55 líneas terminales elementales naturales superan 30**. Los valores más extremos son:
+Un tope global de 30 afectaría al 8,2 % de los registros de nivel elementales, pero su impacto no se distribuye uniformemente: **11 de las 55 líneas terminales elementales naturales superan 30**.
+
+Al aplicar el cap como cálculo de sensibilidad a los 368 registros naturales, la suma de valores baja de 6.865 a 6.586: una reducción global de **4,06 %**. La media cae de 18,65 a 17,90. Por rango, la reducción del total de valor elemental es LR **4,26 %**, HR **5,82 %** y G **2,11 %**. Esto muestra que el efecto porcentual agregado es moderado, pero se concentra en algunas ramas y etapas muy concretas.
+
+Las 11 líneas terminales naturales afectadas son:
+| Arco terminal | Elemento | Valor actual | Rango |
+|---|---|---:|---|
+| Arko Du amarillo | Rayo | 34 | LR |
+| Arko Du blanco | Hielo | 33 | LR |
+| Arco de pelaje | Hielo | 32 | LR |
+| Aliento celestial | Hielo | 60 | LR |
+| Supersónico | Rayo | 33 | LR |
+| Maná elíseo | Agua | 32 | LR |
+| Arpa acuaballo | Agua | 60 | HR |
+| Hecate Claroluna | Fuego | 32 | HR |
+| Victoria laureada | Dragón | 35 | G |
+| Arco vals ígneo | Fuego | 31 | G |
+| Firmamento lejano | Agua | 40 | G |
+
+Los valores más extremos son:
 
 | Arco terminal | Elemento | Valor actual | RAW mostrado | Rango |
 |---|---|---:|---:|---|
@@ -32,7 +51,7 @@ El simulador admite el parámetro opcional en `calculateShot`, `runMatrix` y `ru
 
 ```bash
 node tools/bow-elemental-scenarios.mjs --element-cap=30 --summary
-node tools/bow-elemental-scenarios.mjs --hitzones=data/research/mhgu-hitzones.js --style=guild --element-cap=30 --monster-summary
+node tools/bow-elemental-scenarios.mjs --hitzones=/ruta/a/hitzones.js --style=guild --element-cap=30 --monster-summary
 ```
 
 - Se limita solo el elemento natural mostrado del arma: `effectiveElementValue = min(valor de catálogo, límite)`.
