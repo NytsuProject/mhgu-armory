@@ -331,17 +331,37 @@ export function calculateShot(options) {
   // animation duration. Power Coat boosts only the physical component.
   const sequentialHybridAverage = (elementBase, elementCoated, elementUses, powerCoatingMultiplier = 1.50) => {
     const elementShots = Math.min(elementUses, missionShots);
-    const switchShots = elementShots > 0 && powerUses > 0 && elementShots < missionShots
-      ? Math.min(coatingSwitchShots, missionShots - elementShots) : 0;
-    const powerShots = Math.min(powerUses,
-      Math.max(0, missionShots - elementShots - switchShots));
+    let remainingShots = Math.max(0, missionShots - elementShots);
+    let switchShots = 0;
+
+    // Phase 1: Element Coat boosts only the element.
+    // Phase 2: Power Coat boosts only RAW after the elemental stack expires.
+    const switchToPower = elementShots > 0 && powerUses > 0 && remainingShots > 0
+      ? Math.min(coatingSwitchShots, remainingShots) : 0;
+    switchShots += switchToPower;
+    remainingShots -= switchToPower;
+    const powerShots = Math.min(powerUses, remainingShots);
+    remainingShots -= powerShots;
+
+    // Seregios bows carry a special Close Range coating boost equivalent to
+    // +50% RAW. It is a third physical-only phase after Power Coat is spent.
+    const switchToCloseRange = hasCloseRangeBoost && closeRangeBoostUses > 0 && remainingShots > 0
+      ? Math.min(coatingSwitchShots, remainingShots) : 0;
+    switchShots += switchToCloseRange;
+    remainingShots -= switchToCloseRange;
+    const closeRangeShots = Math.min(closeRangeBoostUses, remainingShots);
+    remainingShots -= closeRangeShots;
+
     // A switch shot-equivalent is a missed attack window: remove its entire
     // uncoated baseline as well as the coating coverage that cannot be used.
     const activeShotShare = (missionShots - switchShots) / missionShots;
     const damage = (elemPhysicalNoCoat + elementBase) * activeShotShare
       + (elementCoated - elementBase) * (elementShots / missionShots)
-      + (elemPhysicalNoCoat * (powerCoatingMultiplier - 1)) * (powerShots / missionShots);
-    return { damage, elementShots, powerShots, switchShots, activeShotShare };
+      + (elemPhysicalNoCoat * (powerCoatingMultiplier - 1)) * (powerShots / missionShots)
+      + (elemPhysicalNoCoat * (1.50 - 1)) * (closeRangeShots / missionShots);
+    return {
+      damage, elementShots, powerShots, closeRangeShots, switchShots, activeShotShare,
+    };
   };
   const hybridCurrent = sequentialHybridAverage(elemFullNoCoat,
     elemFullCoated, elementUsesFullNow);
@@ -438,18 +458,22 @@ export function calculateShot(options) {
       hybridPowerExpectedUses: round(powerUses),
       hybridCurrentElementShots: round(hybridCurrent.elementShots),
       hybridCurrentPowerShots: round(hybridCurrent.powerShots),
+      hybridCurrentCloseRangeBoostedShots: round(hybridCurrent.closeRangeShots),
       hybridCurrentSwitchShots: round(hybridCurrent.switchShots),
       hybridCurrentActiveShotShare: round(hybridCurrent.activeShotShare),
       hybridCapacity50ElementShots: round(hybridCapacity50.elementShots),
       hybridCapacity50PowerShots: round(hybridCapacity50.powerShots),
+      hybridCapacity50CloseRangeBoostedShots: round(hybridCapacity50.closeRangeShots),
       hybridCapacity50SwitchShots: round(hybridCapacity50.switchShots),
       hybridCapacity50ActiveShotShare: round(hybridCapacity50.activeShotShare),
       hybridLowCostCurrentElementShots: round(hybridLowCostCurrent.elementShots),
       hybridLowCostCurrentPowerShots: round(hybridLowCostCurrent.powerShots),
+      hybridLowCostCurrentCloseRangeBoostedShots: round(hybridLowCostCurrent.closeRangeShots),
       hybridLowCostCurrentSwitchShots: round(hybridLowCostCurrent.switchShots),
       hybridLowCostCurrentActiveShotShare: round(hybridLowCostCurrent.activeShotShare),
       hybridLowCostCapacity50ElementShots: round(hybridLowCostCapacity50.elementShots),
       hybridLowCostCapacity50PowerShots: round(hybridLowCostCapacity50.powerShots),
+      hybridLowCostCapacity50CloseRangeBoostedShots: round(hybridLowCostCapacity50.closeRangeShots),
       hybridLowCostCapacity50SwitchShots: round(hybridLowCostCapacity50.switchShots),
       hybridLowCostCapacity50ActiveShotShare: round(hybridLowCostCapacity50.activeShotShare),
       coatingSwitchShots,
