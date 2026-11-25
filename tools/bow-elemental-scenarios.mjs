@@ -548,127 +548,204 @@ export function runMonsterMatrix(database, monsterData, options = {}) {
     candidates.filter(candidate => candidate.rank === rank)
   ]));
   const scenarios = [
-    { id: 'base', multipliers: ELEMENT_CHARGE.base },
-    { id: 'A', multipliers: ELEMENT_CHARGE.A },
-    { id: 'B', multipliers: ELEMENT_CHARGE.B },
+    { id: "base", multipliers: ELEMENT_CHARGE.base },
+    { id: "A", multipliers: ELEMENT_CHARGE.A },
+    { id: "B", multipliers: ELEMENT_CHARGE.B },
   ];
+  const shotTypes = ["Rapid", "Pierce", "Spread", "Heavy"];
+  const profileKeys = ["elementalLite", "elementalFull", "elementalLite50", "elementalFull50"];
   const byRankMonster = [];
-  const largeMonsters = (monsterData.monsters || []).filter((monster) => monster.large);
+  const largeMonsters = (monsterData.monsters || []).filter(monster => monster.large);
 
-  for (const rank of ['LR', 'HR', 'G']) {
+  const makeBestSet = () => Object.fromEntries(scenarios.map(({ id }) => [id, {
+    raw: null,
+    elementalLite: null,
+    elementalFull: null,
+    elementalLite50: null,
+    elementalFull50: null,
+  }]));
+
+  const finalizeBestSet = (bestSet) => {
+    for (const scenario of scenarios) {
+      const result = bestSet[scenario.id];
+      const rawDamage = result.raw?.damage || 0;
+      for (const key of profileKeys) {
+        const selected = result[key];
+        result[key] = selected && rawDamage > 0
+          ? {
+            ...selected,
+            vsRaw: round(selected.damage / rawDamage),
+            rawWeapon: result.raw.weapon,
+            rawTree: result.raw.tree,
+            rawLevel: result.raw.level,
+            rawCharge: result.raw.charge,
+            rawPart: result.raw.part,
+            rawDamage: result.raw.damage,
+          }
+          : selected ? { ...selected, vsRaw: null } : null;
+      }
+    }
+  };
+
+  const recordCandidate = (current, row, info) => {
+    if (!current.raw || row.rawMissionAverage > current.raw.damage) {
+      current.raw = { ...info, damage: row.rawMissionAverage };
+    }
+    if (!row.element || row.elementHz <= 0) return;
+    const choices = [
+      ["elementalLite", row.elementLiteMissionCurrent],
+      ["elementalFull", row.elementFullMissionCurrent],
+      ["elementalLite50", row.elementLiteMissionCapacity50],
+      ["elementalFull50", row.elementFullMissionCapacity50],
+    ];
+    for (const [key, damage] of choices) {
+      if (!current[key] || damage > current[key].damage) {
+        current[key] = { ...info, damage };
+      }
+    }
+  };
+
+  const chooseBestComparison = (partRows, scenarioId, key) => {
+    const eligible = partRows
+      .map(partRow => partRow.scenarios[scenarioId][key])
+      .filter(row => Number.isFinite(row?.vsRaw));
+    if (!eligible.length) return null;
+    return eligible.reduce((best, row) => !best || row.vsRaw > best.vsRaw ? row : best, null);
+  };
+
+  const chooseBestRaw = (partRows, scenarioId) => {
+    const eligible = partRows
+      .map(partRow => partRow.scenarios[scenarioId].raw)
+      .filter(row => Number.isFinite(row?.damage));
+    if (!eligible.length) return null;
+    return eligible.reduce((best, row) => !best || row.damage > best.damage ? row : best, null);
+  };
+
+  for (const rank of ["LR", "HR", "G"]) {
     for (const monster of largeMonsters) {
       const parts = monster.tables?.[0] || [];
-      const makeBestSet = () => Object.fromEntries(scenarios.map(({ id }) => [id, {
-        raw: null, elementalLite: null, elementalFull: null,
-        elementalLite50: null, elementalFull50: null,
-      }]));
-      const best = makeBestSet();
-      const bestByShotType = Object.fromEntries(
-        ["Rapid", "Pierce", "Spread", "Heavy"].map(type => [type, makeBestSet()])
-      );
-      for (const part of parts) {
+      const partRows = [];
+
+      for (const [partIndex, part] of parts.entries()) {
         const shotHz = Number(part[4]) || 0;
+        const partName = part[1] || ("Parte " + (part[0] ?? partIndex));
+        const best = makeBestSet();
+        const bestByShotType = Object.fromEntries(
+          shotTypes.map(type => [type, makeBestSet()])
+        );
+
         for (const candidate of candidatesByRank[rank]) {
           const element = elementOf(candidate.weapon);
           const elementHz = element ? (Number(part[ELEMENT_INDEX[element.type]]) || 0) : 0;
           const matchup = { shotHz, elementHz };
+
           for (const scenario of scenarios) {
             const row = calculateSequence({
-              weapon: candidate.weapon, charge: candidate.charge, matchup,
-              slotIndex: candidate.slotIndex, loadUp: options.includeLoadUp ?? true,
+              weapon: candidate.weapon,
+              charge: candidate.charge,
+              matchup,
+              slotIndex: candidate.slotIndex,
+              loadUp: options.includeLoadUp ?? true,
               elementCharge: scenario.multipliers,
               missionShots: options.missionShots ?? 200,
               ammoSaverChance: options.ammoSaverChance ?? 0,
               ammoSaverEnabled: options.ammoSaverEnabled ?? (options.ammoSaverChance > 0),
               elementCoatingCapacity: options.elementCoatingCapacity ?? 20,
               rapidReliability: options.rapidReliability ?? 1,
-              style: options.style ?? 'guild',
+              style: options.style ?? "guild",
               powerShotUseRate: options.powerShotUseRate ?? 1,
               valorStateUptime: options.valorStateUptime ?? 1,
               trueShotUp: options.trueShotUp ?? false,
             });
             if (!row) continue;
+
             const info = {
-              weapon: candidate.weaponName, tree: candidate.treeId,
-              level: candidate.level, charge: candidate.charge,
+              weapon: candidate.weaponName,
+              tree: candidate.treeId,
+              level: candidate.level,
+              charge: candidate.charge,
               catalogueCharge: candidate.sourceCharge,
               loadUpTypeCorrected: candidate.loadUpTypeCorrected,
-              slot: candidate.slotIndex + 1, shotType: row.shotType,
-              shotLevel: row.shotLevel, part: part[1] || `Parte ${part[0]}`,
-              style: row.style, powerShotCount: row.powerShotCount,
+              slot: candidate.slotIndex + 1,
+              shotType: row.shotType,
+              shotLevel: row.shotLevel,
+              part: partName,
+              partIndex,
+              style: row.style,
+              powerShotCount: row.powerShotCount,
               powerShotUseRate: row.powerShotUseRate,
               valorStateUptime: row.valorStateUptime,
               effectivePowerShotUseRate: row.effectivePowerShotUseRate,
               powerShotCharge: row.powerShotCharge,
-              powerShotSlot: row.powerShotSlot, breakdown: row.breakdown,
-              shotHz, elementHz: element ? elementHz : 0,
+              powerShotSlot: row.powerShotSlot,
+              breakdown: row.breakdown,
+              shotHz,
+              elementHz: element ? elementHz : 0,
               element: element?.type || null,
               skillCosts: row.skillCosts,
             };
-            // Preserve the overall winner and also rank candidates within the same
-            // shot type. This prevents a globally dominant spread shot from hiding
-            // the balance of Rapid, Pierce, or Heavy bows.
-            const targets = [best[scenario.id], bestByShotType[row.shotType][scenario.id]];
-            for (const current of targets) {
-              if (!current.raw || row.rawMissionAverage > current.raw.damage) {
-                current.raw = { ...info, damage: row.rawMissionAverage };
-              }
-              if (element && elementHz > 0) {
-                const choices = [
-                  ['elementalLite', row.elementLiteMissionCurrent],
-                  ['elementalFull', row.elementFullMissionCurrent],
-                  ['elementalLite50', row.elementLiteMissionCapacity50],
-                  ['elementalFull50', row.elementFullMissionCapacity50],
-                ];
-                for (const [key, damage] of choices) {
-                  if (!current[key] || damage > current[key].damage) {
-                    current[key] = { ...info, damage };
-                  }
-                }
-              }
-            }
+
+            recordCandidate(best[scenario.id], row, info);
+            recordCandidate(bestByShotType[row.shotType][scenario.id], row, info);
+          }
+        }
+
+        finalizeBestSet(best);
+        for (const type of shotTypes) finalizeBestSet(bestByShotType[type]);
+        partRows.push({
+          partIndex,
+          part: partName,
+          shotHz,
+          scenarios: best,
+          byShotType: bestByShotType,
+        });
+      }
+
+      // The summary winner for each profile is selected by elemental/RAW ratio
+      // only after both candidates have been evaluated on the exact same part.
+      // The full part breakdown remains available for analysis and auditing.
+      const best = makeBestSet();
+      const bestByShotType = Object.fromEntries(
+        shotTypes.map(type => [type, makeBestSet()])
+      );
+
+      for (const scenario of scenarios) {
+        best[scenario.id].raw = chooseBestRaw(partRows, scenario.id);
+        for (const key of profileKeys) {
+          best[scenario.id][key] = chooseBestComparison(partRows, scenario.id, key);
+        }
+
+        for (const type of shotTypes) {
+          const typedRows = partRows.map(partRow => ({
+            scenarios: partRow.byShotType[type],
+          }));
+          bestByShotType[type][scenario.id].raw = chooseBestRaw(typedRows, scenario.id);
+          for (const key of profileKeys) {
+            bestByShotType[type][scenario.id][key] = chooseBestComparison(typedRows, scenario.id, key);
           }
         }
       }
-      const finalizeBestSet = (bestSet) => {
-        for (const scenario of scenarios) {
-          const result = bestSet[scenario.id];
-          const rawDamage = result.raw?.damage || 0;
-          for (const key of ['elementalLite', 'elementalFull', 'elementalLite50', 'elementalFull50']) {
-            result[key] = result[key] && rawDamage > 0
-              ? {
-                ...result[key],
-                vsRaw: round(result[key].damage / rawDamage),
-                rawWeapon: result.raw.weapon,
-                rawTree: result.raw.tree,
-                rawLevel: result.raw.level,
-                rawCharge: result.raw.charge,
-                rawPart: result.raw.part,
-                rawDamage: result.raw.damage,
-              }
-              : result[key] ? { ...result[key], vsRaw: null } : null;
-          }
-        }
-      };
-      finalizeBestSet(best);
-      for (const type of ["Rapid", "Pierce", "Spread", "Heavy"]) {
-        finalizeBestSet(bestByShotType[type]);
-      }
+
       byRankMonster.push({
-        rank, monster: monster.name, tablesAvailable: monster.tables?.length || 0,
-        partsEvaluated: parts.length, scenarios: best,
+        rank,
+        monster: monster.name,
+        tablesAvailable: monster.tables?.length || 0,
+        partsEvaluated: parts.length,
+        scenarios: best,
         byShotType: bestByShotType,
+        parts: partRows,
       });
     }
   }
+
   return {
     metadata: {
       largeMonsters: largeMonsters.length,
       candidates: candidates.length,
       loadUpDiagnostics: loadUpDiagnostics(database),
-      ranks: ['LR', 'HR', 'G'],
-      shotTypes: ["Rapid", "Pierce", "Spread", "Heavy"],
-      hitzoneTable: 'first table only; parallel tables remain unlabelled',
+      ranks: ["LR", "HR", "G"],
+      shotTypes,
+      hitzoneTable: "first table only; parallel tables remain unlabelled",
       options: {
         includeLoadUp: options.includeLoadUp ?? true,
         missionShots: options.missionShots ?? 200,
@@ -676,17 +753,16 @@ export function runMonsterMatrix(database, monsterData, options = {}) {
         ammoSaverEnabled: options.ammoSaverEnabled ?? (options.ammoSaverChance > 0),
         elementCoatingCapacity: options.elementCoatingCapacity ?? 20,
         rapidReliability: options.rapidReliability ?? 1,
-        style: options.style ?? 'guild',
+        style: options.style ?? "guild",
         powerShotUseRate: options.powerShotUseRate ?? 1,
         valorStateUptime: options.valorStateUptime ?? 1,
         trueShotUp: options.trueShotUp ?? false,
       },
-      note: 'Catalogue-wide best same-part damage index; theoretical hits share one part; not actual DPS.',
+      note: "Each ratio compares RAW and elemental winners on the same monster part. The per-monster summary selects the part with the highest elemental-to-RAW ratio; full part-level results are retained. Theoretical hits share that part; not actual DPS.",
     },
     results: byRankMonster,
   };
 }
-
 function bestBy(rows, valueKey) {
   return rows.reduce((best, row) => !best || row[valueKey] > best[valueKey] ? row : best, null);
 }
