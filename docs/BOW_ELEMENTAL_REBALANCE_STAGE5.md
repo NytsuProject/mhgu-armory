@@ -63,10 +63,12 @@ Subir el MV físico potencia RAW, no el elemento por impacto. Hacerlo para soluc
 
 Fuente: `data/weapons/bow.json`, SHA `ec48bf9390a2eaa1123bfdea11b76bb359483b3b`.
 
-- 107 árboles, 735 niveles.
-- En las armas finales: 55 árboles con Fuego/Agua/Rayo/Hielo/Dragón; 6 con Explosión; 46 sin elemento/estado.
-- De los 55 árboles con elemento real, 51 admiten algún revestimiento de potencia y 46 algún revestimiento elemental; 43 tienen compatibilidad con ambos grupos. Esto no los convierte automáticamente en híbridos, porque los revestimientos se alternan y tienen cargas limitadas. Sí obliga a comparar la build RAW y la elemental sobre el mismo arco.
-- 24 de los 55 árboles elementales tienen Power Coating 2 y Element Coating 2 en la lista de compatibilidad final.
+- 107 segmentos de árbol y 735 registros de nivel; al reconstruir el parent graph hay 59 familias raíz y 78 ramas terminales.
+- Clasificación por arma final de cada rama: 41 elementales naturales, 33 RAW y 4 Explosión.
+- Por rango final: LR = 10 elementales / 9 RAW / 1 Explosión; HR = 17 / 13 / 0; G = 14 / 11 / 3.
+- De las 41 ramas elementales finales, 28 tienen Power Coating 2, 26 tienen Element Coating 2 y 19 tienen ambos en ese nivel. De las 33 ramas RAW, 24 conservan Power Coating 2 y ninguna Element Coating 2.
+- Solo tres familias raíz contienen ramas terminales de más de una identidad: Arco petrificado (elemental/RAW), Arco recio de cazador (elemental/RAW/Explosión) y Arco de cazador (elemental/RAW). Las bifurcaciones se deben equilibrar sin eliminar ramas ni cambiar sus padres.
+- La auditoría completa de progresión, compatibilidad de coatings a lo largo de cada ruta y los 674 slots de Recargando está en [BOW_BRANCH_PROGRESSION_AUDIT_STAGE5.md](BOW_BRANCH_PROGRESSION_AUDIT_STAGE5.md).
 
 ## Primera hipótesis de prueba para cargas
 
@@ -106,5 +108,7 @@ Abanico queda fuera de los cambios de balance de esta etapa. Se conservan sus Mo
 
 
 ## Auditoría de especialización
+
+La clasificación anterior por segmentos ha sido reemplazada por la reconstrucción de 78 ramas terminales descrita en [BOW_BRANCH_PROGRESSION_AUDIT_STAGE5.md](BOW_BRANCH_PROGRESSION_AUDIT_STAGE5.md).
 
 La investigación de fórmulas, impactos, coatings, habilidades y separación RAW/elemental está en [BOW_ELEMENTAL_SPECIALIZATION_AUDIT_STAGE5.md](BOW_ELEMENTAL_SPECIALIZATION_AUDIT_STAGE5.md). Incluye la corrección de Salva Lv5 (cuatro impactos) y la regla de preservar Abanico sin cambios. La herramienta reproducible de escenarios y su modo de comparación contra hitzones reales de 93 monstruos se documentan en [BOW_ELEMENTAL_SIMULATOR_STAGE5.md](BOW_ELEMENTAL_SIMULATOR_STAGE5.md). El comparador ahora incluye secuencias de Power Shot por estilo (Guild/Adepto/Valor), consumo de coatings por cada volea y normalización en memoria de cargas `!` según la regla de Recargando. Esta normalización no modifica `bow.json`.
