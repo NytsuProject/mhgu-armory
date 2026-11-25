@@ -160,6 +160,7 @@ export function calculateShot(options) {
   const {
     weapon, charge, matchup, elementCharge = ELEMENT_CHARGE.base,
     rapidReliability = 1, missionShots = 200, ammoSaverChance = 0,
+    ammoSaverEnabled = ammoSaverChance > 0,
     elementCoatingCapacity = 20, loadUp = false, slotIndex = 2,
     loadUpForPackage, trueShotUp = false, rawShotMultiplier = 1,
   } = options;
