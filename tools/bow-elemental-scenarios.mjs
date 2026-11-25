@@ -120,9 +120,15 @@ function shotAffinity(weapon, shotHz) {
 
 function skillCost(weapon, requiresLoadUp, trueShotUp = false, ammoSaverEnabled = false) {
   const nativePower2 = hasCoating(weapon, 'Power Coating 2');
+  const nativePower1 = hasCoating(weapon, 'Power Coating');
   const nativeElement2 = hasCoating(weapon, 'Element Coating 2');
+  const nativeElement1 = hasCoating(weapon, 'Element Coating');
   const powerUnlock = nativePower2 ? 0 : 15;
   const elementUnlock = nativeElement2 ? 0 : 15;
+  // Budget-friendly path: retain native Lv. II, otherwise use native Lv. I,
+  // and unlock only Lv. I (+10) when the bow has neither level natively.
+  const lowCostPowerUnlock = nativePower2 || nativePower1 ? 0 : 10;
+  const lowCostElementUnlock = nativeElement2 || nativeElement1 ? 0 : 10;
   const loadUp = requiresLoadUp ? 10 : 0;
   const raw = {
     points: 20 + 20 + 10 + 10 + 10 + (ammoSaverEnabled ? 10 : 0) + powerUnlock + loadUp,
@@ -154,13 +160,24 @@ function skillCost(weapon, requiresLoadUp, trueShotUp = false, ammoSaverEnabled 
     skills: elementFull.skills + Number(!nativePower2),
     elementUnlock, powerUnlock, loadUp,
   };
+  const elementHybridLowCost = {
+    points: elementFull.points - elementUnlock
+      + lowCostElementUnlock + lowCostPowerUnlock,
+    skills: elementFull.skills - Number(!nativeElement2)
+      + Number(lowCostElementUnlock > 0) + Number(lowCostPowerUnlock > 0),
+    elementUnlock: lowCostElementUnlock,
+    powerUnlock: lowCostPowerUnlock,
+    elementCoatingLevel: nativeElement2 ? 2 : 1,
+    powerCoatingLevel: nativePower2 ? 2 : 1,
+    loadUp,
+  };
   if (trueShotUp) {
-    for (const build of [raw, elementLite, elementFull, elementHybrid]) {
+    for (const build of [raw, elementLite, elementFull, elementHybrid, elementHybridLowCost]) {
       build.points += 10;
       build.skills += 1;
     }
   }
-  return { raw, elementFocused, elementLite, elementFull, elementHybrid };
+  return { raw, elementFocused, elementLite, elementFull, elementHybrid, elementHybridLowCost };
 }
 
 /**
@@ -221,7 +238,9 @@ export function calculateShot(options) {
   const reliability = shot === 'Rapid' ? clamp(rapidReliability, 0, 1) : 1;
   const weaponCoatings = weapon.x?.coatings || [];
   const hasPower2 = weaponCoatings.includes('Power Coating 2');
+  const hasPower1 = weaponCoatings.includes('Power Coating');
   const hasElement2 = weaponCoatings.includes('Element Coating 2');
+  const hasElement1 = weaponCoatings.includes('Element Coating');
   const skillCosts = skillCost(weapon, loadUpForPackage ?? parsed.requiresLoadUp, trueShotUp, ammoSaverEnabled);
   const activeAmmoSaverChance = ammoSaverEnabled ? ammoSaverChance : 0;
 
@@ -283,7 +302,7 @@ export function calculateShot(options) {
   // Sequential coating loadout: Element Coat II first, then Power Coat II.
   // The switch cost is an explicit number of shot-equivalents, not an assumed
   // animation duration. Power Coat boosts only the physical component.
-  const sequentialHybridAverage = (elementBase, elementCoated, elementUses) => {
+  const sequentialHybridAverage = (elementBase, elementCoated, elementUses, powerCoatingMultiplier = 1.50) => {
     const elementShots = Math.min(elementUses, missionShots);
     const switchShots = elementShots > 0 && powerUses > 0 && elementShots < missionShots
       ? coatingSwitchShots : 0;
@@ -291,13 +310,20 @@ export function calculateShot(options) {
       Math.max(0, missionShots - elementShots - switchShots));
     const damage = elemPhysicalNoCoat + elementBase
       + (elementCoated - elementBase) * (elementShots / missionShots)
-      + (elemPhysicalNoCoat * 0.50) * (powerShots / missionShots);
+      + (elemPhysicalNoCoat * (powerCoatingMultiplier - 1)) * (powerShots / missionShots);
     return { damage, elementShots, powerShots, switchShots };
   };
   const hybridCurrent = sequentialHybridAverage(elemFullNoCoat,
     elemFullCoated, elementUsesFullNow);
   const hybridCapacity50 = sequentialHybridAverage(elemFullNoCoat,
     elemFullCoated, elementUsesFullProposed);
+  const lowCostElementMultiplier = hasElement2 ? 1.50 : 1.35;
+  const lowCostPowerMultiplier = hasPower2 ? 1.50 : 1.35;
+  const lowCostElementCoated = elemFullNoCoat * lowCostElementMultiplier;
+  const hybridLowCostCurrent = sequentialHybridAverage(elemFullNoCoat,
+    lowCostElementCoated, elementUsesFullNow, lowCostPowerMultiplier);
+  const hybridLowCostCapacity50 = sequentialHybridAverage(elemFullNoCoat,
+    lowCostElementCoated, elementUsesFullProposed, lowCostPowerMultiplier);
 
   return {
     shotType: shot, shotLevel, slot: slotIndex + 1, charge,
@@ -336,6 +362,8 @@ export function calculateShot(options) {
     elementFullMissionCapacity50: round(fullMissionProposed),
     elementHybridMissionCurrent: round(hybridCurrent.damage),
     elementHybridMissionCapacity50: round(hybridCapacity50.damage),
+    elementHybridLowCostMissionCurrent: round(hybridLowCostCurrent.damage),
+    elementHybridLowCostMissionCapacity50: round(hybridLowCostCapacity50.damage),
     focusedMissionVsRaw: round(focusedMissionNow / rawMissionAverage),
     focusedCapacity50VsRaw: round(focusedMissionProposed / rawMissionAverage),
     liteMissionVsRaw: round(liteMissionNow / rawMissionAverage),
@@ -344,8 +372,15 @@ export function calculateShot(options) {
     fullCapacity50VsRaw: round(fullMissionProposed / rawMissionAverage),
     elementHybridMissionVsRaw: round(hybridCurrent.damage / rawMissionAverage),
     elementHybridCapacity50VsRaw: round(hybridCapacity50.damage / rawMissionAverage),
+    elementHybridLowCostMissionVsRaw: round(hybridLowCostCurrent.damage / rawMissionAverage),
+    elementHybridLowCostCapacity50VsRaw: round(hybridLowCostCapacity50.damage / rawMissionAverage),
     coatings: {
-      nativePower2: hasPower2, nativeElement2: hasElement2,
+      nativePower1: hasPower1, nativePower2: hasPower2,
+      nativeElement1: hasElement1, nativeElement2: hasElement2,
+      lowCostElementCoatingLevel: skillCosts.elementHybridLowCost.elementCoatingLevel,
+      lowCostPowerCoatingLevel: skillCosts.elementHybridLowCost.powerCoatingLevel,
+      lowCostElementMultiplier,
+      lowCostPowerMultiplier,
       powerSkillPoints: skillCosts.raw.powerUnlock,
       elementSkillPoints: skillCosts.elementLite.elementUnlock,
       powerExpectedUses: round(powerUses),
@@ -365,6 +400,12 @@ export function calculateShot(options) {
       hybridCapacity50ElementShots: round(hybridCapacity50.elementShots),
       hybridCapacity50PowerShots: round(hybridCapacity50.powerShots),
       hybridCapacity50SwitchShots: round(hybridCapacity50.switchShots),
+      hybridLowCostCurrentElementShots: round(hybridLowCostCurrent.elementShots),
+      hybridLowCostCurrentPowerShots: round(hybridLowCostCurrent.powerShots),
+      hybridLowCostCurrentSwitchShots: round(hybridLowCostCurrent.switchShots),
+      hybridLowCostCapacity50ElementShots: round(hybridLowCostCapacity50.elementShots),
+      hybridLowCostCapacity50PowerShots: round(hybridLowCostCapacity50.powerShots),
+      hybridLowCostCapacity50SwitchShots: round(hybridLowCostCapacity50.switchShots),
       coatingSwitchShots,
       missionShots,
       ammoSaverChance: activeAmmoSaverChance,
@@ -463,6 +504,8 @@ export function calculateSequence(options) {
   const fullMission50 = add('elementFullMissionCapacity50');
   const hybridMission = add('elementHybridMissionCurrent');
   const hybridMission50 = add('elementHybridMissionCapacity50');
+  const hybridLowCostMission = add('elementHybridLowCostMissionCurrent');
+  const hybridLowCostMission50 = add('elementHybridLowCostMissionCapacity50');
   const rawIndex = add('rawIndexNoCoat');
   const rawCoated = add('rawIndexPowerCoated');
   return {
@@ -489,6 +532,8 @@ export function calculateSequence(options) {
     elementFullMissionCapacity50: fullMission50,
     elementHybridMissionCurrent: hybridMission,
     elementHybridMissionCapacity50: hybridMission50,
+    elementHybridLowCostMissionCurrent: hybridLowCostMission,
+    elementHybridLowCostMissionCapacity50: hybridLowCostMission50,
     focusedMissionVsRaw: round(focusedMission / rawMissionAverage),
     focusedCapacity50VsRaw: round(focusedMission50 / rawMissionAverage),
     liteMissionVsRaw: round(liteMission / rawMissionAverage),
@@ -497,6 +542,8 @@ export function calculateSequence(options) {
     fullCapacity50VsRaw: round(fullMission50 / rawMissionAverage),
     elementHybridMissionVsRaw: round(hybridMission / rawMissionAverage),
     elementHybridCapacity50VsRaw: round(hybridMission50 / rawMissionAverage),
+    elementHybridLowCostMissionVsRaw: round(hybridLowCostMission / rawMissionAverage),
+    elementHybridLowCostCapacity50VsRaw: round(hybridLowCostMission50 / rawMissionAverage),
     arrowHits: round(sum(shots.map(shot => shot.row.arrowHits * shot.weight))),
     mvSum: round(sum(shots.map(shot => shot.row.mvSum * shot.weight))),
     skillCosts: primary.skillCosts,
@@ -554,6 +601,7 @@ function weaponRows(trees, options = {}) {
             ammoSaverChance: options.ammoSaverChance ?? 0,
             ammoSaverEnabled: options.ammoSaverEnabled ?? (options.ammoSaverChance > 0),
             elementCoatingCapacity: options.elementCoatingCapacity ?? 20,
+            coatingSwitchShots: options.coatingSwitchShots ?? 0,
             rapidReliability: options.rapidReliability ?? 1,
             style: options.style ?? 'guild',
             powerShotUseRate: options.powerShotUseRate ?? 1,
@@ -587,12 +635,16 @@ function weaponRows(trees, options = {}) {
             B_fullMissionVsRaw: scenarioB.fullMissionVsRaw,
             A_hybridMissionVsRaw: scenarioA.elementHybridMissionVsRaw,
             B_hybridMissionVsRaw: scenarioB.elementHybridMissionVsRaw,
+            A_hybridLowCostMissionVsRaw: scenarioA.elementHybridLowCostMissionVsRaw,
+            B_hybridLowCostMissionVsRaw: scenarioB.elementHybridLowCostMissionVsRaw,
             A_liteCapacity50VsRaw: scenarioA.liteCapacity50VsRaw,
             A_fullCapacity50VsRaw: scenarioA.fullCapacity50VsRaw,
             B_liteCapacity50VsRaw: scenarioB.liteCapacity50VsRaw,
             B_fullCapacity50VsRaw: scenarioB.fullCapacity50VsRaw,
             A_hybridCapacity50VsRaw: scenarioA.elementHybridCapacity50VsRaw,
             B_hybridCapacity50VsRaw: scenarioB.elementHybridCapacity50VsRaw,
+            A_hybridLowCostCapacity50VsRaw: scenarioA.elementHybridLowCostCapacity50VsRaw,
+            B_hybridLowCostCapacity50VsRaw: scenarioB.elementHybridLowCostCapacity50VsRaw,
           });
         }
       }
@@ -645,7 +697,7 @@ export function runMonsterMatrix(database, monsterData, options = {}) {
     { id: "B", multipliers: ELEMENT_CHARGE.B },
   ];
   const shotTypes = ["Rapid", "Pierce", "Spread", "Heavy"];
-  const profileKeys = ["elementalFocused", "elementalFocused50", "elementalLite", "elementalFull", "elementalLite50", "elementalFull50", "elementalHybrid", "elementalHybrid50"];
+  const profileKeys = ["elementalFocused", "elementalFocused50", "elementalLite", "elementalFull", "elementalLite50", "elementalFull50", "elementalHybrid", "elementalHybrid50", "elementalHybridLowCost", "elementalHybridLowCost50"];
   const byRankMonster = [];
   const largeMonsters = (monsterData.monsters || []).filter(monster => monster.large);
 
@@ -659,6 +711,8 @@ export function runMonsterMatrix(database, monsterData, options = {}) {
     elementalFull50: null,
     elementalHybrid: null,
     elementalHybrid50: null,
+    elementalHybridLowCost: null,
+    elementalHybridLowCost50: null,
   }]));
 
   const finalizeBestSet = (bestSet) => {
@@ -697,6 +751,8 @@ export function runMonsterMatrix(database, monsterData, options = {}) {
       ["elementalFull50", row.elementFullMissionCapacity50],
       ["elementalHybrid", row.elementHybridMissionCurrent],
       ["elementalHybrid50", row.elementHybridMissionCapacity50],
+      ["elementalHybridLowCost", row.elementHybridLowCostMissionCurrent],
+      ["elementalHybridLowCost50", row.elementHybridLowCostMissionCapacity50],
     ];
     for (const [key, damage] of choices) {
       if (!current[key] || damage > current[key].damage) {
@@ -919,6 +975,7 @@ export function summarizeRows(rows) {
     const bLite = bestBy(group, 'liteMissionVsRaw');
     const bFull = bestBy(group, 'fullMissionVsRaw');
     const bHybrid = bestBy(group, 'elementHybridMissionVsRaw');
+    const bHybridLowCost = bestBy(group, 'elementHybridLowCostMissionVsRaw');
     const bA = bestBy(group, 'A_fullMissionVsRaw');
     const bB = bestBy(group, 'B_fullMissionVsRaw');
     const bHybridA = bestBy(group, 'A_hybridMissionVsRaw');
@@ -927,6 +984,8 @@ export function summarizeRows(rows) {
     const bB50 = bestBy(group, 'B_fullCapacity50VsRaw');
     const bHybridA50 = bestBy(group, 'A_hybridCapacity50VsRaw');
     const bHybridB50 = bestBy(group, 'B_hybridCapacity50VsRaw');
+    const bHybridLowCostA = bestBy(group, 'A_hybridLowCostMissionVsRaw');
+    const bHybridLowCostB = bestBy(group, 'B_hybridLowCostMissionVsRaw');
     out.push({
       rank: first.rank, element: first.element, shotType: first.shotType, matchup: first.matchup,
       style: first.style, powerShotCount: first.powerShotCount,
@@ -939,6 +998,9 @@ export function summarizeRows(rows) {
         ratioCurrent: bFull.fullMissionVsRaw, skillCosts: bFull.skillCosts } : null,
       bestHybrid: bHybrid ? { weapon: bHybrid.weaponName, lv: bHybrid.level, slot: bHybrid.slot,
         ratioCurrent: bHybrid.elementHybridMissionVsRaw, skillCosts: bHybrid.skillCosts.elementHybrid } : null,
+      bestHybridLowCost: bHybridLowCost ? { weapon: bHybridLowCost.weaponName, lv: bHybridLowCost.level,
+        slot: bHybridLowCost.slot, ratioCurrent: bHybridLowCost.elementHybridLowCostMissionVsRaw,
+        skillCosts: bHybridLowCost.skillCosts.elementHybridLowCost } : null,
       bestScenarioA: bA ? { weapon: bA.weaponName, lv: bA.level, slot: bA.slot,
         ratio: bA.A_fullMissionVsRaw, skillCosts: bA.skillCosts } : null,
       bestScenarioB: bB ? { weapon: bB.weaponName, lv: bB.level, slot: bB.slot,
@@ -947,6 +1009,12 @@ export function summarizeRows(rows) {
         ratio: bHybridA.A_hybridMissionVsRaw, skillCosts: bHybridA.skillCosts.elementHybrid } : null,
       bestScenarioBHybrid: bHybridB ? { weapon: bHybridB.weaponName, lv: bHybridB.level, slot: bHybridB.slot,
         ratio: bHybridB.B_hybridMissionVsRaw, skillCosts: bHybridB.skillCosts.elementHybrid } : null,
+      bestScenarioALowCostHybrid: bHybridLowCostA ? { weapon: bHybridLowCostA.weaponName, lv: bHybridLowCostA.level,
+        slot: bHybridLowCostA.slot, ratio: bHybridLowCostA.A_hybridLowCostMissionVsRaw,
+        skillCosts: bHybridLowCostA.skillCosts.elementHybridLowCost } : null,
+      bestScenarioBLowCostHybrid: bHybridLowCostB ? { weapon: bHybridLowCostB.weaponName, lv: bHybridLowCostB.level,
+        slot: bHybridLowCostB.slot, ratio: bHybridLowCostB.B_hybridLowCostMissionVsRaw,
+        skillCosts: bHybridLowCostB.skillCosts.elementHybridLowCost } : null,
       bestFullCapacity50: bestBy(group, 'fullCapacity50VsRaw')
         ? bestBy(group, 'fullCapacity50VsRaw').fullCapacity50VsRaw : null,
       bestScenarioACapacity50: bA50 ? bA50.A_fullCapacity50VsRaw : null,
@@ -955,6 +1023,8 @@ export function summarizeRows(rows) {
         ? bestBy(group, 'elementHybridCapacity50VsRaw').elementHybridCapacity50VsRaw : null,
       bestScenarioAHybridCapacity50: bHybridA50 ? bHybridA50.A_hybridCapacity50VsRaw : null,
       bestScenarioBHybridCapacity50: bHybridB50 ? bHybridB50.B_hybridCapacity50VsRaw : null,
+      bestHybridLowCostCapacity50: bestBy(group, 'elementHybridLowCostCapacity50VsRaw')
+        ? bestBy(group, 'elementHybridLowCostCapacity50VsRaw').elementHybridLowCostCapacity50VsRaw : null,
     });
   }
   return out.sort((a, b) => a.rank.localeCompare(b.rank)
