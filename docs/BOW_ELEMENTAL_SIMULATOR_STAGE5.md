@@ -159,7 +159,7 @@ La variante máxima y la económica son comparaciones de umbrales de habilidad; 
 
 La capacidad 50 de Element Coat es un escenario separado: Element Coat 50 +10 se gasta primero y después se intenta usar el mismo stock Power Coat II 50 +20. En una misión de 200 descargas, las capacidades actuales modelan hasta 30 descargas elementales y 70 físicas con coating, antes de Ammo Saver. Una mejora a Element Coat 50 elevaría la primera fase a 60, no a 50, porque se modela también el +10 de combinación. Los perfiles I y II comparten estos stocks.
 
-`--coating-switch-shots=N` descuenta N descargas equivalentes durante la transición entre los coatings. El valor 0 es neutral y no afirma que cambiar sea instantáneo; 1 o 2 son sensibilidades para medir cuánto altera el resultado. No se ha fijado una duración en frames ni se descuenta una cantidad arbitraria de segundos: ese coste necesita validación in-game.
+`--coating-switch-shots=N` descuenta N oportunidades de ataque equivalentes durante la transición entre coatings. Cada oportunidad perdida aporta cero daño base y no consume coating; no se limita solo a restar N usos de Power Coat. Esto importa en Guild/Valor, donde el total de voleas esperadas puede ser mayor que los disparos primarios configurados. El valor 0 es un techo neutral y no afirma que cambiar sea instantáneo; 1 o 2 son sensibilidades para medir cuánto altera el resultado. No se ha fijado una duración en frames ni se descuenta una cantidad arbitraria de segundos: ese coste necesita validación in-game.
 
 ## Qué no afirma esta herramienta
 
