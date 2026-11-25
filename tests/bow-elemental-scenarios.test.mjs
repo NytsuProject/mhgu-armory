@@ -354,7 +354,8 @@ test('real hitzone matrix compares catalogue RAW and elemental candidates by mon
   assert.ok(g.scenarios.base.elementalHybridLowCost);
   assert.ok(g.scenarios.base.elementalHybridLowCost50);
   assert.equal(g.scenarios.base.elementalHybrid.skillCosts.elementHybrid.powerUnlock, 15);
-  assert.equal(g.scenarios.base.elementalHybridLowCost.skillCosts.elementHybridLowCost.powerUnlock, 0);
+  // The best G-rank water candidate lacks native Power I/II, so it needs +10 for Power Coat I.
+  assert.equal(g.scenarios.base.elementalHybridLowCost.skillCosts.elementHybridLowCost.powerUnlock, 10);
   // The winning slot uses C4! and includes the additional Load Up line (+10).
   assert.equal(g.scenarios.base.elementalFocused.skillCosts.elementFocused.skills, 6);
   assert.equal(g.scenarios.base.elementalFocused.skillCosts.elementFocused.points, 85);
