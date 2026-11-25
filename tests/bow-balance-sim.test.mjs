@@ -21,7 +21,7 @@ const makeBow = () => ({
       levels: [{
         lv: 1, nEs: "Arco de fuego LR", raw: 300, aff: 0, rar: 3,
         ele: [["Fuego", "Fire", 40]],
-        x: { charges: ["Rapid Lv3", "Rapid Lv3", "Rapid Lv3", "Heavy Lv4!"], coatings: ["Element Coating 2"] }
+        x: { charges: ["Rapid Lv3", "Rapid Lv3", "Rapid Lv3", "Heavy Lv4!"], coatings: ["Power Coating 2", "Element Coating 2"] }
       }]
     },
     {
@@ -103,7 +103,7 @@ test("element coating affects only elemental damage, not RAW", () => {
 });
 
 test("Power coating affects only RAW, not the elemental component", () => {
-  const weapon = makeWeaponCandidates(makeBow()).find(w => w.treeId === 1 && w.chargeSlot === 3);
+  const weapon = makeWeaponCandidates(makeBow()).find(w => w.treeId === 2 && w.chargeSlot === 3);
   const none = calculateVolley(weapon, part, { profile: PROFILE.raw, coatingMode: "none", elementCoatingMode: "none" });
   const coated = calculateVolley(weapon, part, { profile: PROFILE.raw, coatingMode: "native", elementCoatingMode: "native" });
   assert.ok(coated.rawDamage > none.rawDamage);
