@@ -126,7 +126,7 @@ test('real hitzone matrix compares catalogue RAW and elemental candidates by mon
     monsters: [{
       name: 'Monstruo de prueba', large: true,
       tables: [[
-        [0, 'Cabeza', 65, 65, 45, 0, 0, 0, 0, 30, 100, 100],
+        [0, 'Cabeza', 65, 65, 45, 0, 0, 0, 30, 0, 100, 100],
         [1, 'Ala', 20, 20, 20, 0, 0, 0, 0, 45, 0, 100],
       ]],
     }],
