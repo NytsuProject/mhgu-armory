@@ -315,6 +315,12 @@ test('Seregios Close Range coating boost follows Power Coat and adds 40 boosted 
   assert.equal(boosted.coatings.rawPowerCoatedShots, 70);
   assert.equal(boosted.coatings.rawCloseRangeBoostedShots, 40);
   assert.equal(boosted.coatings.rawCoatingSwitchShots, 0);
+  // The elemental hybrid also spends Element II, then Power II, then boosted Close Range.
+  assert.equal(boosted.coatings.hybridCurrentElementShots, 30);
+  assert.equal(boosted.coatings.hybridCurrentPowerShots, 70);
+  assert.equal(boosted.coatings.hybridCurrentCloseRangeBoostedShots, 40);
+  assert.equal(boosted.coatings.hybridCurrentSwitchShots, 0);
+  assert.ok(boosted.elementHybridMissionCurrent > unboosted.elementHybridMissionCurrent);
   assert.ok(boosted.rawMissionAverage > unboosted.rawMissionAverage);
   assert.equal(boosted.rawLowCostMissionAverage, boosted.rawMissionAverage);
 
@@ -324,6 +330,15 @@ test('Seregios Close Range coating boost follows Power Coat and adds 40 boosted 
   });
   assert.equal(switched.coatings.rawCoatingSwitchShots, 5);
   assert.equal(switched.coatings.rawCloseRangeBoostedShots, 40);
+  const hybridSwitched = calculateShot({
+    weapon: seregios, charge: 'Rapid Lv4', matchup, slotIndex: 2,
+    missionShots: 200, coatingSwitchShots: 5,
+  });
+  // There are two coating transitions in the three-phase hybrid path.
+  assert.equal(hybridSwitched.coatings.hybridCurrentSwitchShots, 10);
+  assert.equal(hybridSwitched.coatings.hybridCurrentPowerShots, 70);
+  assert.equal(hybridSwitched.coatings.hybridCurrentCloseRangeBoostedShots, 40);
+  assert.equal(hybridSwitched.coatings.hybridCurrentActiveShotShare, 0.95);
   assert.ok(Math.abs(
     (boosted.rawMissionAverage - switched.rawMissionAverage)
       - (boosted.rawIndexNoCoat * 5 / 200),
