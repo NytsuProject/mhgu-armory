@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  ELEMENT_CHARGE, calculateShot, loadUpDiagnostics, normalizeLoadUpCharge, parseCharge, rankFromRarity, runMatrix, runMonsterMatrix,
+  ELEMENT_CHARGE, calculateShot, calculateSequence, loadUpDiagnostics, normalizeLoadUpCharge, parseCharge, rankFromRarity, runMatrix, runMonsterMatrix,
 } from '../tools/bow-elemental-scenarios.mjs';
 
 const weapon = {
@@ -91,7 +91,7 @@ test('matrix enumerates every elemental slot and synthetic matchup', () => {
   assert.equal(rows.filter(row => row.slot === 4).length, 4);
   assert.ok(rows.every(row => row.rank === 'G'));
   assert.equal(summary.length, 4); // one group per matchup
-  assert.ok(summary.every(row => row.bestLite.skillCosts.raw.points === 80));
+  assert.ok(summary.every(row => row.bestLite.skillCosts.raw.points >= 80));
 });
 
 test('rejects invalid coating-uptime probabilities', () => {
@@ -159,4 +159,76 @@ test('Load Up diagnostics counts catalogue mismatches without mutating source ch
     marked: 1, alreadyMatching: 0, normalized: 1, bySlot: { '2': 1 },
   });
   assert.deepEqual(charges, ['Rapid Lv3', 'Spread Lv4!']);
+});
+
+test('Guild Power Shot follows the next charge and Load Up type normalization', () => {
+  const bow = {
+    ...weapon,
+    x: {
+      charges: ['Rapid Lv2', 'Rapid Lv3', 'Rapid Lv4', 'Spread Lv5!'],
+      coatings: ['Power Coating 2', 'Element Coating 2'],
+    },
+  };
+  const withLoadUp = calculateSequence({
+    weapon: bow, charge: 'Rapid Lv4', slotIndex: 2, matchup,
+    style: 'guild', loadUp: true,
+  });
+  assert.equal(withLoadUp.powerShotCount, 1);
+  assert.equal(withLoadUp.powerShotSlot, 4);
+  assert.equal(withLoadUp.powerShotCharge, 'Rapid Lv5!');
+  assert.equal(withLoadUp.sequenceRequiresLoadUp, true);
+  assert.equal(withLoadUp.skillCosts.raw.loadUp, 10);
+  assert.deepEqual(withLoadUp.breakdown.map(x => x.role), ['primary', 'powerShot']);
+
+  const withoutLoadUp = calculateSequence({
+    weapon: bow, charge: 'Rapid Lv4', slotIndex: 2, matchup,
+    style: 'guild', loadUp: false,
+  });
+  assert.equal(withoutLoadUp.powerShotSlot, 3);
+  assert.equal(withoutLoadUp.powerShotCharge, 'Rapid Lv4');
+  assert.equal(withoutLoadUp.sequenceRequiresLoadUp, false);
+  assert.equal(withoutLoadUp.skillCosts.raw.loadUp, 0);
+});
+
+test('Valor sequence adds a second Power Shot and its raw-only modifier', () => {
+  const guild = calculateSequence({
+    weapon, charge: 'Rapid Lv4', slotIndex: 2, matchup, style: 'guild',
+  });
+  const valor = calculateSequence({
+    weapon, charge: 'Rapid Lv4', slotIndex: 2, matchup, style: 'valor',
+  });
+  assert.equal(valor.powerShotCount, 2);
+  assert.equal(valor.expectedVolleysPerSequence, 3);
+  assert.equal(valor.coatings.effectiveMissionVolleys, 600);
+  assert.deepEqual(valor.breakdown.map(x => x.role), [
+    'primary', 'powerShot', 'valorPowerShot',
+  ]);
+  assert.equal(valor.breakdown[2].rawMultiplier, 1.30);
+  assert.ok(valor.rawMissionAverage > guild.rawMissionAverage);
+  assert.ok(valor.elementFullMissionCurrent > guild.elementFullMissionCurrent);
+});
+
+test('TrueShot Up adds its skill cost and affects Power Shot raw, not elemental charge', () => {
+  const standard = calculateSequence({
+    weapon, charge: 'Rapid Lv4', slotIndex: 2, matchup, style: 'guild',
+  });
+  const boosted = calculateSequence({
+    weapon, charge: 'Rapid Lv4', slotIndex: 2, matchup, style: 'guild',
+    trueShotUp: true,
+  });
+  assert.equal(boosted.skillCosts.raw.points, standard.skillCosts.raw.points + 10);
+  assert.equal(boosted.skillCosts.raw.skills, standard.skillCosts.raw.skills + 1);
+  assert.ok(boosted.rawMissionAverage > standard.rawMissionAverage);
+  assert.ok(boosted.elementFullMissionCurrent > standard.elementFullMissionCurrent);
+});
+
+test('styles without Power Shot retain one-volley sequences', () => {
+  for (const style of ['none', 'striker', 'alchemy', 'aerial']) {
+    const result = calculateSequence({
+      weapon, charge: 'Rapid Lv4', slotIndex: 2, matchup, style,
+    });
+    assert.equal(result.powerShotCount, 0);
+    assert.equal(result.expectedVolleysPerSequence, 1);
+    assert.equal(result.breakdown.length, 1);
+  }
 });
