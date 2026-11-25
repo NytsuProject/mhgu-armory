@@ -53,7 +53,7 @@ Cada flecha o impacto de Perforante puede aplicar el elemento. El MV de esa flec
 
 **Corrección importante:** Salva Lv5 tiene cuatro flechas, no cinco. En la tabla física el MV total de Salva Lv5 es 22, repartido en cuatro flechas (12+4+3+3). No se debe convertir ese 22 en un multiplicador elemental.
 
-Los impactos de Perforante solo cuentan si realmente atraviesan y conectan con zonas del monstruo. En Salva y Abanico los impactos también pueden repartirse entre zonas diferentes. La simulación tendrá que distinguir impactos teóricos de impactos efectivos.
+Los impactos de Perforante solo cuentan si realmente atraviesan y conectan con zonas del monstruo. En Salva y Abanico los impactos también pueden repartirse entre zonas diferentes. La simulación tendrá que distinguir impactos teóricos de impactos efectivos. En el arco Salva existe además un bug comunitariamente documentado en MHXX/GU: algunas flechas que coinciden en el mismo frame pueden no registrarse, con una pérdida de hasta ~10 %; el simulador permite probar una fiabilidad de 0,90 como sensibilidad, pero la línea base usa 1,00 porque no se ha validado la pérdida efectiva de cada carga.
 
 Fuente de referencia de valores y fórmula: https://laxgg.blogspot.com/p/mhgen-damage-calculation-motion-values.html
 
@@ -112,7 +112,7 @@ Con la combinación positiva actual documentada en el Builder (tope porcentual c
 
 Esto es el crecimiento del **componente elemental**, no del daño total del disparo. El físico sigue sumándose aparte y puede ser una fracción muy grande del resultado. También muestra que el +6 plano pesa mucho más en LR/HR con elemento base bajo que en un arco con 60 de elemento.
 
-Para estimar duración de Element Coat II durante los primeros 200 impactos: sin Ammo Saver, capacidad 20 da una media idealizada de ×1,05 sobre el total de impactos; capacidad 50 da ×1,125. Si Ammo Saver evita el consumo en 20 % de los usos, la expectativa teórica pasa aproximadamente a ×1,063 y ×1,156 respectivamente. Son promedios de disponibilidad, no DPS medido; en cacería real influyen cambios de coating, tiempo de recarga y pérdida de impactos.
+Para estimar duración durante 200 disparos, se deben incluir también las combinaciones: Power Coat II dispone de 50 + 20 unidades combinadas; Element Coat II, 20 + 10. Ammo Saver tiene un 20 % de probabilidad de devolver el revestimiento gastado, por lo que el número esperado de disparos cubiertos es stock / 0,80. Esto equivale aproximadamente a 87,5 disparos con Power Coat II, 37,5 con Element Coat II actual y 75 si Element Coat II aumenta a capacidad 50 (manteniendo las 10 unidades de combinación). Sobre 200 disparos, la cobertura esperada sería 43,75 %, 18,75 % y 37,5 %, respectivamente. En términos del multiplicador medio del componente que el revestimiento afecta, equivale a ×1,219 para Power Coat II, ×1,094 para Element Coat II actual y ×1,188 para Element Coat II con capacidad 50. Son promedios esperados idealizados: no descuentan el tiempo de combinar/cambiar revestimientos, no garantizan esa cantidad exacta y no son una medición de DPS. Fuente de capacidades y combinaciones: Yet Another Weapon Guide, secciones Power/Element Coating; probabilidad de Ammo Saver: MHGU Skill Details.
 
 **Decisión provisional sobre las habilidades:** no voy a inflar todavía los porcentajes de las habilidades elementales globales. El paquete actual ya puede multiplicar aproximadamente ×1,5 el componente elemental en un arco de E=20, antes de coatings y hitzones. Primero aislaremos el problema de especialización del arco (RAW base, coating compatible y multiplicador de carga). Si después de eso el elemento no cumple la ventana de rendimiento, entonces se prueba un ajuste adicional de habilidad y se mide su impacto colateral en las demás armas.
 
@@ -159,7 +159,15 @@ Cruce preliminar de la primera tabla de hitzones de cada uno de los 93 monstruos
 
 No significa que cada arco de ese elemento sea automáticamente bueno en esos monstruos: el arma debe tener ese elemento, la carga/tipo debe conectar de forma fiable y las hitzones deben coincidir en la parte atacada. Esta tabla solo mide que existe una zona simultáneamente útil para físico y elemento. La fuente de hitzones advierte que 66 de los 93 monstruos tienen varias tablas paralelas sin etiquetar; para esta cobertura se ha utilizado solamente la primera tabla de cada monstruo para no atribuir estados no verificados.
 
-## 8. Qué puede editarse con seguridad y qué falta localizar
+## 8. Herramienta reproducible de escenarios
+
+Se añadió `tools/bow-elemental-scenarios.mjs` y su prueba `tests/bow-elemental-scenarios.test.mjs`. La herramienta recorre los niveles elementales de `bow.json`, calcula los cuatro tipos de flecha y los slots C1–C4, incluye C4 marcado `!` solo con Recargando, y compara tres escenarios elementales (base, A y B). Tiene cuatro perfiles de hitzone sintéticos: favorable (disparo 45 / elemento 30), medio (45 / 15), pobre (45 / 5) y zona elemental sin Maza (35 / 30).
+
+Los paquetes comparados son benchmarks explícitos, no builds óptimas garantizadas: RAW usa Ataque +3, Ojo crítico +3, Maza, Potenciador crítico, potenciador del tipo de flecha y Ahorramunic.; Elemental Lite sustituye los potenciadores exclusivos por el elemento específico +2 y Crítico elemental; Elemental Full añade además Elemental +1. Ambos lados pagan el coste umbral de Power C+ / Elem C+ cuando la compatibilidad natural no incluye el revestimiento II, así como Recargando en una carga `!`. El reporte muestra líneas de habilidad y suma de umbrales; esta suma es un indicador comparativo, no una equivalencia exacta de ranuras de armadura.
+
+El índice calcula el mismo arco con una build RAW y elemental para detectar si una rama elemental puede seguir ganando como RAW. No elige todavía el mejor arco RAW de todo el catálogo frente al mejor elemental de cada monstruo. Todos los impactos teóricos se suponen conectados a la misma parte; en Perforante y Abanico esto es una cota ideal. No incluye Power Shot, estilos, artes, defensa del monstruo ni redondeo por impacto. Por ello no es DPS y no puede aprobar por sí solo un rebalance. Los comandos y límites quedan documentados en `BOW_ELEMENTAL_SIMULATOR_STAGE5.md`.
+
+## 9. Qué puede editarse con seguridad y qué falta localizar
 
 La documentación de modding para el archivo de parámetros del arco `w10` enumera duración de Haste Rain/Blade Wire, modificadores de Power Shots de Valor, generación de gauge y multiplicadores RAW de Arc Shot. No documenta ahí el multiplicador elemental de las flechas normales ni los multiplicadores elementales C1–C4.
 
@@ -167,7 +175,7 @@ Referencia: https://github-wiki-see.page/m/RTHKKona/MHGU-Modding/wiki/Weapon-Par
 
 El mod MHGU Rebalanced indica que el «ailment modifier» afecta tanto elemento como estados, pero su apartado de arco no documenta un cambio de ese modificador para las flechas normales; sí aumenta la capacidad de los revestimientos elementales y modifica otros parámetros propios del arco. Por tanto, **no se debe escribir a offsets desconocidos ni asumir que el valor de MV físico controla el elemento**. Antes de cambiar un modificador de impacto hay que localizar su tabla/estructura concreta y comprobar que afecta a elemento sin alterar indebidamente RAW o estados.
 
-## 9. Protocolo de simulación y validación
+## 10. Protocolo de simulación y validación
 
 Cada build se comparará con un presupuesto comparable de habilidades, no con armas desnudas:
 1. Build RAW: Attack, afinidad/Punto débil, Potenciador crítico, habilidad del tipo de flecha y uso sostenible de Power Coat.
@@ -184,6 +192,6 @@ Objetivo de rendimiento acordado:
 
 No se publican porcentajes de victoria de una simulación hasta modelar correctamente los presupuestos de habilidad, acceso a coatings, impactos efectivos y las tablas múltiples de hitzones. Las comparaciones preliminares simplificadas no son una medición de DPS real y no se usarán para aprobar valores.
 
-## 10. Abanico preservado
+## 11. Abanico preservado
 
 Abanico queda exactamente como en MHXX. No se cambian MVs, multiplicadores, estadísticas RAW/elemento, cargas ni habilidades. Se utilizarán sus parámetros actuales en las pruebas generales, sin una meta de daño adicional específica.
