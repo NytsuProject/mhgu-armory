@@ -61,6 +61,17 @@ export function parseCharge(value) {
   return { type: match[1], level: Number(match[2]), requiresLoadUp: Boolean(match[3]) };
 }
 
+export function normalizeLoadUpCharge(charges, index) {
+  const original = charges[index];
+  const parsed = parseCharge(original);
+  if (!parsed?.requiresLoadUp || index <= 0) return original;
+  const previous = parseCharge(charges[index - 1]);
+  if (!previous || previous.type === parsed.type) return original;
+  // Preserve the Load Up arrow level and marker; only align its arrow type
+  // with the immediately preceding charge, per the project's rule.
+  return `${previous.type} Lv${parsed.level}!`;
+}
+
 export function elementOf(level) {
   const row = (level.ele || []).find((entry) => ELEMENTS.includes(entry[1]));
   return row ? { label: row[0], type: row[1], value: row[2] } : null;
@@ -264,7 +275,9 @@ function weaponRows(trees, options = {}) {
       if (!element) continue;
       const weapon = { ...level, x: level.x || {}, aff: level.aff || 0 };
       const rarity = level.rar ?? tree.rarity;
-      for (const [slotIndex, charge] of (level.x?.charges || []).entries()) {
+      const chargeSlots = level.x?.charges || [];
+      for (const [slotIndex, sourceCharge] of chargeSlots.entries()) {
+        const charge = normalizeLoadUpCharge(chargeSlots, slotIndex);
         const parsed = parseCharge(charge);
         if (!parsed) continue;
         if (parsed.requiresLoadUp && !options.includeLoadUp) continue;
@@ -299,6 +312,9 @@ function weaponRows(trees, options = {}) {
             weaponName: level.nEs || level.n, level: level.lv,
             raw: level.raw, affinity: level.aff || 0,
             ...base,
+            sourceCharge: charge,
+            catalogueCharge: sourceCharge,
+            loadUpTypeCorrected: charge !== sourceCharge,
             A_liteMissionVsRaw: scenarioA.liteMissionVsRaw,
             A_fullMissionVsRaw: scenarioA.fullMissionVsRaw,
             B_liteMissionVsRaw: scenarioB.liteMissionVsRaw,
@@ -321,13 +337,15 @@ function allWeaponCharges(database, options = {}) {
     for (const level of tree.levels || []) {
       const weapon = { ...level, x: level.x || {}, aff: level.aff || 0 };
       const rarity = level.rar ?? tree.rarity;
-      for (const [slotIndex, charge] of (level.x?.charges || []).entries()) {
+      const chargeSlots = level.x?.charges || [];
+      for (const [slotIndex, sourceCharge] of chargeSlots.entries()) {
+        const charge = normalizeLoadUpCharge(chargeSlots, slotIndex);
         const parsed = parseCharge(charge);
         if (!parsed || (parsed.requiresLoadUp && !options.includeLoadUp)) continue;
         candidates.push({
           rank: rankFromRarity(rarity), rarity, treeId: tree.id,
           treeName: tree.nameEs || tree.name, weaponName: level.nEs || level.n,
-          level: level.lv, weapon, charge, slotIndex,
+          level: level.lv, weapon, charge, sourceCharge, loadUpTypeCorrected: charge !== sourceCharge, slotIndex,
         });
       }
     }
@@ -383,6 +401,8 @@ export function runMonsterMatrix(database, monsterData, options = {}) {
             const info = {
               weapon: candidate.weaponName, tree: candidate.treeId,
               level: candidate.level, charge: candidate.charge,
+              catalogueCharge: candidate.sourceCharge,
+              loadUpTypeCorrected: candidate.loadUpTypeCorrected,
               slot: candidate.slotIndex + 1, shotType: row.shotType,
               shotLevel: row.shotLevel, part: part[1] || `Parte ${part[0]}`,
               shotHz, elementHz: element ? elementHz : 0,
