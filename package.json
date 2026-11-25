@@ -8,6 +8,7 @@
   "scripts": {
     "test": "node --test",
     "bow:scenarios": "node tools/bow-elemental-scenarios.mjs --summary",
-    "bow:balance": "node tools/bow-balance-sim.mjs"
+    "bow:balance": "node tools/bow-balance-sim.mjs",
+    "bow:audit": "node tools/bow-branch-audit.mjs"
   }
 }
