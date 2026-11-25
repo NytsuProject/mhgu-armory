@@ -307,6 +307,8 @@ export function summarizeRows(rows) {
     const bFull = bestBy(group, 'fullMissionVsRaw');
     const bA = bestBy(group, 'A_fullMissionVsRaw');
     const bB = bestBy(group, 'B_fullMissionVsRaw');
+    const bA50 = bestBy(group, 'A_fullCapacity50VsRaw');
+    const bB50 = bestBy(group, 'B_fullCapacity50VsRaw');
     out.push({
       rank: first.rank, element: first.element, shotType: first.shotType, matchup: first.matchup,
       candidates: group.length,
@@ -320,6 +322,8 @@ export function summarizeRows(rows) {
         ratio: bB.B_fullMissionVsRaw } : null,
       bestFullCapacity50: bestBy(group, 'fullCapacity50VsRaw')
         ? bestBy(group, 'fullCapacity50VsRaw').fullCapacity50VsRaw : null,
+      bestScenarioACapacity50: bA50 ? bA50.A_fullCapacity50VsRaw : null,
+      bestScenarioBCapacity50: bB50 ? bB50.B_fullCapacity50VsRaw : null,
     });
   }
   return out.sort((a, b) => a.rank.localeCompare(b.rank)
