@@ -147,13 +147,20 @@ function skillCost(weapon, requiresLoadUp, trueShotUp = false, ammoSaverEnabled 
     skills: elementLite.skills + 1 + Number(ammoSaverEnabled),
     elementUnlock, loadUp,
   };
+  // Hybrid coating package: exhaust Element Coat II first, then use Power Coat II.
+  // Power C+ is an extra +15 / skill line only when the bow lacks native Power II.
+  const elementHybrid = {
+    points: elementFull.points + powerUnlock,
+    skills: elementFull.skills + Number(!nativePower2),
+    elementUnlock, powerUnlock, loadUp,
+  };
   if (trueShotUp) {
-    for (const build of [raw, elementLite, elementFull]) {
+    for (const build of [raw, elementLite, elementFull, elementHybrid]) {
       build.points += 10;
       build.skills += 1;
     }
   }
-  return { raw, elementFocused, elementLite, elementFull };
+  return { raw, elementFocused, elementLite, elementFull, elementHybrid };
 }
 
 /**
@@ -167,7 +174,7 @@ export function calculateShot(options) {
     rapidReliability = 1, missionShots = 200, ammoSaverChance = 0,
     ammoSaverEnabled = ammoSaverChance > 0,
     elementCoatingCapacity = 20, elementCap = null, loadUp = false, slotIndex = 2,
-    loadUpForPackage, trueShotUp = false, rawShotMultiplier = 1,
+    coatingSwitchShots = 0, loadUpForPackage, trueShotUp = false, rawShotMultiplier = 1,
   } = options;
   const parsed = parseCharge(charge);
   const element = elementOf(weapon);
@@ -190,6 +197,9 @@ export function calculateShot(options) {
   if (elementCap !== null && elementCap !== undefined
       && (!Number.isFinite(elementCap) || elementCap < 0)) {
     throw new RangeError('elementCap must be zero or greater when supplied.');
+  }
+  if (!Number.isFinite(coatingSwitchShots) || coatingSwitchShots < 0) {
+    throw new RangeError('coatingSwitchShots must be zero or greater.');
   }
   if (!Number.isFinite(rapidReliability) || rapidReliability < 0 || rapidReliability > 1) {
     throw new RangeError('rapidReliability must be between 0 and 1.');
@@ -270,6 +280,25 @@ export function calculateShot(options) {
   const fullMissionProposed = missionAverage(elemPhysicalNoCoat + elemFullNoCoat,
     elemPhysicalNoCoat + elemFullCoated, uptime(elementUsesFullProposed));
 
+  // Sequential coating loadout: Element Coat II first, then Power Coat II.
+  // The switch cost is an explicit number of shot-equivalents, not an assumed
+  // animation duration. Power Coat boosts only the physical component.
+  const sequentialHybridAverage = (elementBase, elementCoated, elementUses) => {
+    const elementShots = Math.min(elementUses, missionShots);
+    const switchShots = elementShots > 0 && powerUses > 0 && elementShots < missionShots
+      ? coatingSwitchShots : 0;
+    const powerShots = Math.min(powerUses,
+      Math.max(0, missionShots - elementShots - switchShots));
+    const damage = elemPhysicalNoCoat + elementBase
+      + (elementCoated - elementBase) * (elementShots / missionShots)
+      + (elemPhysicalNoCoat * 0.50) * (powerShots / missionShots);
+    return { damage, elementShots, powerShots, switchShots };
+  };
+  const hybridCurrent = sequentialHybridAverage(elemFullNoCoat,
+    elemFullCoated, elementUsesFullNow);
+  const hybridCapacity50 = sequentialHybridAverage(elemFullNoCoat,
+    elemFullCoated, elementUsesFullProposed);
+
   return {
     shotType: shot, shotLevel, slot: slotIndex + 1, charge,
     requiresLoadUp: parsed.requiresLoadUp,
@@ -305,12 +334,16 @@ export function calculateShot(options) {
     elementLiteMissionCapacity50: round(liteMissionProposed),
     elementFullMissionCurrent: round(fullMissionNow),
     elementFullMissionCapacity50: round(fullMissionProposed),
+    elementHybridMissionCurrent: round(hybridCurrent.damage),
+    elementHybridMissionCapacity50: round(hybridCapacity50.damage),
     focusedMissionVsRaw: round(focusedMissionNow / rawMissionAverage),
     focusedCapacity50VsRaw: round(focusedMissionProposed / rawMissionAverage),
     liteMissionVsRaw: round(liteMissionNow / rawMissionAverage),
     liteCapacity50VsRaw: round(liteMissionProposed / rawMissionAverage),
     fullMissionVsRaw: round(fullMissionNow / rawMissionAverage),
     fullCapacity50VsRaw: round(fullMissionProposed / rawMissionAverage),
+    elementHybridMissionVsRaw: round(hybridCurrent.damage / rawMissionAverage),
+    elementHybridCapacity50VsRaw: round(hybridCapacity50.damage / rawMissionAverage),
     coatings: {
       nativePower2: hasPower2, nativeElement2: hasElement2,
       powerSkillPoints: skillCosts.raw.powerUnlock,
@@ -325,6 +358,14 @@ export function calculateShot(options) {
       elementCoreUptimeCapacity50: round(uptime(elementUsesCoreProposed)),
       elementFullUptimeCurrent: round(uptime(elementUsesFullNow)),
       elementFullUptimeCapacity50: round(uptime(elementUsesFullProposed)),
+      hybridPowerExpectedUses: round(powerUses),
+      hybridCurrentElementShots: round(hybridCurrent.elementShots),
+      hybridCurrentPowerShots: round(hybridCurrent.powerShots),
+      hybridCurrentSwitchShots: round(hybridCurrent.switchShots),
+      hybridCapacity50ElementShots: round(hybridCapacity50.elementShots),
+      hybridCapacity50PowerShots: round(hybridCapacity50.powerShots),
+      hybridCapacity50SwitchShots: round(hybridCapacity50.switchShots),
+      coatingSwitchShots,
       missionShots,
       ammoSaverChance: activeAmmoSaverChance,
       ammoSaverEnabled,
@@ -420,6 +461,8 @@ export function calculateSequence(options) {
   const liteMission50 = add('elementLiteMissionCapacity50');
   const fullMission = add('elementFullMissionCurrent');
   const fullMission50 = add('elementFullMissionCapacity50');
+  const hybridMission = add('elementHybridMissionCurrent');
+  const hybridMission50 = add('elementHybridMissionCapacity50');
   const rawIndex = add('rawIndexNoCoat');
   const rawCoated = add('rawIndexPowerCoated');
   return {
@@ -444,12 +487,16 @@ export function calculateSequence(options) {
     elementLiteMissionCapacity50: liteMission50,
     elementFullMissionCurrent: fullMission,
     elementFullMissionCapacity50: fullMission50,
+    elementHybridMissionCurrent: hybridMission,
+    elementHybridMissionCapacity50: hybridMission50,
     focusedMissionVsRaw: round(focusedMission / rawMissionAverage),
     focusedCapacity50VsRaw: round(focusedMission50 / rawMissionAverage),
     liteMissionVsRaw: round(liteMission / rawMissionAverage),
     liteCapacity50VsRaw: round(liteMission50 / rawMissionAverage),
     fullMissionVsRaw: round(fullMission / rawMissionAverage),
     fullCapacity50VsRaw: round(fullMission50 / rawMissionAverage),
+    elementHybridMissionVsRaw: round(hybridMission / rawMissionAverage),
+    elementHybridCapacity50VsRaw: round(hybridMission50 / rawMissionAverage),
     arrowHits: round(sum(shots.map(shot => shot.row.arrowHits * shot.weight))),
     mvSum: round(sum(shots.map(shot => shot.row.mvSum * shot.weight))),
     skillCosts: primary.skillCosts,
@@ -491,6 +538,7 @@ function weaponRows(trees, options = {}) {
             ammoSaverChance: options.ammoSaverChance ?? 0,
             ammoSaverEnabled: options.ammoSaverEnabled ?? (options.ammoSaverChance > 0),
             elementCoatingCapacity: options.elementCoatingCapacity ?? 20,
+            coatingSwitchShots: options.coatingSwitchShots ?? 0,
             rapidReliability: options.rapidReliability ?? 1,
             style: options.style ?? 'guild',
             powerShotUseRate: options.powerShotUseRate ?? 1,
@@ -593,7 +641,7 @@ export function runMonsterMatrix(database, monsterData, options = {}) {
     { id: "B", multipliers: ELEMENT_CHARGE.B },
   ];
   const shotTypes = ["Rapid", "Pierce", "Spread", "Heavy"];
-  const profileKeys = ["elementalFocused", "elementalFocused50", "elementalLite", "elementalFull", "elementalLite50", "elementalFull50"];
+  const profileKeys = ["elementalFocused", "elementalFocused50", "elementalLite", "elementalFull", "elementalLite50", "elementalFull50", "elementalHybrid", "elementalHybrid50"];
   const byRankMonster = [];
   const largeMonsters = (monsterData.monsters || []).filter(monster => monster.large);
 
@@ -605,6 +653,8 @@ export function runMonsterMatrix(database, monsterData, options = {}) {
     elementalFull: null,
     elementalLite50: null,
     elementalFull50: null,
+    elementalHybrid: null,
+    elementalHybrid50: null,
   }]));
 
   const finalizeBestSet = (bestSet) => {
@@ -641,6 +691,8 @@ export function runMonsterMatrix(database, monsterData, options = {}) {
       ["elementalFull", row.elementFullMissionCurrent],
       ["elementalLite50", row.elementLiteMissionCapacity50],
       ["elementalFull50", row.elementFullMissionCapacity50],
+      ["elementalHybrid", row.elementHybridMissionCurrent],
+      ["elementalHybrid50", row.elementHybridMissionCapacity50],
     ];
     for (const [key, damage] of choices) {
       if (!current[key] || damage > current[key].damage) {
@@ -695,6 +747,7 @@ export function runMonsterMatrix(database, monsterData, options = {}) {
               ammoSaverChance: options.ammoSaverChance ?? 0,
               ammoSaverEnabled: options.ammoSaverEnabled ?? (options.ammoSaverChance > 0),
               elementCoatingCapacity: options.elementCoatingCapacity ?? 20,
+              coatingSwitchShots: options.coatingSwitchShots ?? 0,
               rapidReliability: options.rapidReliability ?? 1,
               style: options.style ?? "guild",
               powerShotUseRate: options.powerShotUseRate ?? 1,
@@ -832,6 +885,7 @@ export function runMonsterMatrix(database, monsterData, options = {}) {
         ammoSaverChance: options.ammoSaverChance ?? 0,
         ammoSaverEnabled: options.ammoSaverEnabled ?? (options.ammoSaverChance > 0),
         elementCoatingCapacity: options.elementCoatingCapacity ?? 20,
+        coatingSwitchShots: options.coatingSwitchShots ?? 0,
         rapidReliability: options.rapidReliability ?? 1,
         style: options.style ?? "guild",
         powerShotUseRate: options.powerShotUseRate ?? 1,
@@ -929,6 +983,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
     ammoSaverChance: readNumber('--ammo-saver-chance=', 0),
     ammoSaverEnabled: args.includes('--ammo-saver') || readNumber('--ammo-saver-chance=', 0) > 0,
     elementCoatingCapacity: readNumber('--element-coat-capacity=', 20),
+    coatingSwitchShots: readNumber('--coating-switch-shots=', 0),
     powerShotUseRate: readNumber('--power-shot-use-rate=', 1),
     valorStateUptime: readNumber('--valor-uptime=', 1),
     style: args.find((arg) => arg.startsWith('--style='))?.slice(8) || 'guild',
