@@ -210,7 +210,8 @@ export function calculateVolley(weapon, part, options = {}) {
 
   const loadUpSkillSlots = weapon.requiresLoadUp ? 1 : 0;
   const coatingSkillSlots = profile.id === "raw" ? rawCoating.extraSkillSlots : elementCoating.extraSkillSlots;
-  const ammoSaverSkillSlots = (options.ammoSaverReturnRate || 0) > 0 ? 1 : 0;
+  const activeCoatingCapacity = profile.id === "raw" ? rawCoating.capacity : elementCoating.capacity;
+  const ammoSaverSkillSlots = activeCoatingCapacity > 0 && (options.ammoSaverReturnRate || 0) > 0 ? 1 : 0;
   return {
     profile: profile.id,
     weapon: weapon.name,
