@@ -136,30 +136,26 @@ Los porcentajes del cuadro anterior con Ammo Saver son un **escenario hipotétic
 
 Fuente: `data/weapons/bow.json`, SHA `ec48bf9390a2eaa1123bfdea11b76bb359483b3b`.
 
-En los 55 árboles cuyo nivel final tiene Fuego, Agua, Rayo, Hielo o Dragón:
-- 51 permiten algún revestimiento de Potencia.
-- 46 permiten algún revestimiento Elemental.
-- 43 permiten ambos grupos.
-- 35 tienen Potencia II y 35 tienen Elemental II.
-- 24 tienen ambos niveles II (Power Coating 2 y Element Coating 2) disponibles en el mismo arco.
+El grafo contiene 107 segmentos en 59 familias raíz. Al reconstruir cada parent link hasta su punto de bifurcación se obtienen 78 ramas terminales. La clasificación correcta por arma final es:
+- 41 ramas elementales naturales (Fuego, Agua, Rayo, Hielo o Dragón).
+- 33 ramas RAW / sin elemento natural.
+- 4 ramas de Explosión.
 
-Por rango, contando niveles con elemento:
-- LR: 159 niveles elementales; 129 tienen ambos grupos de revestimientos.
-- HR: 101 niveles elementales; 77 tienen ambos grupos.
-- G: 108 niveles elementales; 65 tienen ambos grupos.
+Por rango final:
+- LR: 10 elementales, 9 RAW y 1 Explosión.
+- HR: 17 elementales y 13 RAW.
+- G: 14 elementales, 11 RAW y 3 Explosión.
 
-Esto confirma que muchas familias elementales conservan acceso al camino físico. Por sí solo, un revestimiento no determina la build, pero la combinación de RAW competitivo + Power Coat II + elemento + Element Coat facilita el híbrido.
+Entre las 41 ramas elementales terminales, 28 tienen Power Coating 2, 26 tienen Element Coating 2 y 19 tienen ambos en el último nivel. Entre las 33 ramas RAW terminales, 24 tienen Power Coating 2 y ninguna Element Coating 2. Estas cifras miden la compatibilidad del nivel final; el informe completo distingue también si un coating estuvo disponible en niveles anteriores de la ruta.
 
-**Dirección de diseño para revisar por familia:** las ramas definidas como elementales deben priorizar Element Coating I/II y no tener Power Coating II como opción dominante; las ramas RAW deben priorizar Power Coating I/II y no tener Element Coating como ruta equivalente. No se aplicará automáticamente a todo el catálogo: primero se clasifican familias completas y se revisan sus bifurcaciones y progresión LR→HR→G. Las familias excepcionales se marcan para revisión manual.
+Solo tres familias raíz contienen ramas terminales de identidades distintas:
+- Arco petrificado: ramas elementales y RAW.
+- Arco recio de cazador: ramas elementales, RAW y Explosión.
+- Arco de cazador: ramas elementales y RAW.
 
+**Corrección de recuento:** los valores anteriores de 55 elementales, 46 RAW y 6 Explosión contaban segmentos intermedios y fueron etiquetados erróneamente como ramas finales. No se deben usar para decidir el rol de cada árbol terminal. La reconstrucción completa, los estados de cada nivel heredado y los 674 slots Recargando (441 desalineados con su carga anterior) están documentados en [BOW_BRANCH_PROGRESSION_AUDIT_STAGE5.md](BOW_BRANCH_PROGRESSION_AUDIT_STAGE5.md).
 
-### Linaje completo: no mezclar ramas alternativas
-
-El parent graph del catálogo contiene 107 segmentos conectados en 59 familias. Entre los 107 segmentos finales hay 55 con elemento natural, 46 RAW y 6 Explosión. Los 55 finales elementales se distribuyen en 22 LR, 19 HR y 14 G.
-
-Solo cuatro familias conectadas contienen ramas finales elementales y también ramas finales RAW; una de esas cuatro tiene además una rama de Explosión. Cuatro familias conectadas tienen más de un elemento natural en sus ramas finales. Esto es bueno para el diseño: no hace falta convertir una familia entera en híbrida. Se pueden conservar ramas alternativas con identidad propia desde el punto de bifurcación, mientras cada rama elemental termina en un arco RAW deliberadamente secundario y cada rama RAW mantiene el elemento irrelevante.
-
-Familias mixtas que requieren una revisión de sus bifurcaciones: Arco petrificado, Arco de cazador, Arco recio de cazador y Arco gastado. No se cambiarán sus padres ni se eliminarán ramas; el objetivo es equilibrar la progresión y coating de cada rama sin contaminar su identidad.
+**Dirección de diseño para revisar por rama:** preservar las bifurcaciones existentes. En cada rama elemental final, revisar coating, RAW y elemento a través de toda su progresión; en cada rama RAW, mantener un camino físico claro. No se eliminará ni convertirá automáticamente una rama alternativa en híbrida.
 
 ## 7. Cobertura de debilidades elementales en los monstruos grandes
 
