@@ -70,6 +70,11 @@ jobs:
           node tools/bow-build-feasibility-audit.mjs --rank G --out="$RUNNER_TEMP/bow-build-feasibility-stage7.json"
           node -e "const r=JSON.parse(require('node:fs').readFileSync(process.argv[1],'utf8')); const m=r.metadata; if(m.eligibleGunnerArmorPieces<1000 || r.weaponCatalog.levelRecords!==735 || r.packages.length!==68) throw new Error('Unexpected armor/weapon audit inventory'); if(!r.skillAvailability.Loading || !r.skillAvailability['Ammo Saver']) throw new Error('Optional skills missing from availability report'); if(r.skillAvailability['Elem C+'].targets.some(x=>x.armor.pieceCount!==0)) throw new Error('Elem C+ armor availability changed unexpectedly'); console.log('Verified '+m.eligibleGunnerArmorPieces+' G-rank Gunner/All armor pieces, '+r.weaponCatalog.levelRecords+' bow levels and '+r.packages.length+' skill packages.');" "$RUNNER_TEMP/bow-build-feasibility-stage7.json"
 
+      - name: Optimize a real G-rank hybrid bow build
+        run: |
+          node tools/bow-build-optimizer.mjs --weapon-tree 104 --weapon-level 3 --charge-slot 3 --profile hybrid --rank G --gender male --coating-policy low-cost --beam-width 350 --top-builds 1 --out="$RUNNER_TEMP/bow-build-optimizer-stage8.json"
+          node -e "const r=JSON.parse(require('node:fs').readFileSync(process.argv[1],'utf8')); const c=r.comparisons[0]; if(r.weapon.treeId!==104 || r.weapon.level!==3 || c.builds.length!==1) throw new Error('Missing real bow optimizer result'); const b=c.builds[0]; if(b.armor.length!==5 || b.armor.some(p=>!p.name)) throw new Error('Optimizer must return five named armor pieces'); if(!b.skillPoints.length || !Number.isFinite(b.coverage)) throw new Error('Missing skill diagnostics'); for(const [slot,jewels] of Object.entries(b.jewelsBySlot)){ const cap=slot==='weapon'?r.weapon.weaponSlots:slot==='talisman'?(b.talisman?.deco||0):(b.armor.find(p=>p.slot===slot)?.deco||0); if(jewels.reduce((n,j)=>n+j.cost,0)>cap) throw new Error('Illegal jewel placement: '+slot); } console.log('Verified G-rank hybrid build: '+b.activatedSkills+'/'+b.targetSkillCount+' skills active; '+b.jewelSocketsUsed+' sockets used.');" "$RUNNER_TEMP/bow-build-optimizer-stage8.json"
+
       - name: Upload reproducible bow balance results
         uses: actions/upload-artifact@v4
         with:
@@ -85,4 +90,5 @@ jobs:
             ${{ runner.temp }}/bow-elemental-summary-valor.json
             ${{ runner.temp }}/bow-branch-audit-stage5.json
             ${{ runner.temp }}/bow-build-feasibility-stage7.json
+            ${{ runner.temp }}/bow-build-optimizer-stage8.json
           retention-days: 14

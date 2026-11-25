@@ -10,6 +10,7 @@
     "bow:scenarios": "node tools/bow-elemental-scenarios.mjs --summary",
     "bow:balance": "node tools/bow-balance-sim.mjs",
     "bow:audit": "node tools/bow-branch-audit.mjs",
-    "bow:build-audit": "node tools/bow-build-feasibility-audit.mjs --rank G"
+    "bow:build-audit": "node tools/bow-build-feasibility-audit.mjs --rank G",
+    "bow:optimize": "node tools/bow-build-optimizer.mjs"
   }
 }
