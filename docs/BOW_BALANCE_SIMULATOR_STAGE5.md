@@ -71,8 +71,8 @@ Se corrigió Salva Lv5 a cuatro flechas (12+4+3+3, 22 MV total). Perforante cuen
 ### Load Up y C4
 
 - `current`: conserva el tipo de flecha marcado para C4 en el catálogo.
-- `match-c3` (valor por defecto): para una C4 marcada `!`, copia únicamente el tipo de flecha de C3; conserva el nivel de C4 y su multiplicador de carga. Es una **proyección de la regla solicitada para el rebalance**, no un cambio del JSON.
-- C4 `!` añade un efecto activo adicional al presupuesto para representar el coste de Recargando / Load Up (+10).
+- `match-c3` (nombre de compatibilidad, valor por defecto): cada slot marcado `!` copia únicamente el tipo de flecha del slot inmediatamente anterior; conserva su nivel y el multiplicador de carga de su posición. En C4 esto hace que coincida con C3. Es una **proyección de la regla solicitada para el rebalance**, no un cambio del JSON.
+- Cada carga marcada `!` sigue requiriendo Recargando / Load Up (+10 puntos); el perfil contabiliza una línea de habilidad para el desbloqueo.
 
 ## Revestimientos y coste de habilidades
 
