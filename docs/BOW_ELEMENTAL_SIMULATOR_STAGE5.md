@@ -65,21 +65,21 @@ node tools/bow-elemental-scenarios.mjs --hitzones=../MHGU-Monster-Info/docs/data
 
 Este modo evalúa los niveles de **todo el catálogo**, incluidos arcos RAW y elementales. Para cada monstruo usa solo la primera tabla de hitzones (66 monstruos tienen tablas paralelas sin etiqueta verificada), recorre cada parte y selecciona por separado el mayor índice RAW y el mayor índice elemental dentro de cada rango (LR/HR/G). En cada arma, las flechas teóricas siguen suponiéndose conectadas a la misma parte. El arco elemental se compara con el mejor arco RAW del catálogo para esa parte/monstruo/rango, no solo contra su propio RAW.
 
-El resultado tiene cinco opciones elementales: Lite/Full con capacidad Element Coat actual, y Lite/Full con capacidad 50. La build RAW incluye el daño elemental innato del propio arco, pero no Element Coat ni las habilidades elementales. Esto evita regalarle al lado RAW un arco con elemento sin contabilizar su pequeña contribución, y permite descubrir si una build física sigue ganando con un arco elemental.
+El resultado tiene cinco opciones elementales: Core/Full con capacidad Element Coat actual y Core/Full con capacidad 50 (además de la variante Lite/Saver que se informa en el resumen sintético). La build RAW incluye el daño elemental innato del propio arco, pero no Element Coat ni las habilidades elementales. Esto evita regalarle al lado RAW un arco con elemento sin contabilizar su pequeña contribución, y permite descubrir si una build física sigue ganando con un arco elemental.
 
 La fuente externa advierte que los nombres de partes solo están confirmados para algunos monstruos; donde no hay nombre, el archivo conserva índices. La herramienta usa el nombre publicado o un fallback `Parte N`, no intenta inferir si una tabla corresponde a enfurecido, roto u otro estado. No se descarga la fuente automáticamente: el usuario conserva control sobre los archivos externos y su licencia.
 
 ## Paquetes de habilidades comparados
 
-Las habilidades compartidas entre builds son Ojo crítico +3 (+30 % afinidad), Maza (+50 % si hitzone de disparo ≥45), potenciador del tipo de flecha y Ahorramunic. La carga marcada `!` se activa con Recargando en ambos paquetes.
+Las dos bases comparten Ojo crítico +3 (+30 % afinidad), Maza (+50 % si hitzone de disparo ≥45), Ataque +3 (+20 ataque mostrado) y el potenciador del tipo de flecha. La carga marcada `!` se activa con Recargando en ambos paquetes.
 
-**RAW de referencia:** Ataque +3 (+20 ataque mostrado), Potenciador crítico (crítico físico ×1,40), y Power Coat II. Si el arco no tiene Power Coat II de forma natural, el coste del paquete incluye Power C+ a +15.
+**RAW de referencia (seis líneas principales):** Ataque +3, Ojo crítico +3, Maza, Potenciador crítico (crítico físico ×1,40), potenciador del tipo de flecha y Ahorramunic. Usa Power Coat II; si no está disponible de forma natural, el coste incluye Power C+ a +15.
 
-**Elemental Lite:** Crítico elemental (×1,35 en críticos de arco), elemento específico +2 (+10 % y +6 planos) y Element Coat II. Si el arco no admite Element Coat II naturalmente, se añade Elem C+ a +15.
+**Elemental Core (seis líneas principales, comparación de presupuesto):** Ataque +3, Ojo crítico +3, Maza, potenciador del tipo de flecha, Crítico elemental (×1,35 en críticos de arco) y elemento específico +2 (+10 % y +6 planos). No lleva Potenciador crítico ni Ahorramunic.; usa Element Coat II y, si no está disponible de forma natural, incluye Elem C+ a +15. Su suma de umbrales es 85 puntos antes de C+/Recargando, frente a 80 de RAW; ambos tienen seis líneas principales.
 
-**Elemental Full:** añade Elemental +1 (+10 % general) a Elemental Lite. En el modelo del Builder las bonificaciones porcentuales positivas general y específica se suman hasta +20 %, y se conserva el +6 plano; el elemento mostrado se redondea hacia abajo antes del cálculo.
+**Elemental Full (paquete ampliado):** añade Ahorramunic. y Elemental +1 (+10 % general) a Elemental Core. Tiene dos líneas adicionales (ocho en total) y suma 105 puntos antes de C+/Recargando. En el modelo del Builder las bonificaciones porcentuales positivas general y específica se suman hasta +20 %, y se conserva el +6 plano; el elemento mostrado se redondea hacia abajo antes del cálculo.
 
-Los costes reportados son umbrales de activación sumados y número de líneas de habilidad. No equivalen exactamente a huecos de joya ni demuestran que exista un set concreto con ese reparto. Permiten advertir cuándo Elemental Full usa una línea extra y cuánto cuesta desbloquear el revestimiento que el arco no trae de serie.
+Los costes reportados son umbrales de activación sumados y número de líneas de habilidad. No equivalen exactamente a huecos de joya ni demuestran que exista un set concreto con ese reparto. Los paquetes son benchmarks explícitos para entender las diferencias, no builds in-game probadas; los costes de desbloqueo C+ y Recargando se informan por separado.
 
 ## Fórmulas y límites
 
@@ -101,7 +101,7 @@ Los modificadores de carga elemental de base, A y B son los definidos en `docs/B
 
 - No calcula DPS ni daño final exacto del juego: conserva decimales y no aplica redondeo por cada impacto, defensa global, enfurecimiento ni variaciones de hitzone entre impactos.
 - No incluye Power Shot, que puede representar una parte importante del daño real, ni estilos, artes, Valor, stamina, tiempos de carga, animaciones o ventanas de ataque.
-- No calcula todavía el mejor RAW de todo el catálogo frente al mejor arco elemental de cada monstruo. La primera comparación es sobre el mismo arco: sirve para detectar si una rama elemental conserva una build RAW demasiado competitiva.
+- El modo sintético compara el mismo arco con builds distintas. El modo `--hitzones=... --monster-summary` sí compara el mejor RAW de todo el catálogo contra el mejor elemento por monstruo, parte y rango, usando solo la primera tabla de hitzones.
 - No decide todavía qué multiplicador A/B debe aplicarse. Solo mide escenarios que después se validarán contra hitzones reales, progresión y pruebas in-game.
 - No cambia `bow.json`, el Builder ni los parámetros de MHXX.
 
