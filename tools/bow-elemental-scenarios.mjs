@@ -129,14 +129,14 @@ function skillCost(weapon, requiresLoadUp, trueShotUp = false, ammoSaverEnabled 
     skills: 5 + Number(ammoSaverEnabled) + Number(!nativePower2) + Number(requiresLoadUp),
     powerUnlock, loadUp,
   };
-  // Element Core keeps the same six core skill lines as RAW and retains Attack +3.
-  // It trades Critical Boost / Ammo Saver for Critical Element / element +2.
+  // Element Core retains the physical affinity/Attack foundation, drops physical Critical Boost,
+  // and spends one additional line on Critical Element / element +2.
   const elementLite = {
     points: 20 + 20 + 10 + 10 + 10 + 15 + elementUnlock + loadUp,
     skills: 6 + Number(!nativeElement2) + Number(requiresLoadUp),
     elementUnlock, loadUp,
   };
-  // Full adds Ammo Saver and general Elemental +1 (two extra skill lines).
+  // Full adds general Elemental +1; Ammo Saver is an optional extra skill line only when enabled.
   const elementFull = {
     points: elementLite.points + 10 + (ammoSaverEnabled ? 10 : 0),
     skills: elementLite.skills + 1 + Number(ammoSaverEnabled),
@@ -240,7 +240,7 @@ export function calculateShot(options) {
   const elementUsesFullProposed = expectedUses(50, 10, activeAmmoSaverChance);
   const missionAverage = (base, coated, ratio) => base + (coated - base) * ratio;
   const rawMissionAverage = missionAverage(rawBuildNoCoat, rawBuildPowerCoated, uptime(powerUses));
-  // Element Core has Attack +3 but no Ammo Saver; Full adds Ammo Saver and Elemental +1.
+  // Element Core omits Ammo Saver; Full adds one general elemental skill and optionally Ammo Saver.
   const liteMissionNow = missionAverage(elemPhysicalNoCoat + elemLiteNoCoat,
     elemPhysicalNoCoat + elemLiteCoated, uptime(elementUsesCoreNow));
   const liteMissionProposed = missionAverage(elemPhysicalNoCoat + elemLiteNoCoat,
