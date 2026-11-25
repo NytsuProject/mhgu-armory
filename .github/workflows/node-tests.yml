@@ -65,6 +65,11 @@ jobs:
           node tools/bow-elemental-scenarios.mjs --summary > "$RUNNER_TEMP/bow-scenarios.json"
           node -e "JSON.parse(require('node:fs').readFileSync(process.argv[1], 'utf8'))" "$RUNNER_TEMP/bow-scenarios.json"
 
+      - name: Audit actual G-rank bow skill sources
+        run: |
+          node tools/bow-build-feasibility-audit.mjs --rank G --out="$RUNNER_TEMP/bow-build-feasibility-stage7.json"
+          node -e "const r=JSON.parse(require('node:fs').readFileSync(process.argv[1],'utf8')); const m=r.metadata; if(m.eligibleGunnerArmorPieces<1000 || r.weaponCatalog.levelRecords!==735 || r.packages.length!==68) throw new Error('Unexpected armor/weapon audit inventory'); if(!r.skillAvailability.Loading || !r.skillAvailability['Ammo Saver']) throw new Error('Optional skills missing from availability report'); if(r.skillAvailability['Elem C+'].targets.some(x=>x.armor.pieceCount!==0)) throw new Error('Elem C+ armor availability changed unexpectedly'); console.log('Verified '+m.eligibleGunnerArmorPieces+' G-rank Gunner/All armor pieces, '+r.weaponCatalog.levelRecords+' bow levels and '+r.packages.length+' skill packages.');" "$RUNNER_TEMP/bow-build-feasibility-stage7.json"
+
       - name: Upload reproducible bow balance results
         uses: actions/upload-artifact@v4
         with:
@@ -79,4 +84,5 @@ jobs:
             ${{ runner.temp }}/bow-elemental-summary-guild-cap30.json
             ${{ runner.temp }}/bow-elemental-summary-valor.json
             ${{ runner.temp }}/bow-branch-audit-stage5.json
+            ${{ runner.temp }}/bow-build-feasibility-stage7.json
           retention-days: 14
