@@ -96,7 +96,9 @@ La guía de MHGen observa que los aumentos de elemento suelen aportar solo unos 
 - `Power C+` a +10 habilita Power Coat I y a +15 habilita todos los niveles.
 - `Ammo Saver` puede devolver ocasionalmente un revestimiento. Kiranico no publica una probabilidad; el 20 % aparece en fuentes comunitarias secundarias y solo debe modelarse como escenario de sensibilidad, nunca como valor base.
 
-Esto significa que no basta con comparar ×1,50 contra ×1,50. Hay que comparar también el coste en puntos de habilidad y los usos disponibles. Referencias MHGU: https://mhgu.kiranico.com/skill/48364 y https://mhgu.kiranico.com/skill/40554. Guía de arco: https://laxgg.blogspot.com/p/mhgen-armour-skills.html.
+Esto significa que no basta con comparar ×1,50 contra ×1,50. Hay que comparar también el coste en puntos de habilidad y los usos disponibles.
+
+El catálogo del Builder confirma la disponibilidad real de esta habilidad: `Elem C+` está registrado en `data/armor/skill-levels.json` y `data/armor/talisman-skills.json`, y tiene dos joyas (`+1` por 1 ranura y `+3` por 2). No aparece en ninguna pieza de armadura del catálogo, por lo que alcanzar +15 requiere combinar puntos de talismán y/o joyas; no se debe inventar una pieza que lo otorgue. `Power C+`, en cambio, aparece en ocho piezas además de talismán y joyas. El simulador cobra +15 puntos y una línea adicional cuando el arco no trae Element Coat II / Power Coat II de forma nativa. Referencias MHGU: https://mhgu.kiranico.com/skill/48364 y https://mhgu.kiranico.com/skill/40554. Guía de arco: https://laxgg.blogspot.com/p/mhgen-armour-skills.html.
 
 
 ### Cuánto aportan ya las habilidades elementales al componente elemental
