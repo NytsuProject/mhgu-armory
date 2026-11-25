@@ -45,6 +45,30 @@ La herramienta recorre cada nivel de cada segmento del árbol de arco, no solame
 
 Estos perfiles son sintéticos, no monstruos. Todos los impactos teóricos se asignan a una misma parte. Es una cota alta especialmente para Perforante, cuyas cinco conexiones pueden cruzar hitzones diferentes, y para Abanico, cuyas flechas se distribuyen en abanico.
 
+
+## Comparación real por hitzones de monstruos
+
+La herramienta también puede leer un dump de hitzones externo, sin copiarlo ni redistribuirlo dentro de este repositorio. Fuente de datos utilizada en el proyecto de investigación: [ArmoredRaven17/MHGU-Monster-Info](https://github.com/ArmoredRaven17/MHGU-Monster-Info), que documenta su extracción desde los archivos `dt_tune` del RomFS y la cobertura de 93 monstruos grandes.
+
+Descarga su archivo `docs/data/hitzones.js` a una ubicación local (por ejemplo, `../MHGU-Monster-Info/docs/data/hitzones.js`) y ejecuta:
+
+```bash
+# Resumen JSON: un resultado por monstruo y rango
+node tools/bow-elemental-scenarios.mjs --hitzones=../MHGU-Monster-Info/docs/data/hitzones.js --monster-summary
+
+# CSV por monstruo y rango
+node tools/bow-elemental-scenarios.mjs --hitzones=../MHGU-Monster-Info/docs/data/hitzones.js --monster-csv=tools/out/bow-elemental-monster-matchups.csv
+
+# Incluir además una prueba conservadora de fiabilidad para Salva
+node tools/bow-elemental-scenarios.mjs --hitzones=../MHGU-Monster-Info/docs/data/hitzones.js --monster-summary --rapid-reliability=0.90
+```
+
+Este modo evalúa los niveles de **todo el catálogo**, incluidos arcos RAW y elementales. Para cada monstruo usa solo la primera tabla de hitzones (66 monstruos tienen tablas paralelas sin etiqueta verificada), recorre cada parte y selecciona por separado el mayor índice RAW y el mayor índice elemental dentro de cada rango (LR/HR/G). En cada arma, las flechas teóricas siguen suponiéndose conectadas a la misma parte. El arco elemental se compara con el mejor arco RAW del catálogo para esa parte/monstruo/rango, no solo contra su propio RAW.
+
+El resultado tiene cinco opciones elementales: Lite/Full con capacidad Element Coat actual, y Lite/Full con capacidad 50. La build RAW incluye el daño elemental innato del propio arco, pero no Element Coat ni las habilidades elementales. Esto evita regalarle al lado RAW un arco con elemento sin contabilizar su pequeña contribución, y permite descubrir si una build física sigue ganando con un arco elemental.
+
+La fuente externa advierte que los nombres de partes solo están confirmados para algunos monstruos; donde no hay nombre, el archivo conserva índices. La herramienta usa el nombre publicado o un fallback `Parte N`, no intenta inferir si una tabla corresponde a enfurecido, roto u otro estado. No se descarga la fuente automáticamente: el usuario conserva control sobre los archivos externos y su licencia.
+
 ## Paquetes de habilidades comparados
 
 Las habilidades compartidas entre builds son Ojo crítico +3 (+30 % afinidad), Maza (+50 % si hitzone de disparo ≥45), potenciador del tipo de flecha y Ahorramunic. La carga marcada `!` se activa con Recargando en ambos paquetes.
