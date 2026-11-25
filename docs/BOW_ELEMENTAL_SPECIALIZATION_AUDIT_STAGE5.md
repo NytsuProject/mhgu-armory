@@ -135,6 +135,15 @@ Esto confirma que muchas familias elementales conservan acceso al camino físico
 
 **Dirección de diseño para revisar por familia:** las ramas definidas como elementales deben priorizar Element Coating I/II y no tener Power Coating II como opción dominante; las ramas RAW deben priorizar Power Coating I/II y no tener Element Coating como ruta equivalente. No se aplicará automáticamente a todo el catálogo: primero se clasifican familias completas y se revisan sus bifurcaciones y progresión LR→HR→G. Las familias excepcionales se marcan para revisión manual.
 
+
+### Linaje completo: no mezclar ramas alternativas
+
+El parent graph del catálogo contiene 107 segmentos conectados en 59 familias. Entre los 107 segmentos finales hay 55 con elemento natural, 46 RAW y 6 Explosión. Los 55 finales elementales se distribuyen en 22 LR, 19 HR y 14 G.
+
+Solo cuatro familias conectadas contienen ramas finales elementales y también ramas finales RAW; una de esas cuatro tiene además una rama de Explosión. Cuatro familias conectadas tienen más de un elemento natural en sus ramas finales. Esto es bueno para el diseño: no hace falta convertir una familia entera en híbrida. Se pueden conservar ramas alternativas con identidad propia desde el punto de bifurcación, mientras cada rama elemental termina en un arco RAW deliberadamente secundario y cada rama RAW mantiene el elemento irrelevante.
+
+Familias mixtas que requieren una revisión de sus bifurcaciones: Arco petrificado, Arco de cazador, Arco recio de cazador y Arco gastado. No se cambiarán sus padres ni se eliminarán ramas; el objetivo es equilibrar la progresión y coating de cada rama sin contaminar su identidad.
+
 ## 7. Cobertura de debilidades elementales en los monstruos grandes
 
 Cruce preliminar de la primera tabla de hitzones de cada uno de los 93 monstruos grandes: partes con hitzone de disparo ≥45 (umbral relevante para Weakness Exploit) y hitzone elemental ≥20.
