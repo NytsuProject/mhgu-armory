@@ -543,6 +543,10 @@ export function runMonsterMatrix(database, monsterData, options = {}) {
   const candidates = allWeaponCharges(database, {
     includeLoadUp: options.includeLoadUp ?? true,
   });
+  const candidatesByRank = Object.fromEntries(["LR", "HR", "G"].map(rank => [
+    rank,
+    candidates.filter(candidate => candidate.rank === rank)
+  ]));
   const scenarios = [
     { id: 'base', multipliers: ELEMENT_CHARGE.base },
     { id: 'A', multipliers: ELEMENT_CHARGE.A },
@@ -560,8 +564,7 @@ export function runMonsterMatrix(database, monsterData, options = {}) {
       }]));
       for (const part of parts) {
         const shotHz = Number(part[4]) || 0;
-        for (const candidate of candidates) {
-          if (candidate.rank !== rank) continue;
+        for (const candidate of candidatesByRank[rank]) {
           const element = elementOf(candidate.weapon);
           const elementHz = element ? (Number(part[ELEMENT_INDEX[element.type]]) || 0) : 0;
           const matchup = { shotHz, elementHz };
