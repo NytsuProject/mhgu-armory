@@ -167,7 +167,6 @@ export function calculateShot(options) {
 
   // MH bow display values: displayed RAW / 1.2; displayed element / 10.
   const rawTrue = (weapon.raw + 20) / 1.2; // Attack +3 package.
-  const rawWithoutAttack = weapon.raw / 1.2;
   const rawCrit = expectedCriticalMultiplier(affinity, 1.40); // Critical Boost.
   const normalCrit = expectedCriticalMultiplier(affinity, 1.25);
   const physicalBase = (rawTrue * rawCharge * distance * shotUp
