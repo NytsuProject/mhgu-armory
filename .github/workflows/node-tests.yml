@@ -30,6 +30,16 @@ jobs:
           node tools/bow-balance-sim.mjs --hitzones "$RUNNER_TEMP/mhgu-hitzones.js" --out "$RUNNER_TEMP/bow-balance-stage5.json" --load-up-policy match-c3 --shots-per-stack 100 --skill-budgets 5,6,7 > "$RUNNER_TEMP/bow-balance-stage5.log"
           node -e "const r=JSON.parse(require('node:fs').readFileSync(process.argv[1],'utf8')); if(r.meta.monsterCount!==93) throw new Error('Expected 93 large monsters'); if(!r.matchups.length || !r.summary.length) throw new Error('Empty bow balance matrix'); console.log('Verified '+r.matchups.length+' matchup rows and '+r.summary.length+' summaries across '+r.meta.monsterCount+' large monsters.'); const rows=r.summary.filter(x=>x.skillBudget===7); const groups={}; for(const x of rows){const k=[x.rank,x.shotType,x.chargeScenario,x.coatingScenario].join('/'); const g=groups[k]||(groups[k]={n:0,w:0,r:0,fn:0,fw:0,fr:0}); g.n+=x.matchups; g.w+=x.elementalWins; g.r+=x.meanElementToRawRatio*x.matchups; g.fn+=x.favorable25Plus.count; g.fw+=x.favorable25Plus.elementalWins; g.fr+=(x.favorable25Plus.meanRatio||0)*x.favorable25Plus.count;} for(const [k,g] of Object.entries(groups)) console.log(k+' ratio='+ (g.r/g.n).toFixed(3)+' wins='+g.w+'/'+g.n+' | fav25+ ratio='+ (g.fn? (g.fr/g.fn).toFixed(3):'n/a')+' wins='+g.fw+'/'+g.fn);" "$RUNNER_TEMP/bow-balance-stage5.json"
 
+
+      - name: Run detailed monster matrix with Guild style
+        run: |
+          node tools/bow-elemental-scenarios.mjs --hitzones="$RUNNER_TEMP/mhgu-hitzones.js" --style=guild --monster-summary > "$RUNNER_TEMP/bow-elemental-monsters-guild.json"
+          node -e "const r=JSON.parse(require('node:fs').readFileSync(process.argv[1],'utf8')); if(r.metadata.largeMonsters!==93 || r.results.length!==279) throw new Error('Expected 93 monsters × 3 ranks'); console.log('Detailed Guild matrix: '+r.metadata.largeMonsters+' large monsters × '+r.metadata.ranks.length+' ranks = '+r.results.length+' rank-matchups.');" "$RUNNER_TEMP/bow-elemental-monsters-guild.json"
+      - name: Run detailed monster matrix with Valor style
+        run: |
+          node tools/bow-elemental-scenarios.mjs --hitzones="$RUNNER_TEMP/mhgu-hitzones.js" --style=valor --monster-summary > "$RUNNER_TEMP/bow-elemental-monsters-valor.json"
+          node -e "const r=JSON.parse(require('node:fs').readFileSync(process.argv[1],'utf8')); if(r.metadata.largeMonsters!==93 || r.results.length!==279) throw new Error('Expected 93 monsters × 3 ranks'); console.log('Detailed Valor matrix: '+r.metadata.largeMonsters+' large monsters × '+r.metadata.ranks.length+' ranks = '+r.results.length+' rank-matchups.');" "$RUNNER_TEMP/bow-elemental-monsters-valor.json"
+
       - name: Run full bow catalogue scenario smoke test
         run: |
           node tools/bow-elemental-scenarios.mjs --summary > "$RUNNER_TEMP/bow-scenarios.json"
@@ -43,4 +53,6 @@ jobs:
             ${{ runner.temp }}/bow-balance-stage5.json
             ${{ runner.temp }}/bow-balance-stage5.log
             ${{ runner.temp }}/bow-scenarios.json
+            ${{ runner.temp }}/bow-elemental-monsters-guild.json
+            ${{ runner.temp }}/bow-elemental-monsters-valor.json
           retention-days: 14
