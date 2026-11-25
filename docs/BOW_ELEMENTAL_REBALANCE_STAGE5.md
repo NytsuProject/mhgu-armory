@@ -63,12 +63,12 @@ Subir el MV físico potencia RAW, no el elemento por impacto. Hacerlo para soluc
 
 Fuente: `data/weapons/bow.json`, SHA `ec48bf9390a2eaa1123bfdea11b76bb359483b3b`.
 
-- 107 segmentos de árbol y 735 registros de nivel; al reconstruir el parent graph hay 59 familias raíz y 78 ramas terminales.
-- Clasificación por arma final de cada rama: 41 elementales naturales, 33 RAW y 4 Explosión.
-- Por rango final: LR = 10 elementales / 9 RAW / 1 Explosión; HR = 17 / 13 / 0; G = 14 / 11 / 3.
-- De las 41 ramas elementales finales, 28 tienen Power Coating 2, 26 tienen Element Coating 2 y 19 tienen ambos en ese nivel. De las 33 ramas RAW, 24 conservan Power Coating 2 y ninguna Element Coating 2.
-- Solo tres familias raíz contienen ramas terminales de más de una identidad: Arco petrificado (elemental/RAW), Arco recio de cazador (elemental/RAW/Explosión) y Arco de cazador (elemental/RAW). Las bifurcaciones se deben equilibrar sin eliminar ramas ni cambiar sus padres.
-- La auditoría completa de progresión, compatibilidad de coatings a lo largo de cada ruta y los 674 slots de Recargando está en [BOW_BRANCH_PROGRESSION_AUDIT_STAGE5.md](BOW_BRANCH_PROGRESSION_AUDIT_STAGE5.md).
+- 107 líneas/segmentos de árbol y 735 registros de nivel; el parent graph contiene 59 familias raíz. Hay 78 segmentos sin hijos, pero **los 107 segmentos conservan su propia línea hasta su último nivel**, incluso cuando otros se bifurcan desde un nivel anterior.
+- Clasificación por extremo de línea: 55 elementales naturales, 46 RAW y 6 Explosión.
+- Por rango final: LR = 22 elementales / 18 RAW / 2 Explosión; HR = 19 / 17 / 1; G = 14 / 11 / 3.
+- De las 55 líneas elementales, 51 permiten algún revestimiento de Potencia, 46 algún revestimiento Elemental y 43 ambos grupos. 35 tienen Power Coating 2, 35 Element Coating 2 y 24 ambos niveles II. De las 46 líneas RAW, 39 permiten algún Power Coating, ninguna Element Coating y 31 tienen Power Coating 2.
+- Cuatro familias raíz contienen líneas de más de una identidad: Arco petrificado (elemental/RAW), Arco de cazador (elemental/RAW), Arco recio de cazador (elemental/RAW/Explosión) y Arco gastado (elemental/RAW). Las bifurcaciones se deben equilibrar sin eliminar líneas ni cambiar sus padres.
+- La auditoría completa de progresión, coating a lo largo de cada linaje y los 674 slots de Recargando está en [BOW_BRANCH_PROGRESSION_AUDIT_STAGE5.md](BOW_BRANCH_PROGRESSION_AUDIT_STAGE5.md).
 
 ## Primera hipótesis de prueba para cargas
 
