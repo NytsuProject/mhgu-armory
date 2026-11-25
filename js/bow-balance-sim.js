@@ -188,7 +188,9 @@ export function calculateVolley(weapon, part, options = {}) {
   const elementHz = elementIndex === null ? 0 : Number(part[5 + elementIndex] || 0);
   const affinity = affinityForProfile(weapon, part, profile);
   const trueRaw = weapon.rawDisplay / BOW_DISPLAY_RAW_MULTIPLIER + (profile.attackTrueRaw || 0);
-  const rawCoating = coatingForWeapon(weapon, profile, options.coatingMode || "none");
+  const rawCoating = profile.id === "raw"
+    ? coatingForWeapon(weapon, PROFILE.raw, options.coatingMode || "none")
+    : { label: "No aplica", multiplier: 1, capacity: 0, extraSkillSlots: 0, item: null };
   const rawCoatingFactor = averageCoatingMultiplier(rawCoating, options.shotsPerStack || 100, options.ammoSaverReturnRate || 0);
   const rawCritFactor = expectedPhysicalCrit(affinity, profile.criticalBoost);
   const shotUp = SHOT_TYPE_UP[type] || 1;
@@ -197,7 +199,9 @@ export function calculateVolley(weapon, part, options = {}) {
     * rawMotionTotal * (shotHz / 100) * shotUp * rawCritFactor * rawCoatingFactor;
 
   const trueElement = elementEntry ? elementWithSkills(elementEntry.display, profile.elementalSkills) : 0;
-  const elementCoating = coatingForWeapon(weapon, PROFILE.elemental, options.elementCoatingMode || "none");
+  const elementCoating = profile.id === "elemental"
+    ? coatingForWeapon(weapon, PROFILE.elemental, options.elementCoatingMode || "none")
+    : { label: "No aplica", multiplier: 1, capacity: 0, extraSkillSlots: 0, item: null };
   const elementCoatingFactor = averageCoatingMultiplier(elementCoating, options.shotsPerStack || 100, options.ammoSaverReturnRate || 0);
   const criticalElementFactor = profile.criticalElement ? 1 + Math.max(0, affinity) / 100 * 0.35 : 1;
   const elementalHits = mv.length;
