@@ -69,6 +69,23 @@ test("Ammo Saver is off by default because no exact MHGU return rate is verified
   assert.equal(row.coatings.elementFullExpectedUsesCapacity50, 60);
 });
 
+
+test("enabling Ammo Saver adds its point cost to the relevant builds and models its return rate", () => {
+  const row = calculateShot({
+    weapon, charge: 'Rapid Lv4', matchup, slotIndex: 2,
+    ammoSaverChance: 0.20,
+  });
+  assert.equal(row.coatings.ammoSaverEnabled, true);
+  assert.equal(row.coatings.ammoSaverChance, 0.20);
+  assert.equal(row.skillCosts.raw.points, 80);
+  assert.equal(row.skillCosts.raw.skills, 6);
+  assert.equal(row.skillCosts.elementFull.points, 105);
+  assert.equal(row.skillCosts.elementFull.skills, 8);
+  assert.equal(row.coatings.powerExpectedUses, 87.5);
+  assert.equal(row.coatings.elementFullExpectedUsesCurrent, 37.5);
+  assert.equal(row.coatings.elementFullExpectedUsesCapacity50, 75);
+});
+
 test('global charge scenarios affect uncoated elemental damage in both builds', () => {
   const base = calculateShot({
     weapon, charge: 'Rapid Lv4', matchup, slotIndex: 2,
@@ -88,9 +105,11 @@ test('element build uses elemental coating and distinct skill package costs', ()
   });
   assert.equal(nativeCoatings.skillCosts.raw.powerUnlock, 0);
   assert.equal(nativeCoatings.skillCosts.elementLite.elementUnlock, 0);
-  assert.equal(nativeCoatings.skillCosts.raw.points, 80);
+  assert.equal(nativeCoatings.skillCosts.raw.points, 70);
+  assert.equal(nativeCoatings.skillCosts.raw.skills, 5);
   assert.equal(nativeCoatings.skillCosts.elementLite.points, 85);
-  assert.equal(nativeCoatings.skillCosts.elementFull.points, 105);
+  assert.equal(nativeCoatings.skillCosts.elementFull.points, 95);
+  assert.equal(nativeCoatings.skillCosts.elementFull.skills, 7);
   const noCoatings = calculateShot({
     weapon: { ...weapon, x: { ...weapon.x, coatings: [] } },
     charge: 'Rapid Lv4', matchup, slotIndex: 2,
@@ -116,7 +135,7 @@ test('matrix enumerates every elemental slot and synthetic matchup', () => {
   assert.equal(rows.filter(row => row.slot === 4).length, 4);
   assert.ok(rows.every(row => row.rank === 'G'));
   assert.equal(summary.length, 4); // one group per matchup
-  assert.ok(summary.every(row => row.bestLite.skillCosts.raw.points >= 80));
+  assert.ok(summary.every(row => row.bestLite.skillCosts.raw.points >= 70));
 });
 
 test('rejects invalid coating-uptime probabilities', () => {
