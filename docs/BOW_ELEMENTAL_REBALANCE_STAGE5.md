@@ -39,7 +39,7 @@ El número de proyectiles/impactos potenciales por nivel explica una parte impor
 
 | Tipo | Lv1 | Lv2 | Lv3 | Lv4 | Lv5 |
 |---|---:|---:|---:|---:|---:|
-| Salva / Rapid | 1 | 2 | 3 | 4 | 5 |
+| Salva / Rapid | 1 | 2 | 3 | 4 | 4 |
 | Perforante / Pierce | 3 | 4 | 5 | 5 | 5 |
 | Abanico / Spread | 3 | 3 | 5 | 5 | 5 |
 | Pesada / Heavy | 1 | 1 | 1 | 1 | 1 |
@@ -103,3 +103,8 @@ Abanico queda fuera de los cambios de balance de esta etapa. Se conservan sus Mo
 - [Kiranico MHGU — Elem C+](https://mhgu.kiranico.com/skill/48364) — desbloqueo de revestimientos elementales.
 - [MHGU Skill Details](https://www.scribd.com/document/1013447337/MHGU-Skill-Details) — tiers elementales, Crítico elemental y habilidades de tipo de flecha.
 - [Laxaria — MHGen Bow Damage Calculation](https://laxgg.blogspot.com/p/mhgen-damage-calculation-motion-values.html) — separación entre daño físico y elemental; advierte que parte de sus valores deriva de MH4U/MHGen, por lo que no se trata como fórmula oficial confirmada de MHXX.
+
+
+## Auditoría de especialización
+
+La investigación de fórmulas, impactos, coatings, habilidades y separación RAW/elemental está en [BOW_ELEMENTAL_SPECIALIZATION_AUDIT_STAGE5.md](BOW_ELEMENTAL_SPECIALIZATION_AUDIT_STAGE5.md). Incluye la corrección de Salva Lv5 (cuatro impactos) y la regla de preservar Abanico sin cambios.
