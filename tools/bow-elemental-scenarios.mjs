@@ -72,6 +72,25 @@ export function normalizeLoadUpCharge(charges, index) {
   return `${previous.type} Lv${parsed.level}!`;
 }
 
+export function loadUpDiagnostics(database) {
+  const result = { marked: 0, alreadyMatching: 0, normalized: 0, bySlot: {} };
+  for (const tree of database.trees || []) {
+    for (const level of tree.levels || []) {
+      const charges = level.x?.charges || [];
+      for (const [index, sourceCharge] of charges.entries()) {
+        const parsed = parseCharge(sourceCharge);
+        if (!parsed?.requiresLoadUp) continue;
+        result.marked += 1;
+        const slot = String(index + 1);
+        result.bySlot[slot] = (result.bySlot[slot] || 0) + 1;
+        if (normalizeLoadUpCharge(charges, index) !== sourceCharge) result.normalized += 1;
+        else result.alreadyMatching += 1;
+      }
+    }
+  }
+  return result;
+}
+
 export function elementOf(level) {
   const row = (level.ele || []).find((entry) => ELEMENTS.includes(entry[1]));
   return row ? { label: row[0], type: row[1], value: row[2] } : null;
@@ -312,7 +331,6 @@ function weaponRows(trees, options = {}) {
             weaponName: level.nEs || level.n, level: level.lv,
             raw: level.raw, affinity: level.aff || 0,
             ...base,
-            sourceCharge: charge,
             catalogueCharge: sourceCharge,
             loadUpTypeCorrected: charge !== sourceCharge,
             A_liteMissionVsRaw: scenarioA.liteMissionVsRaw,
@@ -448,6 +466,7 @@ export function runMonsterMatrix(database, monsterData, options = {}) {
     metadata: {
       largeMonsters: largeMonsters.length,
       candidates: candidates.length,
+      loadUpDiagnostics: loadUpDiagnostics(database),
       ranks: ['LR', 'HR', 'G'],
       hitzoneTable: 'first table only; parallel tables remain unlabelled',
       options: {
@@ -575,6 +594,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
         metadata: {
           weaponLevels: rows.length,
           elementalLevels: database.trees.reduce((n, t) => n + (t.levels || []).filter(elementOf).length, 0),
+          loadUpDiagnostics: loadUpDiagnostics(database),
           ranks: ['LR', 'HR', 'G'],
           matchups: MATCHUPS,
           options,
