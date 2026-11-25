@@ -133,7 +133,6 @@ export function calculateShot(options) {
   const mvs = SHOT_MV[shot][shotLevel];
   const arrowHits = mvs.length;
   const mvSum = sum(mvs);
-  const slotIndex = arguments[0].slotIndex ?? 2;
   const affinity = shotAffinity(weapon, matchup.shotHz);
   const shotUp = SHOT_UP[shot];
   const rawCharge = RAW_CHARGE[slotIndex];
