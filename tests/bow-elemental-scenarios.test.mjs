@@ -187,6 +187,13 @@ test('real hitzone matrix compares catalogue RAW and elemental candidates by mon
   assert.equal(g.scenarios.base.elementalFull.style, 'guild');
   assert.equal(g.scenarios.base.elementalFull.powerShotCount, 1);
   assert.equal(g.scenarios.base.elementalFull50.vsRaw > 0, true);
+  assert.ok(g.byShotType.Rapid.base.raw);
+  assert.ok(g.byShotType.Rapid.base.elementalFull);
+  assert.equal(g.byShotType.Rapid.base.raw.shotType, "Rapid");
+  assert.equal(g.byShotType.Rapid.base.elementalFull.shotType, "Rapid");
+  assert.equal(g.byShotType.Rapid.base.elementalFull.rawWeapon, g.byShotType.Rapid.base.raw.weapon);
+  assert.equal(g.byShotType.Spread.base.raw, null);
+  assert.equal(g.byShotType.Spread.base.elementalFull, null);
   const noSaverRawCost = g.scenarios.base.raw.skillCosts.raw.points;
   const noSaverFullCost = g.scenarios.base.elementalFull.skillCosts.elementFull.points;
   const saver = runMonsterMatrix(database, monsterData, {
