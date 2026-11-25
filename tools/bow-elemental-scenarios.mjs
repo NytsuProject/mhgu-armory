@@ -362,7 +362,8 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   } else {
     const out = args.find(a => a.startsWith('--csv='))?.slice(6)
       || path.resolve(here, 'out/bow-elemental-scenarios.csv');
-    mkdirSync(path.dirname(out), { recursive: true });\n    writeFileSync(out, csv(rows));
+    mkdirSync(path.dirname(out), { recursive: true });
+    writeFileSync(out, csv(rows));
     process.stdout.write('CSV written: ' + out + '\nRows: ' + rows.length + '\n');
   }
 }
