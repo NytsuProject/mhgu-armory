@@ -74,6 +74,8 @@ Este modo evalúa los niveles de **todo el catálogo**, incluidos arcos RAW y el
 
 Además de la comparación global que permite que gane cualquier tipo de flecha, cada matchup ahora incluye submatrices independientes para **Rapid, Pierce, Spread y Heavy**. Dentro de cada submatriz, el mejor arco RAW y el mejor elemental están obligados a usar el mismo tipo de flecha. Esto evita que un tipo dominante oculte la brecha real de los demás y permite estudiar Salva, Perforante, Abanico y Pesada sin alterar sus parámetros. Abanico se calcula con sus datos originales.
 
+La comparación también se empareja por **la misma parte del monstruo**. Para cada parte se buscan el mejor candidato RAW y el mejor elemental con el mismo tipo de flecha; la relación elemental/RAW se calcula usando ese par. El resultado por monstruo selecciona la parte con la relación más favorable al elemento, pero conserva el desglose de todas las partes. El resumen incluye dos métricas distintas: la mejor relación por monstruo y la distribución de relaciones sobre todas las partes. No se divide el mejor daño elemental de una parte entre el mejor RAW de otra.
+
 El modo de hitzones ofrece cuatro resultados elementales: Elemental Core/Full con capacidad Element Coat actual y Elemental Core/Full con capacidad 50. La build RAW incluye el daño elemental innato del propio arco, pero no Element Coat ni las habilidades elementales. Esto evita regalarle al lado RAW un arco con elemento sin contabilizar su pequeña contribución, y permite descubrir si una build física sigue ganando con un arco elemental.
 
 La fuente externa advierte que los nombres de partes solo están confirmados para algunos monstruos; donde no hay nombre, el archivo conserva índices. La herramienta usa el nombre publicado o un fallback `Parte N`, no intenta inferir si una tabla corresponde a enfurecido, roto u otro estado. No se descarga la fuente automáticamente: el usuario conserva control sobre los archivos externos y su licencia.
@@ -118,6 +120,8 @@ Los costes reportados son umbrales de activación sumados y número de líneas d
 **RAW:** el índice suma MV físicos por cada flecha, multiplica por RAW verdadero (ataque mostrado del arco / 1,2), multiplicador RAW de carga, distancia crítica ×1,5, potenciador del tipo de flecha, hitzone de disparo, afinidad promedio con Potenciador crítico y revestimiento Power Coat II ×1,5. Power Coat II multiplica **solo el componente físico**; el elemento innato del arco se suma aparte y no recibe ese ×1,5.
 
 **Elemento:** el elemento verdadero (valor mostrado /10) se multiplica por elemento tras habilidades, multiplicador elemental de carga, hitzone elemental, número de impactos y afinidad promedio cuando Crítico elemental está activo. El revestimiento Element Coat II aplica ×1,5. Los MV físicos no se utilizan en el componente elemental.
+
+En el JSON completo, cada fila de monstruo contiene `parts`, con los candidatos RAW/elementales emparejados en cada parte y sus resultados por tipo de flecha; `scenarios` y `byShotType` resumen por monstruo la parte con la mayor relación elemental/RAW. Una relación mayor que 1 significa que la build elemental gana en esa parte concreta bajo los supuestos del modelo; no significa que el DPS real de la cacería sea mayor.
 
 El modelo usa los MV publicados para MHXX/MHGen:
 - Salva Lv1–5: 12 / 12+4 / 12+4+3 / 12+4+3+2 / 12+4+3+3; por tanto tiene 1, 2, 3, 4 y **4** flechas.
