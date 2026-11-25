@@ -10,7 +10,7 @@
  * Output: JSON summary by rank / element / shot type / matchup profile,
  *         or CSV detail for every elemental weapon level and charge slot.
  */
-import { readFileSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
@@ -117,15 +117,16 @@ function skillCost(weapon, shot, requiresLoadUp) {
  * packages. All theoretical arrows / Pierce contacts are assumed to hit the
  * same requested part. This is deliberately an upper-bound comparison.
  */
-export function calculateShot({
-  weapon, charge, matchup, elementCharge = ELEMENT_CHARGE.base,
-  rapidReliability = 1, missionShots = 200, ammoSaverChance = 0.20,
-  elementCoatingCapacity = 20,
-}) {
+export function calculateShot(options) {
+  const {
+    weapon, charge, matchup, elementCharge = ELEMENT_CHARGE.base,
+    rapidReliability = 1, missionShots = 200, ammoSaverChance = 0.20,
+    elementCoatingCapacity = 20, loadUp = false, slotIndex = 2,
+  } = options;
   const parsed = parseCharge(charge);
   const element = elementOf(weapon);
   if (!parsed || !element) return null;
-  if (parsed.requiresLoadUp && !arguments[0].loadUp) return null;
+  if (parsed.requiresLoadUp && !loadUp) return null;
 
   const shot = parsed.type;
   const shotLevel = parsed.level;
@@ -155,7 +156,7 @@ export function calculateShot({
     * (mvSum / 100) * (matchup.shotHz / 100) * reliability);
   const rawNoCoat = physicalBase * rawCrit;
   const rawPowerCoated = rawNoCoat * 1.50;
-  const rawBuildBaseElement = (element.value / 10) * ELEMENT_CHARGE.base[slotIndex]
+  const rawBuildBaseElement = (element.value / 10) * eleCharge
     * (matchup.elementHz / 100) * arrowHits * reliability;
   const rawBuildNoCoat = rawNoCoat + rawBuildBaseElement;
   const rawBuildPowerCoated = rawPowerCoated + rawBuildBaseElement;
@@ -362,7 +363,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   } else {
     const out = args.find(a => a.startsWith('--csv='))?.slice(6)
       || path.resolve(here, 'out/bow-elemental-scenarios.csv');
-    writeFileSync(out, csv(rows));
+    mkdirSync(path.dirname(out), { recursive: true });\n    writeFileSync(out, csv(rows));
     process.stdout.write('CSV written: ' + out + '\nRows: ' + rows.length + '\n');
   }
 }
