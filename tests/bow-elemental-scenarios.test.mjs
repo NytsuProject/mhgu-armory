@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  ELEMENT_CHARGE, calculateShot, parseCharge, rankFromRarity,
+  ELEMENT_CHARGE, calculateShot, parseCharge, rankFromRarity, runMatrix,
 } from '../tools/bow-elemental-scenarios.mjs';
 
 const weapon = {
@@ -63,12 +63,39 @@ test('element build uses elemental coating and distinct skill package costs', ()
   });
   assert.equal(nativeCoatings.skillCosts.raw.powerUnlock, 0);
   assert.equal(nativeCoatings.skillCosts.elementLite.elementUnlock, 0);
-  assert.ok(nativeCoatings.skillCosts.elementFull.points
-    > nativeCoatings.skillCosts.elementLite.points);
+  assert.equal(nativeCoatings.skillCosts.raw.points, 80);
+  assert.equal(nativeCoatings.skillCosts.elementLite.points, 75);
+  assert.equal(nativeCoatings.skillCosts.elementFull.points, 85);
   const noCoatings = calculateShot({
     weapon: { ...weapon, x: { ...weapon.x, coatings: [] } },
     charge: 'Rapid Lv4', matchup, slotIndex: 2,
   });
   assert.equal(noCoatings.skillCosts.raw.powerUnlock, 15);
   assert.equal(noCoatings.skillCosts.elementLite.elementUnlock, 15);
+});
+
+test('matrix enumerates every elemental slot and synthetic matchup', () => {
+  const database = {
+    trees: [{
+      id: 1, name: 'Test Bow', rarity: 8,
+      levels: [{
+        lv: 1, rar: 8, nEs: 'Arco de prueba', raw: 240, aff: 0,
+        ele: [['Hielo', 'Ice', 33]],
+        x: { charges: ['Rapid Lv2', 'Rapid Lv3', 'Rapid Lv4', 'Rapid Lv5!'],
+          coatings: ['Power Coating 2', 'Element Coating 2'] },
+      }],
+    }],
+  };
+  const { rows, summary } = runMatrix(database);
+  assert.equal(rows.length, 16); // four slots × four matchup profiles
+  assert.equal(rows.filter(row => row.slot === 4).length, 4);
+  assert.ok(rows.every(row => row.rank === 'G'));
+  assert.equal(summary.length, 4); // one group per matchup
+  assert.ok(summary.every(row => row.bestLite.skillCosts.raw.points === 80));
+});
+
+test('rejects invalid coating-uptime probabilities', () => {
+  assert.throws(() => calculateShot({
+    weapon, charge: 'Rapid Lv4', matchup, ammoSaverChance: 1,
+  }), /ammoSaverChance/);
 });
