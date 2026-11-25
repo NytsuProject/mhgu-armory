@@ -44,6 +44,28 @@ test('Load Up-only charge is excluded when the skill is absent', () => {
   }), null);
 });
 
+test('optional element cap clamps catalogue element before elemental skills and innate hybrid damage', () => {
+  const uncapped = calculateShot({
+    weapon, charge: 'Rapid Lv4', matchup, slotIndex: 2,
+  });
+  const capped = calculateShot({
+    weapon, charge: 'Rapid Lv4', matchup, slotIndex: 2, elementCap: 30,
+  });
+  assert.equal(uncapped.elementValue, 33);
+  assert.equal(uncapped.effectiveElementValue, 33);
+  assert.equal(uncapped.elementCap, null);
+  assert.equal(capped.elementValue, 33); // source/catalogue value remains visible
+  assert.equal(capped.effectiveElementValue, 30);
+  assert.equal(capped.elementCap, 30);
+  assert.equal(capped.rawElementNoCoat, Number((uncapped.rawElementNoCoat * 30 / 33).toFixed(4)));
+  assert.equal(capped.elementFullElementNoCoat, Number((uncapped.elementFullElementNoCoat * 42 / 45).toFixed(4)));
+  assert.equal(capped.rawPhysicalNoCoat, uncapped.rawPhysicalNoCoat);
+  assert.equal(capped.elementPhysicalNoCoat, uncapped.elementPhysicalNoCoat);
+  assert.throws(() => calculateShot({
+    weapon, charge: 'Rapid Lv4', matchup, slotIndex: 2, elementCap: -1,
+  }), /elementCap/);
+});
+
 
 test("Power Coating multiplies only the physical component of a hybrid bow shot", () => {
   const row = calculateShot({
