@@ -27,8 +27,9 @@ const average = values => values.length
   ? values.reduce((sum, value) => sum + value, 0) / values.length
   : null;
 
-function summarizeGroup({ rank, scenario, profile, label, shotType, chosen }) {
+function summarizeGroup({ rank, scenario, profile, label, shotType, chosen, partChosen }) {
   const ratios = chosen.map(item => item.value.vsRaw);
+  const partRatios = partChosen.map(item => item.value.vsRaw);
   const band = (predicate) => {
     const items = chosen.filter(item => predicate(item.value.elementHz));
     const values = items.map(item => item.value.vsRaw);
@@ -45,6 +46,16 @@ function summarizeGroup({ rank, scenario, profile, label, shotType, chosen }) {
     meanRatio: average(ratios),
     medianRatio: median(ratios),
     elementalWins: ratios.filter(value => value > 1).length,
+    monstersWithAnyElementalPartWin: new Set(partChosen.filter(item => item.value.vsRaw > 1).map(item => item.monster)).size,
+    partMatchups: partRatios.length,
+    partMeanRatio: average(partRatios),
+    partMedianRatio: median(partRatios),
+    partWins: partRatios.filter(value => value > 1).length,
+    partFavorable25Plus: (() => {
+      const items = partChosen.filter(item => item.value.elementHz >= 25);
+      const values = items.map(item => item.value.vsRaw);
+      return { count: values.length, meanRatio: average(values), medianRatio: median(values), wins: values.filter(value => value > 1).length };
+    })(),
     favorable25Plus: band(value => value >= 25),
     medium15To24: band(value => value >= 15 && value < 25),
     poor10OrLess: band(value => value <= 10),
@@ -75,8 +86,15 @@ for (const rank of ranks) {
         monster: monster.monster,
         value: monster.scenarios?.[scenario]?.[key] || null,
       })).filter(item => Number.isFinite(item.value?.vsRaw));
+      const allParts = monsters.flatMap(monster => (monster.parts || []).map(part => ({
+        monster: monster.monster,
+        part: part.part,
+        value: part.scenarios?.[scenario]?.[key] || null,
+      }))).filter(item => Number.isFinite(item.value?.vsRaw));
       rows.push(summarizeGroup({
-        rank, scenario, profile: key, label, shotType: "ALL", chosen: all,
+        rank, scenario, profile: key, label, shotType: "ALL",
+        chosen: all,
+        partChosen: allParts,
       }));
 
       for (const shotType of shotTypes) {
@@ -84,8 +102,15 @@ for (const rank of ranks) {
           monster: monster.monster,
           value: monster.byShotType?.[shotType]?.[scenario]?.[key] || null,
         })).filter(item => Number.isFinite(item.value?.vsRaw));
+        const typeParts = monsters.flatMap(monster => (monster.parts || []).map(part => ({
+          monster: monster.monster,
+          part: part.part,
+          value: part.byShotType?.[shotType]?.[scenario]?.[key] || null,
+        }))).filter(item => Number.isFinite(item.value?.vsRaw));
         rows.push(summarizeGroup({
-          rank, scenario, profile: key, label, shotType, chosen,
+          rank, scenario, profile: key, label, shotType,
+          chosen,
+          partChosen: typeParts,
         }));
       }
     }
@@ -95,7 +120,7 @@ for (const rank of ranks) {
 const result = {
   source: resolve(input),
   metadata: report.metadata,
-  note: "ALL compares the best candidates across all shot types. A named shotType compares the best elemental and RAW candidates restricted to that same type. Ratio above 1 means the elemental candidate's theoretical same-part mission average exceeds the RAW candidate. This is not measured hunt DPS.",
+  note: "ALL compares the best candidates across all shot types. A named shotType compares the best elemental and RAW candidates restricted to that same type. Each ratio is paired on the same monster part. Top-level means use each monster's best-ratio part; partMeanRatio and partWins aggregate every evaluated part. Ratio above 1 means the elemental candidate's theoretical mission average exceeds the RAW candidate on that exact part. This is not measured hunt DPS.",
   rows,
 };
 const json = JSON.stringify(result, null, 2) + "\n";
