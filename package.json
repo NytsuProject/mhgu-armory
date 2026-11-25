@@ -1,0 +1,9 @@
+{
+  "name": "mhgu-armory",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "bow:scenarios": "node tools/bow-elemental-scenarios.mjs --summary"
+  }
+}
