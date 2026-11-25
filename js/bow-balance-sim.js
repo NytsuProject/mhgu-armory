@@ -374,8 +374,15 @@ export function simulateBowBalance(bowData, hitzoneData, options = {}) {
       shotsPerStack,
       ammoSaverReturnRate: returnRate,
       firstHitzoneTableOnly: true,
+      profiles: Object.values(PROFILE).map(profile => ({
+        id: profile.id,
+        label: profile.label,
+        activeSkills: profile.activeSkills,
+        activeSkillCount: profile.skillCount,
+        nominalThresholdPoints: profile.nominalThresholdPoints
+      })),
       assumptions: [
-        "Los paquetes comparados tienen cinco habilidades de daño activas; la suma de puntos umbral no equivale a una optimización completa de armadura.",
+        "Los paquetes comparados tienen cinco habilidades ofensivas activas; sus puntos umbral nominales (RAW 65, elemental 55) no equivalen a una optimización completa de armadura ni son directamente comparables entre árboles de habilidad.",
         "Attack +3 se aplica como +20 de true RAW; el RAW mostrado del arco se divide por el multiplicador de clase 1,2.",
         "Cada flecha de una descarga se supone que conecta con la misma parte seleccionada; es un límite superior optimista, especialmente para Perforante y Abanico.",
         "Se usa solo la primera tabla de hitzones; las tablas paralelas no se etiquetan como estados.",
