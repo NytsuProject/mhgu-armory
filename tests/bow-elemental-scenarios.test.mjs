@@ -140,7 +140,13 @@ test('real hitzone matrix compares catalogue RAW and elemental candidates by mon
   assert.ok(g.scenarios.base.raw);
   assert.ok(g.scenarios.base.elementalFull);
   assert.equal(g.scenarios.base.elementalFull.element, 'Ice');
+  assert.equal(g.scenarios.base.elementalFull.style, 'guild');
+  assert.equal(g.scenarios.base.elementalFull.powerShotCount, 1);
   assert.equal(g.scenarios.base.elementalFull50.vsRaw > 0, true);
+  const valor = runMonsterMatrix(database, monsterData, { includeLoadUp: true, style: 'valor' });
+  const valorG = valor.results.find(row => row.rank === 'G');
+  assert.equal(valorG.scenarios.base.elementalFull.style, 'valor');
+  assert.equal(valorG.scenarios.base.elementalFull.powerShotCount, 2);
 });
 
 test('Load Up charge keeps its level but follows the preceding arrow type', () => {
