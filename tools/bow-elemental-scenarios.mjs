@@ -118,15 +118,15 @@ function shotAffinity(weapon, shotHz) {
   return clamp((weapon.aff || 0) + expert3 + weaknessExploit, -100, 100);
 }
 
-function skillCost(weapon, requiresLoadUp, trueShotUp = false) {
+function skillCost(weapon, requiresLoadUp, trueShotUp = false, ammoSaverEnabled = false) {
   const nativePower2 = hasCoating(weapon, 'Power Coating 2');
   const nativeElement2 = hasCoating(weapon, 'Element Coating 2');
   const powerUnlock = nativePower2 ? 0 : 15;
   const elementUnlock = nativeElement2 ? 0 : 15;
   const loadUp = requiresLoadUp ? 10 : 0;
   const raw = {
-    points: 20 + 20 + 10 + 10 + 10 + 10 + powerUnlock + loadUp,
-    skills: 6 + Number(!nativePower2) + Number(requiresLoadUp),
+    points: 20 + 20 + 10 + 10 + 10 + (ammoSaverEnabled ? 10 : 0) + powerUnlock + loadUp,
+    skills: 5 + Number(ammoSaverEnabled) + Number(!nativePower2) + Number(requiresLoadUp),
     powerUnlock, loadUp,
   };
   // Element Core keeps the same six core skill lines as RAW and retains Attack +3.
@@ -138,8 +138,8 @@ function skillCost(weapon, requiresLoadUp, trueShotUp = false) {
   };
   // Full adds Ammo Saver and general Elemental +1 (two extra skill lines).
   const elementFull = {
-    points: elementLite.points + 10 + 10,
-    skills: elementLite.skills + 2,
+    points: elementLite.points + 10 + (ammoSaverEnabled ? 10 : 0),
+    skills: elementLite.skills + 1 + Number(ammoSaverEnabled),
     elementUnlock, loadUp,
   };
   if (trueShotUp) {
@@ -200,7 +200,8 @@ export function calculateShot(options) {
   const weaponCoatings = weapon.x?.coatings || [];
   const hasPower2 = weaponCoatings.includes('Power Coating 2');
   const hasElement2 = weaponCoatings.includes('Element Coating 2');
-  const skillCosts = skillCost(weapon, loadUpForPackage ?? parsed.requiresLoadUp, trueShotUp);
+  const skillCosts = skillCost(weapon, loadUpForPackage ?? parsed.requiresLoadUp, trueShotUp, ammoSaverEnabled);
+  const activeAmmoSaverChance = ammoSaverEnabled ? ammoSaverChance : 0;
 
   // MH bow display values: displayed RAW / 1.2; displayed element / 10.
   const rawTrue = (weapon.raw + 20) / 1.2; // Attack +3 package.
@@ -231,11 +232,11 @@ export function calculateShot(options) {
   const expectedUses = (capacity, combineBonus, saverChance) =>
     (capacity + combineBonus) / (1 - saverChance);
   const uptime = (uses) => clamp(uses / missionShots, 0, 1);
-  const powerUses = expectedUses(50, 20, ammoSaverChance);
+  const powerUses = expectedUses(50, 20, activeAmmoSaverChance);
   const elementUsesCoreNow = expectedUses(elementCoatingCapacity, 10, 0);
   const elementUsesCoreProposed = expectedUses(50, 10, 0);
-  const elementUsesFullNow = expectedUses(elementCoatingCapacity, 10, ammoSaverChance);
-  const elementUsesFullProposed = expectedUses(50, 10, ammoSaverChance);
+  const elementUsesFullNow = expectedUses(elementCoatingCapacity, 10, activeAmmoSaverChance);
+  const elementUsesFullProposed = expectedUses(50, 10, activeAmmoSaverChance);
   const missionAverage = (base, coated, ratio) => base + (coated - base) * ratio;
   const rawMissionAverage = missionAverage(rawBuildNoCoat, rawBuildPowerCoated, uptime(powerUses));
   // Element Core has Attack +3 but no Ammo Saver; Full adds Ammo Saver and Elemental +1.
@@ -288,7 +289,8 @@ export function calculateShot(options) {
       elementFullUptimeCurrent: round(uptime(elementUsesFullNow)),
       elementFullUptimeCapacity50: round(uptime(elementUsesFullProposed)),
       missionShots,
-      ammoSaverChance,
+      ammoSaverChance: activeAmmoSaverChance,
+      ammoSaverEnabled,
     },
     skillCosts,
     sensitivity: shot === 'Rapid' ? { rapidReliability: reliability } : null,
@@ -443,6 +445,7 @@ function weaponRows(trees, options = {}) {
             elementCharge: ELEMENT_CHARGE.base,
             missionShots: options.missionShots ?? 200,
             ammoSaverChance: options.ammoSaverChance ?? 0,
+            ammoSaverEnabled: options.ammoSaverEnabled ?? (options.ammoSaverChance > 0),
             elementCoatingCapacity: options.elementCoatingCapacity ?? 20,
             rapidReliability: options.rapidReliability ?? 1,
             style: options.style ?? 'guild',
@@ -456,6 +459,7 @@ function weaponRows(trees, options = {}) {
             elementCharge: ELEMENT_CHARGE.A,
             missionShots: options.missionShots ?? 200,
             ammoSaverChance: options.ammoSaverChance ?? 0,
+            ammoSaverEnabled: options.ammoSaverEnabled ?? (options.ammoSaverChance > 0),
             elementCoatingCapacity: options.elementCoatingCapacity ?? 20,
             rapidReliability: options.rapidReliability ?? 1,
             style: options.style ?? 'guild',
@@ -468,6 +472,7 @@ function weaponRows(trees, options = {}) {
             elementCharge: ELEMENT_CHARGE.B,
             missionShots: options.missionShots ?? 200,
             ammoSaverChance: options.ammoSaverChance ?? 0,
+            ammoSaverEnabled: options.ammoSaverEnabled ?? (options.ammoSaverChance > 0),
             elementCoatingCapacity: options.elementCoatingCapacity ?? 20,
             rapidReliability: options.rapidReliability ?? 1,
             style: options.style ?? 'guild',
@@ -632,6 +637,7 @@ export function runMonsterMatrix(database, monsterData, options = {}) {
         includeLoadUp: options.includeLoadUp ?? true,
         missionShots: options.missionShots ?? 200,
         ammoSaverChance: options.ammoSaverChance ?? 0,
+        ammoSaverEnabled: options.ammoSaverEnabled ?? (options.ammoSaverChance > 0),
         elementCoatingCapacity: options.elementCoatingCapacity ?? 20,
         rapidReliability: options.rapidReliability ?? 1,
         style: options.style ?? 'guild',
