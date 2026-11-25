@@ -94,7 +94,7 @@ La guía de MHGen observa que los aumentos de elemento suelen aportar solo unos 
 
 - `Elem C+` a +10 habilita Element Coat I y a +15 habilita todos los niveles.
 - `Power C+` a +10 habilita Power Coat I y a +15 habilita todos los niveles.
-- `Ammo Saver` puede evitar consumir un coating ocasionalmente (20 % según la guía), por lo que debe incluirse al modelar la duración efectiva.
+- `Ammo Saver` puede devolver ocasionalmente un revestimiento. Kiranico no publica una probabilidad; el 20 % aparece en fuentes comunitarias secundarias y solo debe modelarse como escenario de sensibilidad, nunca como valor base.
 
 Esto significa que no basta con comparar ×1,50 contra ×1,50. Hay que comparar también el coste en puntos de habilidad y los usos disponibles. Referencias MHGU: https://mhgu.kiranico.com/skill/48364 y https://mhgu.kiranico.com/skill/40554. Guía de arco: https://laxgg.blogspot.com/p/mhgen-armour-skills.html.
 
@@ -112,7 +112,7 @@ Con la combinación positiva actual documentada en el Builder (tope porcentual c
 
 Esto es el crecimiento del **componente elemental**, no del daño total del disparo. El físico sigue sumándose aparte y puede ser una fracción muy grande del resultado. También muestra que el +6 plano pesa mucho más en LR/HR con elemento base bajo que en un arco con 60 de elemento.
 
-Para estimar duración durante 200 disparos, se deben incluir también las combinaciones: Power Coat II dispone de 50 + 20 unidades combinadas; Element Coat II, 20 + 10. Ammo Saver tiene un 20 % de probabilidad de devolver el revestimiento gastado, por lo que el número esperado de disparos cubiertos es stock / (1 − probabilidad).
+Para estimar duración durante 200 disparos, se deben incluir también las combinaciones: Power Coat II dispone de 50 + 20 unidades combinadas; Element Coat II, 20 + 10. Kiranico describe Ammo Saver únicamente como una devolución ocasional y no especifica una tasa. La tabla usa un 20 % de retorno como hipótesis secundaria; el simulador nuevo lo deja en 0 % por defecto y permite introducir 0.2 solo para una prueba de sensibilidad.
 
 | Build benchmark | Stock esperado | Cobertura de 200 disparos | Multiplicador medio del componente |
 |---|---:|---:|---:|
@@ -122,9 +122,15 @@ Para estimar duración durante 200 disparos, se deben incluir también las combi
 | Element Full · Element Coat II + Ammo Saver | 37,5 | 18,75 % | ×1,094 |
 | Element Full · Element Coat II capacidad 50 + Ammo Saver | 75 | 37,5 % | ×1,188 |
 
-Estos promedios solo modelan la disponibilidad del revestimiento. No descuentan el tiempo de combinar/cambiar, no garantizan esa cantidad exacta y no son una medición de DPS. La diferencia de acceso a revestimientos introduce una desventaja sostenida en la build elemental; subir capacidad a 50 reduce parte de esa brecha, pero no transforma por sí solo el componente elemental en daño físico equivalente. Fuente de capacidades y combinaciones: Yet Another Weapon Guide, secciones Power/Element Coating; probabilidad de Ammo Saver: MHGU Skill Details.
+Estos promedios solo modelan la disponibilidad del revestimiento. No descuentan el tiempo de combinar/cambiar, no garantizan esa cantidad exacta y no son una medición de DPS. La diferencia de acceso a revestimientos introduce una desventaja sostenida en la build elemental; subir capacidad a 50 reduce parte de esa brecha, pero no transforma por sí solo el componente elemental en daño físico equivalente. Fuentes de capacidad y combinaciones: Yet Another Weapon Guide, secciones Power/Element Coating. Kiranico solo confirma que Ammo Saver devuelve revestimientos ocasionalmente: https://mhgu.kiranico.com/skill.
 
 **Decisión provisional sobre las habilidades:** no voy a inflar todavía los porcentajes de las habilidades elementales globales. El paquete actual ya puede multiplicar aproximadamente ×1,5 el componente elemental en un arco de E=20, antes de coatings y hitzones. Primero aislaremos el problema de especialización del arco (RAW base, coating compatible y multiplicador de carga). Si después de eso el elemento no cumple la ventana de rendimiento, entonces se prueba un ajuste adicional de habilidad y se mide su impacto colateral en las demás armas.
+
+
+
+### Nota de corrección para las cifras de Ammo Saver
+
+Los porcentajes del cuadro anterior con Ammo Saver son un **escenario hipotético al 20 %**, no una cifra confirmada por Kiranico. El simulador Stage 5 no aplica devolución de forma predeterminada. Para reproducir esa hipótesis se usa `--ammo-saver-return-rate 0.2`; para la línea base se omite el parámetro o se deja en `0`.
 
 ## 6. Auditoría del catálogo actual: coating híbrido
 
