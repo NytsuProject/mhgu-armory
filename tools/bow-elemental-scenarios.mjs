@@ -305,13 +305,16 @@ export function calculateShot(options) {
   const sequentialHybridAverage = (elementBase, elementCoated, elementUses, powerCoatingMultiplier = 1.50) => {
     const elementShots = Math.min(elementUses, missionShots);
     const switchShots = elementShots > 0 && powerUses > 0 && elementShots < missionShots
-      ? coatingSwitchShots : 0;
+      ? Math.min(coatingSwitchShots, missionShots - elementShots) : 0;
     const powerShots = Math.min(powerUses,
       Math.max(0, missionShots - elementShots - switchShots));
-    const damage = elemPhysicalNoCoat + elementBase
+    // A switch shot-equivalent is a missed attack window: remove its entire
+    // uncoated baseline as well as the coating coverage that cannot be used.
+    const activeShotShare = (missionShots - switchShots) / missionShots;
+    const damage = (elemPhysicalNoCoat + elementBase) * activeShotShare
       + (elementCoated - elementBase) * (elementShots / missionShots)
       + (elemPhysicalNoCoat * (powerCoatingMultiplier - 1)) * (powerShots / missionShots);
-    return { damage, elementShots, powerShots, switchShots };
+    return { damage, elementShots, powerShots, switchShots, activeShotShare };
   };
   const hybridCurrent = sequentialHybridAverage(elemFullNoCoat,
     elemFullCoated, elementUsesFullNow);
@@ -397,15 +400,19 @@ export function calculateShot(options) {
       hybridCurrentElementShots: round(hybridCurrent.elementShots),
       hybridCurrentPowerShots: round(hybridCurrent.powerShots),
       hybridCurrentSwitchShots: round(hybridCurrent.switchShots),
+      hybridCurrentActiveShotShare: round(hybridCurrent.activeShotShare),
       hybridCapacity50ElementShots: round(hybridCapacity50.elementShots),
       hybridCapacity50PowerShots: round(hybridCapacity50.powerShots),
       hybridCapacity50SwitchShots: round(hybridCapacity50.switchShots),
+      hybridCapacity50ActiveShotShare: round(hybridCapacity50.activeShotShare),
       hybridLowCostCurrentElementShots: round(hybridLowCostCurrent.elementShots),
       hybridLowCostCurrentPowerShots: round(hybridLowCostCurrent.powerShots),
       hybridLowCostCurrentSwitchShots: round(hybridLowCostCurrent.switchShots),
+      hybridLowCostCurrentActiveShotShare: round(hybridLowCostCurrent.activeShotShare),
       hybridLowCostCapacity50ElementShots: round(hybridLowCostCapacity50.elementShots),
       hybridLowCostCapacity50PowerShots: round(hybridLowCostCapacity50.powerShots),
       hybridLowCostCapacity50SwitchShots: round(hybridLowCostCapacity50.switchShots),
+      hybridLowCostCapacity50ActiveShotShare: round(hybridLowCostCapacity50.activeShotShare),
       coatingSwitchShots,
       missionShots,
       ammoSaverChance: activeAmmoSaverChance,
@@ -640,6 +647,10 @@ function weaponRows(trees, options = {}) {
             B_hybridPowerShots: scenarioB.coatings.hybridCurrentPowerShots,
             A_hybridSwitchShots: scenarioA.coatings.hybridCurrentSwitchShots,
             B_hybridSwitchShots: scenarioB.coatings.hybridCurrentSwitchShots,
+            A_hybridLowCostPowerShots: scenarioA.coatings.hybridLowCostCurrentPowerShots,
+            B_hybridLowCostPowerShots: scenarioB.coatings.hybridLowCostCurrentPowerShots,
+            A_hybridLowCostSwitchShots: scenarioA.coatings.hybridLowCostCurrentSwitchShots,
+            B_hybridLowCostSwitchShots: scenarioB.coatings.hybridLowCostCurrentSwitchShots,
             A_hybridLowCostMissionVsRaw: scenarioA.elementHybridLowCostMissionVsRaw,
             B_hybridLowCostMissionVsRaw: scenarioB.elementHybridLowCostMissionVsRaw,
             A_liteCapacity50VsRaw: scenarioA.liteCapacity50VsRaw,
