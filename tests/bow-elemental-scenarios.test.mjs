@@ -236,6 +236,13 @@ test('real hitzone matrix compares catalogue RAW and elemental candidates by mon
   assert.ok(g.byShotType.Rapid.base.elementalFocused);
   assert.equal(g.byShotType.Rapid.base.elementalFocused.shotType, "Rapid");
   assert.equal(g.scenarios.base.elementalFull.element, 'Ice');
+  const cappedMatrix = runMonsterMatrix(database, monsterData, {
+    includeLoadUp: true, elementCap: 30,
+  });
+  const cappedG = cappedMatrix.results.find(row => row.rank === 'G');
+  assert.equal(cappedMatrix.metadata.options.elementCap, 30);
+  assert.equal(cappedG.scenarios.base.elementalFull.catalogElementValue, 45);
+  assert.equal(cappedG.scenarios.base.elementalFull.effectiveElementValue, 30);
   assert.equal(g.scenarios.base.elementalFull.style, 'guild');
   assert.equal(g.scenarios.base.elementalFull.powerShotCount, 1);
   assert.equal(g.scenarios.base.elementalFull50.vsRaw > 0, true);
