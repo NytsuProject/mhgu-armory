@@ -88,6 +88,16 @@ El cálculo actual del Builder aplica un límite conjunto de +20 % a las bonific
 
 La guía de MHGen observa que los aumentos de elemento suelen aportar solo unos pocos puntos a la descarga y resultan menos atractivos que las habilidades de crítico/RAW para el arco. Esa es precisamente la desventaja que la revisión debe corregir, pero sin convertir las habilidades elementales en una mejora descontrolada para todas las armas.
 
+
+
+### Coste real de desbloquear los coatings
+
+- `Elem C+` a +10 habilita Element Coat I y a +15 habilita todos los niveles.
+- `Power C+` a +10 habilita Power Coat I y a +15 habilita todos los niveles.
+- `Ammo Saver` puede evitar consumir un coating ocasionalmente (20 % según la guía), por lo que debe incluirse al modelar la duración efectiva.
+
+Esto significa que no basta con comparar ×1,50 contra ×1,50. Hay que comparar también el coste en puntos de habilidad y los usos disponibles. Referencias MHGU: https://mhgu.kiranico.com/skill/48364 y https://mhgu.kiranico.com/skill/40554. Guía de arco: https://laxgg.blogspot.com/p/mhgen-armour-skills.html.
+
 ## 6. Auditoría del catálogo actual: coating híbrido
 
 Fuente: `data/weapons/bow.json`, SHA `ec48bf9390a2eaa1123bfdea11b76bb359483b3b`.
@@ -107,7 +117,21 @@ Esto confirma que muchas familias elementales conservan acceso al camino físico
 
 **Dirección de diseño para revisar por familia:** las ramas definidas como elementales deben priorizar Element Coating I/II y no tener Power Coating II como opción dominante; las ramas RAW deben priorizar Power Coating I/II y no tener Element Coating como ruta equivalente. No se aplicará automáticamente a todo el catálogo: primero se clasifican familias completas y se revisan sus bifurcaciones y progresión LR→HR→G. Las familias excepcionales se marcan para revisión manual.
 
-## 7. Qué puede editarse con seguridad y qué falta localizar
+## 7. Cobertura de debilidades elementales en los monstruos grandes
+
+Cruce preliminar de la primera tabla de hitzones de cada uno de los 93 monstruos grandes: partes con hitzone de disparo ≥45 (umbral relevante para Weakness Exploit) y hitzone elemental ≥20.
+
+| Elemento | Monstruos con alguna parte que cumple ambos umbrales |
+|---|---:|
+| Fuego | 33/93 |
+| Agua | 18/93 |
+| Rayo | 20/93 |
+| Hielo | 32/93 |
+| Dragón | 13/93 |
+
+No significa que cada arco de ese elemento sea automáticamente bueno en esos monstruos: el arma debe tener ese elemento, la carga/tipo debe conectar de forma fiable y las hitzones deben coincidir en la parte atacada. Esta tabla solo mide que existe una zona simultáneamente útil para físico y elemento. La fuente de hitzones advierte que 66 de los 93 monstruos tienen varias tablas paralelas sin etiquetar; para esta cobertura se ha utilizado solamente la primera tabla de cada monstruo para no atribuir estados no verificados.
+
+## 8. Qué puede editarse con seguridad y qué falta localizar
 
 La documentación de modding para el archivo de parámetros del arco `w10` enumera duración de Haste Rain/Blade Wire, modificadores de Power Shots de Valor, generación de gauge y multiplicadores RAW de Arc Shot. No documenta ahí el multiplicador elemental de las flechas normales ni los multiplicadores elementales C1–C4.
 
@@ -115,7 +139,7 @@ Referencia: https://github-wiki-see.page/m/RTHKKona/MHGU-Modding/wiki/Weapon-Par
 
 El mod MHGU Rebalanced indica que el «ailment modifier» afecta tanto elemento como estados, pero su apartado de arco no documenta un cambio de ese modificador para las flechas normales; sí aumenta la capacidad de los revestimientos elementales y modifica otros parámetros propios del arco. Por tanto, **no se debe escribir a offsets desconocidos ni asumir que el valor de MV físico controla el elemento**. Antes de cambiar un modificador de impacto hay que localizar su tabla/estructura concreta y comprobar que afecta a elemento sin alterar indebidamente RAW o estados.
 
-## 8. Protocolo de simulación y validación
+## 9. Protocolo de simulación y validación
 
 Cada build se comparará con un presupuesto comparable de habilidades, no con armas desnudas:
 1. Build RAW: Attack, afinidad/Punto débil, Potenciador crítico, habilidad del tipo de flecha y uso sostenible de Power Coat.
@@ -132,6 +156,6 @@ Objetivo de rendimiento acordado:
 
 No se publican porcentajes de victoria de una simulación hasta modelar correctamente los presupuestos de habilidad, acceso a coatings, impactos efectivos y las tablas múltiples de hitzones. Las comparaciones preliminares simplificadas no son una medición de DPS real y no se usarán para aprobar valores.
 
-## 9. Abanico preservado
+## 10. Abanico preservado
 
 Abanico queda exactamente como en MHXX. No se cambian MVs, multiplicadores, estadísticas RAW/elemento, cargas ni habilidades. Se utilizarán sus parámetros actuales en las pruebas generales, sin una meta de daño adicional específica.
