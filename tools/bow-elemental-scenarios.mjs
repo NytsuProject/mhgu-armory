@@ -118,7 +118,7 @@ function shotAffinity(weapon, shotHz) {
   return clamp((weapon.aff || 0) + expert3 + weaknessExploit, -100, 100);
 }
 
-function skillCost(weapon, requiresLoadUp) {
+function skillCost(weapon, requiresLoadUp, trueShotUp = false) {
   const nativePower2 = hasCoating(weapon, 'Power Coating 2');
   const nativeElement2 = hasCoating(weapon, 'Element Coating 2');
   const powerUnlock = nativePower2 ? 0 : 15;
@@ -142,6 +142,12 @@ function skillCost(weapon, requiresLoadUp) {
     skills: elementLite.skills + 2,
     elementUnlock, loadUp,
   };
+  if (trueShotUp) {
+    for (const build of [raw, elementLite, elementFull]) {
+      build.points += 10;
+      build.skills += 1;
+    }
+  }
   return { raw, elementLite, elementFull };
 }
 
@@ -155,6 +161,7 @@ export function calculateShot(options) {
     weapon, charge, matchup, elementCharge = ELEMENT_CHARGE.base,
     rapidReliability = 1, missionShots = 200, ammoSaverChance = 0.20,
     elementCoatingCapacity = 20, loadUp = false, slotIndex = 2,
+    loadUpForPackage, trueShotUp = false, rawShotMultiplier = 1,
   } = options;
   const parsed = parseCharge(charge);
   const element = elementOf(weapon);
@@ -193,16 +200,16 @@ export function calculateShot(options) {
   const weaponCoatings = weapon.x?.coatings || [];
   const hasPower2 = weaponCoatings.includes('Power Coating 2');
   const hasElement2 = weaponCoatings.includes('Element Coating 2');
-  const skillCosts = skillCost(weapon, parsed.requiresLoadUp);
+  const skillCosts = skillCost(weapon, loadUpForPackage ?? parsed.requiresLoadUp, trueShotUp);
 
   // MH bow display values: displayed RAW / 1.2; displayed element / 10.
   const rawTrue = (weapon.raw + 20) / 1.2; // Attack +3 package.
   const rawCrit = expectedCriticalMultiplier(affinity, 1.40); // Critical Boost.
   const normalCrit = expectedCriticalMultiplier(affinity, 1.25);
   const physicalBase = (rawTrue * rawCharge * distance * shotUp
-    * (mvSum / 100) * (matchup.shotHz / 100) * reliability);
+    * (mvSum / 100) * (matchup.shotHz / 100) * reliability * rawShotMultiplier);
   const physicalElemBuildBase = (rawTrue * rawCharge * distance * shotUp
-    * (mvSum / 100) * (matchup.shotHz / 100) * reliability);
+    * (mvSum / 100) * (matchup.shotHz / 100) * reliability * rawShotMultiplier);
   const rawNoCoat = physicalBase * rawCrit;
   const rawPowerCoated = rawNoCoat * 1.50;
   const rawBuildBaseElement = element ? (element.value / 10) * eleCharge
