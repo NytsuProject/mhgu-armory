@@ -10,7 +10,7 @@ on:
 
 # Push and pull_request events for the same head commit share one CI run.
 concurrency:
-  group: bow-stage5-${{ github.event.pull_request.head.sha || github.sha }}
+  group: bow-stage5-${{ github.event.pull_request.head.ref || github.ref_name }}
   cancel-in-progress: true
 
 permissions:
