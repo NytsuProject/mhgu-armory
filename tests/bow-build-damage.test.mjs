@@ -31,7 +31,7 @@ test("real skill points affect the actual bow volley, affinity and shot-type bon
   assert.equal(full.effectiveElementValue, 42);
   assert.equal(partial.effectiveElementValue, 38);
   assert.ok(full.elementalDamage > partial.elementalDamage);
-  assert.equal(full.elementalDamage / partial.elementalDamage, 42 / 38);
+  assert.ok(Math.abs(full.elementalDamage / partial.elementalDamage - 42 / 38) < 1e-12);
 });
 
 test("build skill reconstruction honours Torso Up and decorations in their own slots", () => {
