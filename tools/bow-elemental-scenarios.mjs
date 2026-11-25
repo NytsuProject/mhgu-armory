@@ -88,7 +88,7 @@ function shotAffinity(weapon, shotHz) {
   return clamp((weapon.aff || 0) + expert3 + weaknessExploit, -100, 100);
 }
 
-function skillCost(weapon, shot, requiresLoadUp) {
+function skillCost(weapon, requiresLoadUp) {
   const nativePower2 = hasCoating(weapon, 'Power Coating 2');
   const nativeElement2 = hasCoating(weapon, 'Element Coating 2');
   const powerUnlock = nativePower2 ? 0 : 15;
@@ -127,6 +127,24 @@ export function calculateShot(options) {
   const element = elementOf(weapon);
   if (!parsed || !element) return null;
   if (parsed.requiresLoadUp && !loadUp) return null;
+  if (!Number.isInteger(slotIndex) || slotIndex < 0 || slotIndex > 3) {
+    throw new RangeError('slotIndex must be an integer from 0 to 3.');
+  }
+  if (!Number.isFinite(missionShots) || missionShots <= 0) {
+    throw new RangeError('missionShots must be greater than zero.');
+  }
+  if (!Number.isFinite(ammoSaverChance) || ammoSaverChance < 0 || ammoSaverChance >= 1) {
+    throw new RangeError('ammoSaverChance must be between 0 (inclusive) and 1 (exclusive).');
+  }
+  if (!Number.isFinite(elementCoatingCapacity) || elementCoatingCapacity < 0) {
+    throw new RangeError('elementCoatingCapacity must be zero or greater.');
+  }
+  if (!Number.isFinite(rapidReliability) || rapidReliability < 0 || rapidReliability > 1) {
+    throw new RangeError('rapidReliability must be between 0 and 1.');
+  }
+  if (!Array.isArray(elementCharge) || !Number.isFinite(elementCharge[slotIndex])) {
+    throw new TypeError('elementCharge must contain a multiplier for each charge slot.');
+  }
 
   const shot = parsed.type;
   const shotLevel = parsed.level;
@@ -142,7 +160,7 @@ export function calculateShot(options) {
   const weaponCoatings = weapon.x?.coatings || [];
   const hasPower2 = weaponCoatings.includes('Power Coating 2');
   const hasElement2 = weaponCoatings.includes('Element Coating 2');
-  const skillCosts = skillCost(weapon, shot, parsed.requiresLoadUp);
+  const skillCosts = skillCost(weapon, parsed.requiresLoadUp);
 
   // MH bow display values: displayed RAW / 1.2; displayed element / 10.
   const rawTrue = (weapon.raw + 20) / 1.2; // Attack +3 package.
@@ -161,7 +179,6 @@ export function calculateShot(options) {
   const rawBuildPowerCoated = rawPowerCoated + rawBuildBaseElement;
 
   const elemPhysicalNoCoat = physicalElemBuildBase * normalCrit;
-  const unbuffedElement = element.value / 10;
   const elemLiteValue = Math.floor(element.value * 1.10 + 6);
   const elemFullValue = Math.floor(element.value * 1.20 + 6);
   const elemCrit = elementAffinityMultiplier(affinity, true);
@@ -313,13 +330,13 @@ export function summarizeRows(rows) {
       rank: first.rank, element: first.element, shotType: first.shotType, matchup: first.matchup,
       candidates: group.length,
       bestLite: bLite ? { weapon: bLite.weaponName, lv: bLite.level, slot: bLite.slot,
-        ratioCurrent: bLite.liteMissionVsRaw } : null,
+        ratioCurrent: bLite.liteMissionVsRaw, skillCosts: bLite.skillCosts } : null,
       bestFull: bFull ? { weapon: bFull.weaponName, lv: bFull.level, slot: bFull.slot,
-        ratioCurrent: bFull.fullMissionVsRaw } : null,
+        ratioCurrent: bFull.fullMissionVsRaw, skillCosts: bFull.skillCosts } : null,
       bestScenarioA: bA ? { weapon: bA.weaponName, lv: bA.level, slot: bA.slot,
-        ratio: bA.A_fullMissionVsRaw } : null,
+        ratio: bA.A_fullMissionVsRaw, skillCosts: bA.skillCosts } : null,
       bestScenarioB: bB ? { weapon: bB.weaponName, lv: bB.level, slot: bB.slot,
-        ratio: bB.B_fullMissionVsRaw } : null,
+        ratio: bB.B_fullMissionVsRaw, skillCosts: bB.skillCosts } : null,
       bestFullCapacity50: bestBy(group, 'fullCapacity50VsRaw')
         ? bestBy(group, 'fullCapacity50VsRaw').fullCapacity50VsRaw : null,
       bestScenarioACapacity50: bA50 ? bA50.A_fullCapacity50VsRaw : null,
