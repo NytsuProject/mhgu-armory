@@ -252,10 +252,14 @@ test('A/B scenarios receive the same coating-switch penalty as the base profile'
   const switched = runMatrix(database, { missionShots: 100, coatingSwitchShots: 20 });
   const freeRow = free.rows.find(row => row.slot === 3 && row.matchupId === 'favorable');
   const switchedRow = switched.rows.find(row => row.slot === 3 && row.matchupId === 'favorable');
-  assert.ok(freeRow.A_hybridMissionVsRaw > switchedRow.A_hybridMissionVsRaw);
-  assert.ok(freeRow.B_hybridMissionVsRaw > switchedRow.B_hybridMissionVsRaw);
-  assert.ok(freeRow.A_hybridLowCostMissionVsRaw > switchedRow.A_hybridLowCostMissionVsRaw);
-  assert.ok(freeRow.B_hybridLowCostMissionVsRaw > switchedRow.B_hybridLowCostMissionVsRaw);
+  assert.equal(freeRow.A_hybridPowerShots, 70);
+  assert.equal(freeRow.B_hybridPowerShots, 70);
+  assert.equal(freeRow.A_hybridSwitchShots, 0);
+  assert.equal(freeRow.B_hybridSwitchShots, 0);
+  assert.equal(switchedRow.A_hybridPowerShots, 50);
+  assert.equal(switchedRow.B_hybridPowerShots, 50);
+  assert.equal(switchedRow.A_hybridSwitchShots, 20);
+  assert.equal(switchedRow.B_hybridSwitchShots, 20);
 });
 
 test('coating switch cost reduces Power Coat coverage and accepts shot-equivalent sensitivity', () => {
