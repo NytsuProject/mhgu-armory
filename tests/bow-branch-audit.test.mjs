@@ -37,7 +37,9 @@ test("builds complete parent paths and truncates each parent at the branch level
   const report = auditBowBranches(data);
   assert.equal(report.metadata.segmentCount, 3);
   assert.equal(report.metadata.rootFamilyCount, 1);
-  assert.equal(report.metadata.terminalBranchCount, 2);
+  assert.equal(report.metadata.terminalBranchCount, 3);
+  assert.equal(report.metadata.graphLeafSegmentCount, 2);
+  assert.equal(report.branches.length, 3);
 
   const fire = report.branches.find(row => row.branchName === "Fuego II");
   assert.equal(fire.progressionLevels, 3);
@@ -51,6 +53,9 @@ test("builds complete parent paths and truncates each parent at the branch level
   const raw = report.branches.find(row => row.branchName === "RAW I");
   assert.equal(raw.progressionLevels, 3);
   assert.equal(raw.role, "raw");
+  const rootContinuation = report.branches.find(row => row.branchName === "Raíz 3");
+  assert.equal(rootContinuation.progressionLevels, 3);
+  assert.deepEqual(rootContinuation.segments.map(row => row.treeId), [1]);
 });
 
 test("counts Load Up mismatches and preserves charge level and marker", () => {
