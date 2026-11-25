@@ -8,19 +8,22 @@ Desde la raíz del repositorio, con Node.js 18 o posterior:
 
 ```bash
 # Resumen por rango, elemento, tipo de flecha y matchup sintético
-node tools/bow-elemental-scenarios.mjs --summary
+node tools/bow-elemental-scenarios.mjs --summary --style=guild
 
 # CSV detallado de todos los niveles elementales y sus cargas
 node tools/bow-elemental-scenarios.mjs --csv=tools/out/bow-elemental-scenarios.csv
 
 # Sensibilidad de Salva al bug que puede perder impactos simultáneos
-node tools/bow-elemental-scenarios.mjs --summary --rapid-reliability=0.90
+node tools/bow-elemental-scenarios.mjs --summary --style=valor --rapid-reliability=0.90
 
 # Contraste sin devolución de revestimientos; 200 disparos de referencia
-node tools/bow-elemental-scenarios.mjs --summary --ammo-saver-chance=0 --mission-shots=200
+node tools/bow-elemental-scenarios.mjs --summary --style=none --ammo-saver-chance=0 --mission-shots=200
 
 # Recalcular la capacidad actual suponiendo una capacidad modificada a 50
-node tools/bow-elemental-scenarios.mjs --summary --element-coat-capacity=50
+node tools/bow-elemental-scenarios.mjs --summary --style=valor --power-shot-use-rate=0.75 --element-coat-capacity=50
+
+# Añadir TrueShot Up al paquete de habilidades y al modificador RAW del Power Shot
+node tools/bow-elemental-scenarios.mjs --summary --style=valor --true-shot-up
 ```
 
 Opciones:
@@ -31,6 +34,9 @@ Opciones:
 - `--element-coat-capacity=20`: capacidad actual de Element Coat II; el reporte compara también la propuesta de 50.
 - `--rapid-reliability=1`: fiabilidad supuesta de impactos de Salva. 0,90 sirve como escenario de sensibilidad, no como medición comprobada por carga.
 - `--no-load-up`: omite las cargas marcadas `!`; por defecto se incluyen con Recargando activo.
+- `--style=none|guild|adept|valor|striker|alchemy|aerial`: estilo a simular. Por defecto `guild`. Guild/Adepto generan un Power Shot; Valor genera dos; Striker/Alquimia/Aéreo no generan Power Shot.
+- `--power-shot-use-rate=1`: fracción esperada de secuencias que aprovechan sus Power Shots (0–1). Por defecto 1 es una cota de uso ideal, no una tasa real de cacería.
+- `--true-shot-up`: incluye el coste de habilidad +10 y aplica ×1,20 al componente RAW de cada Power Shot. La guía de datos MHXX lista ×1,20; se deja como supuesto separado a validar in-game.
 
 ## Qué compara
 
@@ -69,6 +75,19 @@ El modo de hitzones ofrece cuatro resultados elementales: Elemental Core/Full co
 
 La fuente externa advierte que los nombres de partes solo están confirmados para algunos monstruos; donde no hay nombre, el archivo conserva índices. La herramienta usa el nombre publicado o un fallback `Parte N`, no intenta inferir si una tabla corresponde a enfurecido, roto u otro estado. No se descarga la fuente automáticamente: el usuario conserva control sobre los archivos externos y su licencia.
 
+
+## Power Shot y estilos de caza
+
+El modo de secuencia ya no compara solo la flecha primaria. Para Guild/Adepto suma un Power Shot; para Valor suma Power Shot + Valor Power Shot; Striker, Alquimia y Aéreo quedan como estilos sin Power Shot. El seguimiento usa la carga del slot inmediatamente siguiente (por ejemplo, un disparo C3 puede seguirse con C4). Si el slot siguiente está marcado `!` y Recargando no está activo, el Power Shot repite el disparo principal; si está activo, utiliza la carga desbloqueada.
+
+La regla del proyecto para Load Up se aplica antes de calcular el seguimiento: se conserva el Lv y `!`, y el tipo de flecha del slot marcado se alinea con el inmediatamente anterior. En el catálogo actual 441 de 674 slots marcados `!` no cumplen esa regla; el simulador los normaliza en memoria y guarda en la salida el texto original del catálogo. **No modifica `bow.json`.**
+
+Cada descarga primaria se trata como una secuencia de una o varias voleas. La frecuencia de Power Shot es configurable; el valor 1 representa uso en cada oportunidad y debe considerarse techo optimista. El número de voleas por secuencia también aumenta el consumo esperado de coatings: Power Coat II y Element Coat II se promedian sobre todos los proyectiles de la secuencia, no solo sobre el disparo primario.
+
+El segundo Valor Power Shot repite el mismo nivel de carga del primero y usa ×1,30 en el componente RAW, según la hoja de datos comunitaria de MHXX. TrueShot Up se modela como ×1,20 RAW para cada Power Shot y suma un umbral de habilidad; Kiranico confirma que potencia Power Shot/Arc Shot, pero la fuente consultada no desglosa con precisión su componente elemental. **Por prudencia, ambos modificadores se aplican al componente físico RAW del modelo y quedan como supuestos de trabajo, no como verificación in-game del desglose elemental.** Si se demuestra que afectan también al elemento, se activará ese factor en ambos componentes y se volverá a calcular la matriz.
+
+Referencias: [manual oficial de Capcom sobre Power Shot](https://game.capcom.com/manual/MH_Gen/en-UK/page-123.html), [Yet Another Weapon Guide — estilos y secuencias](https://docs.google.com/document/d/1vuDNCYYhNvSPHMqPwoC2cyjF-qcuXztYsipi9jUZHa0/mobilebasic), [Kiranico — lista de habilidades MHGU](https://mhgu.kiranico.com/skill), [datos comunitarios MHXX Bow MV/Modifiers](https://es.scribd.com/document/706766576/MHXX-BW-MVs).
+
 ## Paquetes de habilidades comparados
 
 Las dos bases comparten Ojo crítico +3 (+30 % afinidad), Maza (+50 % si hitzone de disparo ≥45), Ataque +3 (+20 ataque mostrado) y el potenciador del tipo de flecha. La carga marcada `!` se activa con Recargando en ambos paquetes.
@@ -100,7 +119,7 @@ Los modificadores de carga elemental de base, A y B son los definidos en `docs/B
 ## Qué no afirma esta herramienta
 
 - No calcula DPS ni daño final exacto del juego: conserva decimales y no aplica redondeo por cada impacto, defensa global, enfurecimiento ni variaciones de hitzone entre impactos.
-- No incluye Power Shot, que puede representar una parte importante del daño real, ni estilos, artes, Valor, stamina, tiempos de carga, animaciones o ventanas de ataque.
+- No simula el ciclo de carga, coste real de stamina, animaciones ni ventanas de apertura. La tasa de uso de Power Shot es una entrada estimada; el valor 1 es techo teórico. No incluye Hunter Arts ni tiempos reales de cacería.
 - El modo sintético compara el mismo arco con builds distintas. El modo `--hitzones=... --monster-summary` sí compara el mejor RAW de todo el catálogo contra el mejor elemento por monstruo, parte y rango, usando solo la primera tabla de hitzones.
 - No decide todavía qué multiplicador A/B debe aplicarse. Solo mide escenarios que después se validarán contra hitzones reales, progresión y pruebas in-game.
 - No cambia `bow.json`, el Builder ni los parámetros de MHXX.
