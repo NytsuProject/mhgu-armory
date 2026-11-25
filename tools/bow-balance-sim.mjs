@@ -24,7 +24,8 @@ function main() {
       "Uso: node tools/bow-balance-sim.mjs --hitzones ruta/al/hitzones.js " +
       "[--bows data/weapons/bow.json] [--out tools/out/bow-balance-stage5.json] " +
       "[--load-up-policy match-c3|current] [--shots-per-stack 100] " +
-      "[--ammo-saver-return-rate 0] [--skill-budgets 5,6,7]"
+      "[--ammo-saver-return-rate 0] [--skill-budgets 5,6,7] " +
+      "[--charge-scenarios base,A,B]"
     );
   }
   const bowsPath = resolve(args.bows || "data/weapons/bow.json");
@@ -42,7 +43,10 @@ function main() {
     loadUpPolicy: args["load-up-policy"] || "match-c3",
     shotsPerStack: Number(args["shots-per-stack"] || 100),
     ammoSaverReturnRate: Number(args["ammo-saver-return-rate"] || 0),
-    skillBudgets: budgets
+    skillBudgets: budgets,
+    chargeScenarios: args["charge-scenarios"]
+      ? args["charge-scenarios"].split(",").filter(Boolean)
+      : ["base", "A", "B"]
   });
   mkdirSync(dirname(outputPath), { recursive: true });
   writeFileSync(outputPath, JSON.stringify(result, null, 2) + "\n", "utf8");
@@ -51,13 +55,15 @@ function main() {
   console.log("Monstruos grandes: " + result.meta.monsterCount);
   console.log("Arcos por rango: " + JSON.stringify(result.meta.weaponsByRank));
   console.log("Política Load Up: " + result.meta.loadUpPolicy);
+  console.log("Escenarios de carga elemental: " + result.meta.elementChargeScenarios.map(x => x.id).join(", "));
   console.log("Disparos por pila: " + result.meta.shotsPerStack);
   console.log("");
   for (const row of result.summary) {
     console.log([
       row.rank,
       row.shotType,
-      row.scenario,
+      row.chargeScenario,
+      row.coatingScenario,
       "presupuesto " + row.skillBudget,
       row.matchups + " matchups",
       "elemental gana " + row.elementalWins,
