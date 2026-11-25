@@ -515,24 +515,49 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
     ammoSaverChance: readNumber('--ammo-saver-chance=', 0.20),
     elementCoatingCapacity: readNumber('--element-coat-capacity=', 20),
   };
-  const { rows, summary } = runMatrix(database, options);
-  if (args.includes('--summary')) {
-    process.stdout.write(JSON.stringify({
-      metadata: {
-        weaponLevels: rows.length,
-        elementalLevels: database.trees.reduce((n, t) => n + (t.levels || []).filter(elementOf).length, 0),
-        ranks: ['LR', 'HR', 'G'],
-        matchups: MATCHUPS,
-        options,
-        note: 'Index comparison, not exact DPS. See docs/BOW_ELEMENTAL_SIMULATOR_STAGE5.md.',
-      },
-      summary,
-    }, null, 2) + '\n');
+  const hitzonesPath = args.find((arg) => arg.startsWith('--hitzones='))?.slice(11);
+  if (hitzonesPath) {
+    const source = readFileSync(path.resolve(hitzonesPath), 'utf8').trim();
+    let monsterData;
+    try {
+      monsterData = JSON.parse(source);
+    } catch {
+      const assignment = 'window.MONSTER_DATA =';
+      const start = source.indexOf(assignment);
+      const end = source.lastIndexOf(';');
+      if (start < 0) throw new Error('Hitzone file must be JSON or expose window.MONSTER_DATA = JSON.');
+      monsterData = JSON.parse(source.slice(start + assignment.length, end > start ? end : undefined).trim());
+    }
+    const result = runMonsterMatrix(database, monsterData, options);
+    if (args.includes('--monster-summary')) {
+      process.stdout.write(JSON.stringify(result, null, 2) + '\n');
+    } else {
+      const out = args.find(a => a.startsWith('--monster-csv='))?.slice(14)
+        || path.resolve(here, 'out/bow-elemental-monster-matchups.csv');
+      mkdirSync(path.dirname(out), { recursive: true });
+      writeFileSync(out, csv(result.results));
+      process.stdout.write('Monster CSV written: ' + out + '\nRows: ' + result.results.length + '\n');
+    }
   } else {
-    const out = args.find(a => a.startsWith('--csv='))?.slice(6)
-      || path.resolve(here, 'out/bow-elemental-scenarios.csv');
-    mkdirSync(path.dirname(out), { recursive: true });
-    writeFileSync(out, csv(rows));
-    process.stdout.write('CSV written: ' + out + '\nRows: ' + rows.length + '\n');
+    const { rows, summary } = runMatrix(database, options);
+    if (args.includes('--summary')) {
+      process.stdout.write(JSON.stringify({
+        metadata: {
+          weaponLevels: rows.length,
+          elementalLevels: database.trees.reduce((n, t) => n + (t.levels || []).filter(elementOf).length, 0),
+          ranks: ['LR', 'HR', 'G'],
+          matchups: MATCHUPS,
+          options,
+          note: 'Index comparison, not exact DPS. See docs/BOW_ELEMENTAL_SIMULATOR_STAGE5.md.',
+        },
+        summary,
+      }, null, 2) + '\n');
+    } else {
+      const out = args.find(a => a.startsWith('--csv='))?.slice(6)
+        || path.resolve(here, 'out/bow-elemental-scenarios.csv');
+      mkdirSync(path.dirname(out), { recursive: true });
+      writeFileSync(out, csv(rows));
+      process.stdout.write('CSV written: ' + out + '\nRows: ' + rows.length + '\n');
+    }
   }
 }
