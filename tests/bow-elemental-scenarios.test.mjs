@@ -64,8 +64,8 @@ test('element build uses elemental coating and distinct skill package costs', ()
   assert.equal(nativeCoatings.skillCosts.raw.powerUnlock, 0);
   assert.equal(nativeCoatings.skillCosts.elementLite.elementUnlock, 0);
   assert.equal(nativeCoatings.skillCosts.raw.points, 80);
-  assert.equal(nativeCoatings.skillCosts.elementLite.points, 75);
-  assert.equal(nativeCoatings.skillCosts.elementFull.points, 85);
+  assert.equal(nativeCoatings.skillCosts.elementLite.points, 85);
+  assert.equal(nativeCoatings.skillCosts.elementFull.points, 105);
   const noCoatings = calculateShot({
     weapon: { ...weapon, x: { ...weapon.x, coatings: [] } },
     charge: 'Rapid Lv4', matchup, slotIndex: 2,
