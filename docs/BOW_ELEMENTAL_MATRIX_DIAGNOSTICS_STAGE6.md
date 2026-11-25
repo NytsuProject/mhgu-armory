@@ -81,7 +81,7 @@ El híbrido máximo conserva Element Full y añade Power C+ a +15 puntos y una l
 
 La variante económica ya pasó la matriz Guild de 93 monstruos y usa el mejor nivel de coating disponible sin forzar nivel II: conserva II si es nativo, utiliza I si el arco lo ofrece y solo desbloquea nivel I con +10 cuando no existe coating nativo. Los multiplicadores son ×1,35 para nivel I y ×1,50 para nivel II. En el comparador, esta build elemental se empareja con un RAW que sigue la política de desbloqueo de coatings de menor coste (`rawLowCost`); **no** significa que ambos tengan los mismos puntos de habilidad o el mismo número de líneas.
 
-La matriz Guild del híbrido económico, con los valores base actuales, dio estos ratios:
+La matriz Guild del híbrido económico, con los valores base actuales, dio estos ratios. El modelo cuenta el bonus especial Close Range de Seregios en RAW: los seis niveles del catálogo que tienen `coatingBoost: Close Range Coating` no poseen elemento natural, así que ese recurso no crea una fase extra dentro de los perfiles elementales que aparecen aquí.
 | Rango | Media por mejor parte de cada monstruo | Media de todas las partes | Partes favorables (elemento ≥25) | Partes que superan a RAW |
 |---|---:|---:|---:|---:|
 | LR | 0,870 | 0,841 | 0,869 | 2 / 631 |
