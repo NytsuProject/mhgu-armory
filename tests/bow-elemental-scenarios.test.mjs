@@ -44,6 +44,31 @@ test('Load Up-only charge is excluded when the skill is absent', () => {
   }), null);
 });
 
+
+test("Power Coating multiplies only the physical component of a hybrid bow shot", () => {
+  const row = calculateShot({
+    weapon, charge: 'Rapid Lv4', matchup, slotIndex: 2,
+    ammoSaverChance: 0,
+  });
+  assert.ok(row.rawPhysicalNoCoat > 0);
+  assert.ok(row.rawElementNoCoat > 0);
+  assert.equal(row.rawPhysicalPowerCoated, Number((row.rawPhysicalNoCoat * 1.5).toFixed(4)));
+  assert.equal(
+    Number((row.rawIndexPowerCoated - row.rawIndexNoCoat).toFixed(4)),
+    Number((row.rawPhysicalNoCoat * 0.5).toFixed(4))
+  );
+  assert.equal(row.rawElementNoCoat, Number((row.rawIndexNoCoat - row.rawPhysicalNoCoat).toFixed(4)));
+});
+
+test("Ammo Saver is off by default because no exact MHGU return rate is verified", () => {
+  const row = calculateShot({
+    weapon, charge: 'Rapid Lv4', matchup, slotIndex: 2,
+  });
+  assert.equal(row.coatings.ammoSaverChance, 0);
+  assert.equal(row.coatings.elementFullExpectedUsesCurrent, 30);
+  assert.equal(row.coatings.elementFullExpectedUsesCapacity50, 60);
+});
+
 test('global charge scenarios affect uncoated elemental damage in both builds', () => {
   const base = calculateShot({
     weapon, charge: 'Rapid Lv4', matchup, slotIndex: 2,
