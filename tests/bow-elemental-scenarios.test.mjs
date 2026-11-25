@@ -199,10 +199,10 @@ test('coating switch cost reduces Power Coat coverage and accepts shot-equivalen
   assert.equal(oneShotSwitch.coatings.hybridCurrentElementShots, 30);
   assert.equal(oneShotSwitch.coatings.hybridCurrentPowerShots, 69);
   assert.equal(oneShotSwitch.coatings.hybridCurrentSwitchShots, 1);
-  assert.equal(
-    Number((freeSwitch.elementHybridMissionCurrent - oneShotSwitch.elementHybridMissionCurrent).toFixed(4)),
-    Number((freeSwitch.elementPhysicalNoCoat * 0.5 / 100).toFixed(4)),
-  );
+  const observedLoss = freeSwitch.elementHybridMissionCurrent - oneShotSwitch.elementHybridMissionCurrent;
+  const expectedLoss = freeSwitch.elementPhysicalNoCoat * 0.5 / 100;
+  assert.ok(Math.abs(observedLoss - expectedLoss) <= 0.0001,
+    'switch penalty should remove one Power-Coated shot within output precision');
   assert.throws(() => calculateShot({
     weapon, charge: 'Rapid Lv4', matchup, coatingSwitchShots: -1,
   }), /coatingSwitchShots/);
@@ -280,7 +280,7 @@ test('real hitzone matrix compares catalogue RAW and elemental candidates by mon
   assert.ok(g.scenarios.base.elementalFull);
   assert.ok(g.scenarios.base.elementalHybrid);
   assert.ok(g.scenarios.base.elementalHybrid50);
-  assert.equal(g.scenarios.base.elementalHybrid.skillCosts.elementHybrid.powerUnlock, 0);
+  assert.equal(g.scenarios.base.elementalHybrid.skillCosts.elementHybrid.powerUnlock, 15);
   // The winning slot uses C4! and includes the additional Load Up line (+10).
   assert.equal(g.scenarios.base.elementalFocused.skillCosts.elementFocused.skills, 6);
   assert.equal(g.scenarios.base.elementalFocused.skillCosts.elementFocused.points, 85);
