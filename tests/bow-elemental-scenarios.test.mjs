@@ -238,3 +238,26 @@ test('styles without Power Shot retain one-volley sequences', () => {
     assert.equal(result.breakdown.length, 1);
   }
 });
+
+test('Valor state uptime scales both follow-up shots and coating consumption', () => {
+  const fullValor = calculateSequence({
+    weapon, charge: 'Rapid Lv4', slotIndex: 2, matchup,
+    style: 'valor', powerShotUseRate: 1, valorStateUptime: 1,
+  });
+  const halfValor = calculateSequence({
+    weapon, charge: 'Rapid Lv4', slotIndex: 2, matchup,
+    style: 'valor', powerShotUseRate: 1, valorStateUptime: 0.5,
+  });
+  const noValor = calculateSequence({
+    weapon, charge: 'Rapid Lv4', slotIndex: 2, matchup,
+    style: 'valor', powerShotUseRate: 1, valorStateUptime: 0,
+  });
+  assert.equal(fullValor.expectedVolleysPerSequence, 3);
+  assert.equal(halfValor.expectedVolleysPerSequence, 2);
+  assert.equal(halfValor.effectivePowerShotUseRate, 0.5);
+  assert.equal(noValor.expectedVolleysPerSequence, 1);
+  assert.equal(noValor.powerShotSlot, null);
+  assert.equal(noValor.sequenceRequiresLoadUp, false);
+  assert.ok(fullValor.rawMissionAverage > halfValor.rawMissionAverage);
+  assert.ok(halfValor.rawMissionAverage > noValor.rawMissionAverage);
+});
