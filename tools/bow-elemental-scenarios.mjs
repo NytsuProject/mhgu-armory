@@ -558,10 +558,14 @@ export function runMonsterMatrix(database, monsterData, options = {}) {
   for (const rank of ['LR', 'HR', 'G']) {
     for (const monster of largeMonsters) {
       const parts = monster.tables?.[0] || [];
-      let best = Object.fromEntries(scenarios.map(({ id }) => [id, {
+      const makeBestSet = () => Object.fromEntries(scenarios.map(({ id }) => [id, {
         raw: null, elementalLite: null, elementalFull: null,
         elementalLite50: null, elementalFull50: null,
       }]));
+      const best = makeBestSet();
+      const bestByShotType = Object.fromEntries(
+        ["Rapid", "Pierce", "Spread", "Heavy"].map(type => [type, makeBestSet()])
+      );
       for (const part of parts) {
         const shotHz = Number(part[4]) || 0;
         for (const candidate of candidatesByRank[rank]) {
@@ -601,38 +605,50 @@ export function runMonsterMatrix(database, monsterData, options = {}) {
               element: element?.type || null,
               skillCosts: row.skillCosts,
             };
-            const current = best[scenario.id];
-            if (!current.raw || row.rawMissionAverage > current.raw.damage) {
-              current.raw = { ...info, damage: row.rawMissionAverage };
-            }
-            if (element && elementHz > 0) {
-              const choices = [
-                ['elementalLite', row.elementLiteMissionCurrent],
-                ['elementalFull', row.elementFullMissionCurrent],
-                ['elementalLite50', row.elementLiteMissionCapacity50],
-                ['elementalFull50', row.elementFullMissionCapacity50],
-              ];
-              for (const [key, damage] of choices) {
-                if (!current[key] || damage > current[key].damage) {
-                  current[key] = { ...info, damage };
+            // Preserve the overall winner and also rank candidates within the same
+            // shot type. This prevents a globally dominant spread shot from hiding
+            // the balance of Rapid, Pierce, or Heavy bows.
+            const targets = [best[scenario.id], bestByShotType[row.shotType][scenario.id]];
+            for (const current of targets) {
+              if (!current.raw || row.rawMissionAverage > current.raw.damage) {
+                current.raw = { ...info, damage: row.rawMissionAverage };
+              }
+              if (element && elementHz > 0) {
+                const choices = [
+                  ['elementalLite', row.elementLiteMissionCurrent],
+                  ['elementalFull', row.elementFullMissionCurrent],
+                  ['elementalLite50', row.elementLiteMissionCapacity50],
+                  ['elementalFull50', row.elementFullMissionCapacity50],
+                ];
+                for (const [key, damage] of choices) {
+                  if (!current[key] || damage > current[key].damage) {
+                    current[key] = { ...info, damage };
+                  }
                 }
               }
             }
           }
         }
       }
-      for (const scenario of scenarios) {
-        const result = best[scenario.id];
-        const rawDamage = result.raw?.damage || 0;
-        for (const key of ['elementalLite', 'elementalFull', 'elementalLite50', 'elementalFull50']) {
-          result[key] = result[key] && rawDamage > 0
-            ? { ...result[key], vsRaw: round(result[key].damage / rawDamage) }
-            : result[key] ? { ...result[key], vsRaw: null } : null;
+      const finalizeBestSet = (bestSet) => {
+        for (const scenario of scenarios) {
+          const result = bestSet[scenario.id];
+          const rawDamage = result.raw?.damage || 0;
+          for (const key of ['elementalLite', 'elementalFull', 'elementalLite50', 'elementalFull50']) {
+            result[key] = result[key] && rawDamage > 0
+              ? { ...result[key], vsRaw: round(result[key].damage / rawDamage) }
+              : result[key] ? { ...result[key], vsRaw: null } : null;
+          }
         }
+      };
+      finalizeBestSet(best);
+      for (const type of ["Rapid", "Pierce", "Spread", "Heavy"]) {
+        finalizeBestSet(bestByShotType[type]);
       }
       byRankMonster.push({
         rank, monster: monster.name, tablesAvailable: monster.tables?.length || 0,
         partsEvaluated: parts.length, scenarios: best,
+        byShotType: bestByShotType,
       });
     }
   }
@@ -642,6 +658,7 @@ export function runMonsterMatrix(database, monsterData, options = {}) {
       candidates: candidates.length,
       loadUpDiagnostics: loadUpDiagnostics(database),
       ranks: ['LR', 'HR', 'G'],
+      shotTypes: ["Rapid", "Pierce", "Spread", "Heavy"],
       hitzoneTable: 'first table only; parallel tables remain unlabelled',
       options: {
         includeLoadUp: options.includeLoadUp ?? true,
