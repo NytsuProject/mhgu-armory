@@ -324,7 +324,6 @@ export function summarizeRows(rows) {
 export function runMatrix(database, options = {}) {
   const rows = weaponRows(database.trees || [], { includeLoadUp: options.includeLoadUp ?? true, ...options });
   // Keep matchup metadata on rows for grouping and export.
-  const lookup = new Map(MATCHUPS.map(x => [x.id, x]));
   for (const row of rows) {
     const match = MATCHUPS.find(x => x.shotHz === row.shotHz && x.elementHz === row.elementHz);
     row.matchupId = match?.id || 'custom';
