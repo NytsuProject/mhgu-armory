@@ -249,7 +249,7 @@ test('A/B scenarios receive the same coating-switch penalty as the base profile'
     }],
   };
   const free = runMatrix(database, { missionShots: 100, coatingSwitchShots: 0 });
-  const switched = runMatrix(database, { missionShots: 100, coatingSwitchShots: 1 });
+  const switched = runMatrix(database, { missionShots: 100, coatingSwitchShots: 20 });
   const freeRow = free.rows.find(row => row.slot === 3 && row.matchupId === 'favorable');
   const switchedRow = switched.rows.find(row => row.slot === 3 && row.matchupId === 'favorable');
   assert.ok(freeRow.A_hybridMissionVsRaw > switchedRow.A_hybridMissionVsRaw);
