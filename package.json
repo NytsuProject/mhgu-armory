@@ -1,10 +1,13 @@
 {
   "name": "mhgu-armory",
   "private": true,
-  "engines": { "node": ">=18" },
+  "engines": {
+    "node": ">=18"
+  },
   "type": "module",
   "scripts": {
     "test": "node --test",
-    "bow:scenarios": "node tools/bow-elemental-scenarios.mjs --summary"
+    "bow:scenarios": "node tools/bow-elemental-scenarios.mjs --summary",
+    "bow:balance": "node tools/bow-balance-sim.mjs"
   }
 }
