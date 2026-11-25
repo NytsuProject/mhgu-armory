@@ -696,6 +696,8 @@ function weaponRows(trees, options = {}) {
             B_hybridLowCostSwitchShots: scenarioB.coatings.hybridLowCostCurrentSwitchShots,
             A_hybridLowCostMissionVsRaw: scenarioA.elementHybridLowCostMissionVsRaw,
             B_hybridLowCostMissionVsRaw: scenarioB.elementHybridLowCostMissionVsRaw,
+            A_hybridLowCostMissionVsRawLowCost: scenarioA.elementHybridLowCostMissionVsRawLowCost,
+            B_hybridLowCostMissionVsRawLowCost: scenarioB.elementHybridLowCostMissionVsRawLowCost,
             A_liteCapacity50VsRaw: scenarioA.liteCapacity50VsRaw,
             A_fullCapacity50VsRaw: scenarioA.fullCapacity50VsRaw,
             B_liteCapacity50VsRaw: scenarioB.liteCapacity50VsRaw,
@@ -704,6 +706,8 @@ function weaponRows(trees, options = {}) {
             B_hybridCapacity50VsRaw: scenarioB.elementHybridCapacity50VsRaw,
             A_hybridLowCostCapacity50VsRaw: scenarioA.elementHybridLowCostCapacity50VsRaw,
             B_hybridLowCostCapacity50VsRaw: scenarioB.elementHybridLowCostCapacity50VsRaw,
+            A_hybridLowCostCapacity50VsRawLowCost: scenarioA.elementHybridLowCostCapacity50VsRawLowCost,
+            B_hybridLowCostCapacity50VsRawLowCost: scenarioB.elementHybridLowCostCapacity50VsRawLowCost,
           });
         }
       }
@@ -1045,7 +1049,8 @@ export function summarizeRows(rows) {
     const bLite = bestBy(group, 'liteMissionVsRaw');
     const bFull = bestBy(group, 'fullMissionVsRaw');
     const bHybrid = bestBy(group, 'elementHybridMissionVsRaw');
-    const bHybridLowCost = bestBy(group, 'elementHybridLowCostMissionVsRaw');
+    const bHybridLowCost = bestBy(group, 'elementHybridLowCostMissionVsRawLowCost');
+    const bHybridLowCostVsMaxRaw = bestBy(group, 'elementHybridLowCostMissionVsRaw');
     const bA = bestBy(group, 'A_fullMissionVsRaw');
     const bB = bestBy(group, 'B_fullMissionVsRaw');
     const bHybridA = bestBy(group, 'A_hybridMissionVsRaw');
@@ -1054,8 +1059,8 @@ export function summarizeRows(rows) {
     const bB50 = bestBy(group, 'B_fullCapacity50VsRaw');
     const bHybridA50 = bestBy(group, 'A_hybridCapacity50VsRaw');
     const bHybridB50 = bestBy(group, 'B_hybridCapacity50VsRaw');
-    const bHybridLowCostA = bestBy(group, 'A_hybridLowCostMissionVsRaw');
-    const bHybridLowCostB = bestBy(group, 'B_hybridLowCostMissionVsRaw');
+    const bHybridLowCostA = bestBy(group, 'A_hybridLowCostMissionVsRawLowCost');
+    const bHybridLowCostB = bestBy(group, 'B_hybridLowCostMissionVsRawLowCost');
     out.push({
       rank: first.rank, element: first.element, shotType: first.shotType, matchup: first.matchup,
       style: first.style, powerShotCount: first.powerShotCount,
@@ -1069,7 +1074,9 @@ export function summarizeRows(rows) {
       bestHybrid: bHybrid ? { weapon: bHybrid.weaponName, lv: bHybrid.level, slot: bHybrid.slot,
         ratioCurrent: bHybrid.elementHybridMissionVsRaw, skillCosts: bHybrid.skillCosts.elementHybrid } : null,
       bestHybridLowCost: bHybridLowCost ? { weapon: bHybridLowCost.weaponName, lv: bHybridLowCost.level,
-        slot: bHybridLowCost.slot, ratioCurrent: bHybridLowCost.elementHybridLowCostMissionVsRaw,
+        slot: bHybridLowCost.slot, ratioCurrent: bHybridLowCost.elementHybridLowCostMissionVsRawLowCost,
+        rawReference: 'rawLowCost', rawWeapon: bHybridLowCostVsMaxRaw?.weaponName || null,
+        rawRatioVsMaxRaw: bHybridLowCostVsMaxRaw?.elementHybridLowCostMissionVsRaw ?? null,
         skillCosts: bHybridLowCost.skillCosts.elementHybridLowCost } : null,
       bestScenarioA: bA ? { weapon: bA.weaponName, lv: bA.level, slot: bA.slot,
         ratio: bA.A_fullMissionVsRaw, skillCosts: bA.skillCosts } : null,
@@ -1080,11 +1087,11 @@ export function summarizeRows(rows) {
       bestScenarioBHybrid: bHybridB ? { weapon: bHybridB.weaponName, lv: bHybridB.level, slot: bHybridB.slot,
         ratio: bHybridB.B_hybridMissionVsRaw, skillCosts: bHybridB.skillCosts.elementHybrid } : null,
       bestScenarioALowCostHybrid: bHybridLowCostA ? { weapon: bHybridLowCostA.weaponName, lv: bHybridLowCostA.level,
-        slot: bHybridLowCostA.slot, ratio: bHybridLowCostA.A_hybridLowCostMissionVsRaw,
-        skillCosts: bHybridLowCostA.skillCosts.elementHybridLowCost } : null,
+        slot: bHybridLowCostA.slot, ratio: bHybridLowCostA.A_hybridLowCostMissionVsRawLowCost,
+        rawReference: 'rawLowCost', skillCosts: bHybridLowCostA.skillCosts.elementHybridLowCost } : null,
       bestScenarioBLowCostHybrid: bHybridLowCostB ? { weapon: bHybridLowCostB.weaponName, lv: bHybridLowCostB.level,
-        slot: bHybridLowCostB.slot, ratio: bHybridLowCostB.B_hybridLowCostMissionVsRaw,
-        skillCosts: bHybridLowCostB.skillCosts.elementHybridLowCost } : null,
+        slot: bHybridLowCostB.slot, ratio: bHybridLowCostB.B_hybridLowCostMissionVsRawLowCost,
+        rawReference: 'rawLowCost', skillCosts: bHybridLowCostB.skillCosts.elementHybridLowCost } : null,
       bestFullCapacity50: bestBy(group, 'fullCapacity50VsRaw')
         ? bestBy(group, 'fullCapacity50VsRaw').fullCapacity50VsRaw : null,
       bestScenarioACapacity50: bA50 ? bA50.A_fullCapacity50VsRaw : null,
