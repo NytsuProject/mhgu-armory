@@ -779,6 +779,19 @@ export function runMonsterMatrix(database, monsterData, options = {}) {
     elementalHybridLowCost50: null,
   }]));
 
+  const skillCostProfileFor = {
+    elementalFocused: 'elementFocused',
+    elementalFocused50: 'elementFocused',
+    elementalLite: 'elementLite',
+    elementalLite50: 'elementLite',
+    elementalFull: 'elementFull',
+    elementalFull50: 'elementFull',
+    elementalHybrid: 'elementHybrid',
+    elementalHybrid50: 'elementHybrid',
+    elementalHybridLowCost: 'elementHybridLowCost',
+    elementalHybridLowCost50: 'elementHybridLowCost',
+  };
+
   const finalizeBestSet = (bestSet) => {
     for (const scenario of scenarios) {
       const result = bestSet[scenario.id];
@@ -788,20 +801,36 @@ export function runMonsterMatrix(database, monsterData, options = {}) {
         const selected = result[key];
         const usesLowCostRaw = key === 'elementalHybridLowCost' || key === 'elementalHybridLowCost50';
         const rawReference = usesLowCostRaw ? result.rawLowCost : result.raw;
+        const rawReferenceKey = usesLowCostRaw ? 'rawLowCost' : 'raw';
         const referenceDamage = usesLowCostRaw ? rawLowCostDamage : rawDamage;
+        const elementalCostKey = skillCostProfileFor[key];
+        const elementalCost = selected?.skillCosts?.[elementalCostKey] || null;
+        const rawCost = rawReference?.skillCosts?.[rawReferenceKey] || null;
+        const skillCostComparison = elementalCost && rawCost ? {
+          rawReference: rawReferenceKey,
+          rawPoints: rawCost.points,
+          rawSkills: rawCost.skills,
+          elementalProfile: elementalCostKey,
+          elementalPoints: elementalCost.points,
+          elementalSkills: elementalCost.skills,
+          pointDelta: elementalCost.points - rawCost.points,
+          skillDelta: elementalCost.skills - rawCost.skills,
+          note: 'Diagnostic only: the packages are not optimized full armor builds with identical point and slot budgets.',
+        } : null;
         result[key] = selected && referenceDamage > 0
           ? {
             ...selected,
             vsRaw: round(selected.damage / referenceDamage),
-            rawReference: usesLowCostRaw ? 'rawLowCost' : 'raw',
+            rawReference: rawReferenceKey,
             rawWeapon: rawReference.weapon,
             rawTree: rawReference.tree,
             rawLevel: rawReference.level,
             rawCharge: rawReference.charge,
             rawPart: rawReference.part,
             rawDamage: referenceDamage,
+            skillCostComparison,
           }
-          : selected ? { ...selected, vsRaw: null } : null;
+          : selected ? { ...selected, vsRaw: null, skillCostComparison } : null;
       }
     }
   };
