@@ -107,4 +107,4 @@ Abanico queda fuera de los cambios de balance de esta etapa. Se conservan sus Mo
 
 ## Auditoría de especialización
 
-La investigación de fórmulas, impactos, coatings, habilidades y separación RAW/elemental está en [BOW_ELEMENTAL_SPECIALIZATION_AUDIT_STAGE5.md](BOW_ELEMENTAL_SPECIALIZATION_AUDIT_STAGE5.md). Incluye la corrección de Salva Lv5 (cuatro impactos) y la regla de preservar Abanico sin cambios.
+La investigación de fórmulas, impactos, coatings, habilidades y separación RAW/elemental está en [BOW_ELEMENTAL_SPECIALIZATION_AUDIT_STAGE5.md](BOW_ELEMENTAL_SPECIALIZATION_AUDIT_STAGE5.md). Incluye la corrección de Salva Lv5 (cuatro impactos) y la regla de preservar Abanico sin cambios. La herramienta reproducible de escenarios y su modo de comparación contra hitzones reales de 93 monstruos se documentan en [BOW_ELEMENTAL_SIMULATOR_STAGE5.md](BOW_ELEMENTAL_SIMULATOR_STAGE5.md).
