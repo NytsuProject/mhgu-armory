@@ -20,7 +20,7 @@ node tools/bow-elemental-scenarios.mjs --summary --style=valor --rapid-reliabili
 node tools/bow-elemental-scenarios.mjs --summary --style=none --ammo-saver-chance=0 --mission-shots=200
 
 # Recalcular la capacidad actual suponiendo una capacidad modificada a 50
-node tools/bow-elemental-scenarios.mjs --summary --style=valor --power-shot-use-rate=0.75 --element-coat-capacity=50
+node tools/bow-elemental-scenarios.mjs --summary --style=valor --valor-uptime=0.60 --power-shot-use-rate=0.75 --element-coat-capacity=50
 
 # Añadir TrueShot Up al paquete de habilidades y al modificador RAW del Power Shot
 node tools/bow-elemental-scenarios.mjs --summary --style=valor --true-shot-up
@@ -35,7 +35,8 @@ Opciones:
 - `--rapid-reliability=1`: fiabilidad supuesta de impactos de Salva. 0,90 sirve como escenario de sensibilidad, no como medición comprobada por carga.
 - `--no-load-up`: omite las cargas marcadas `!`; por defecto se incluyen con Recargando activo.
 - `--style=none|guild|adept|valor|striker|alchemy|aerial`: estilo a simular. Por defecto `guild`. Guild/Adepto generan un Power Shot; Valor genera dos; Striker/Alquimia/Aéreo no generan Power Shot.
-- `--power-shot-use-rate=1`: fracción esperada de secuencias que aprovechan sus Power Shots (0–1). Por defecto 1 es una cota de uso ideal, no una tasa real de cacería.
+- `--power-shot-use-rate=1`: fracción esperada de oportunidades en las que se dispara el Power Shot (0–1). Por defecto 1 es una cota de uso ideal, no una tasa real de cacería.
+- `--valor-uptime=1`: proporción de la cacería en la que se mantiene el estado Valor (0–1). Solo afecta al estilo Valor; no es una cifra medida. Por defecto 1 representa el techo máximo.
 - `--true-shot-up`: incluye el coste de habilidad +10 y aplica ×1,20 al componente RAW de cada Power Shot. La guía de datos MHXX lista ×1,20; se deja como supuesto separado a validar in-game.
 
 ## Qué compara
@@ -88,6 +89,16 @@ El segundo Valor Power Shot repite el mismo nivel de carga del primero y usa ×1
 
 Referencias: [manual oficial de Capcom sobre Power Shot](https://game.capcom.com/manual/MH_Gen/en-UK/page-123.html), [Yet Another Weapon Guide — estilos y secuencias](https://docs.google.com/document/d/1vuDNCYYhNvSPHMqPwoC2cyjF-qcuXztYsipi9jUZHa0/mobilebasic), [Kiranico — lista de habilidades MHGU](https://mhgu.kiranico.com/skill), [datos comunitarios MHXX Bow MV/Modifiers](https://es.scribd.com/document/706766576/MHXX-BW-MVs).
 
+
+
+### Valor no debe asumirse activo durante toda la cacería
+
+El estilo Valor añade dos Power Shots en la secuencia, pero solo mientras está activo el estado Valor. Para no tratar la barra como si estuviera al 100 % todo el tiempo, el simulador separa dos factores: `powerShotUseRate` (probabilidad de aprovechar la oportunidad de disparo) y `valorStateUptime` (fracción de la cacería en estado Valor). La tasa efectiva de seguimiento en Valor es el producto de ambos. Prueba sensibilidades de 0,4 / 0,6 / 0,8 / 1,0 en `--valor-uptime`; no interpretes 1,0 como rendimiento medio de un jugador.
+
+El Power Shot normal sube un nivel respecto al disparo cargado anterior. Si se está en la carga máxima disponible, repite ese nivel; sus tipo de flecha y MV siguen la carga resultante. La guía de mecánicas de arco de MHGen documenta Guild/Adepto y esta regla; el manual oficial de MHXX describe剛射 (Power Shot) como acción propia del arco, pero la división exacta de estilos se contrasta con la guía comunitaria y los parámetros de estilo de MHGU. Para Guild/Adepto hay un Power Shot; para Valor el archivo de parámetros `w10` expone dos modificadores independientes. La guía de datos MHXX los recoge como `1` y `1,3` para el primer/segundo Power Shot de Valor. 
+
+El modelo aplica `TrueShot Up ×1,20` y el segundo Power Shot de Valor `×1,30` al **componente RAW**; no los multiplica al elemento. Esto coincide con las fórmulas y notas comunitarias que identifican esos modificadores como físicos. Las cifras se conservan como hipótesis documentadas hasta confirmar su aplicación exacta en MHXX retail. Las duraciones de carga, gasto de stamina y ritmo real de animación no están incluidos: por tanto, ningún resultado se llama DPS.
+
 ## Paquetes de habilidades comparados
 
 Las dos bases comparten Ojo crítico +3 (+30 % afinidad), Maza (+50 % si hitzone de disparo ≥45), Ataque +3 (+20 ataque mostrado) y el potenciador del tipo de flecha. La carga marcada `!` se activa con Recargando en ambos paquetes.
@@ -119,7 +130,7 @@ Los modificadores de carga elemental de base, A y B son los definidos en `docs/B
 ## Qué no afirma esta herramienta
 
 - No calcula DPS ni daño final exacto del juego: conserva decimales y no aplica redondeo por cada impacto, defensa global, enfurecimiento ni variaciones de hitzone entre impactos.
-- No simula el ciclo de carga, coste real de stamina, animaciones ni ventanas de apertura. La tasa de uso de Power Shot es una entrada estimada; el valor 1 es techo teórico. No incluye Hunter Arts ni tiempos reales de cacería.
+- No simula el ciclo de carga, coste real de stamina, animaciones ni ventanas de apertura. Las tasas de uso de Power Shot y uptime de Valor son entradas estimadas; el valor 1 es techo teórico. No incluye Hunter Arts ni tiempos reales de cacería.
 - El modo sintético compara el mismo arco con builds distintas. El modo `--hitzones=... --monster-summary` sí compara el mejor RAW de todo el catálogo contra el mejor elemento por monstruo, parte y rango, usando solo la primera tabla de hitzones.
 - No decide todavía qué multiplicador A/B debe aplicarse. Solo mide escenarios que después se validarán contra hitzones reales, progresión y pruebas in-game.
 - No cambia `bow.json`, el Builder ni los parámetros de MHXX.
