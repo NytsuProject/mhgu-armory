@@ -198,8 +198,9 @@ test('real hitzone matrix compares catalogue RAW and elemental candidates by mon
   assert.ok(g.scenarios.base.raw);
   assert.ok(g.scenarios.base.elementalFocused);
   assert.ok(g.scenarios.base.elementalFull);
-  assert.equal(g.scenarios.base.elementalFocused.skillCosts.elementFocused.skills, 5);
-  assert.equal(g.scenarios.base.elementalFocused.skillCosts.elementFocused.points, 75);
+  // The winning slot uses C4! and includes the additional Load Up line (+10).
+  assert.equal(g.scenarios.base.elementalFocused.skillCosts.elementFocused.skills, 6);
+  assert.equal(g.scenarios.base.elementalFocused.skillCosts.elementFocused.points, 85);
   assert.ok(g.scenarios.base.elementalFocused.damage > 0);
   assert.ok(g.byShotType.Rapid.base.elementalFocused);
   assert.equal(g.byShotType.Rapid.base.elementalFocused.shotType, "Rapid");
