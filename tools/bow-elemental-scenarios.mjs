@@ -647,6 +647,8 @@ export function summarizeRows(rows) {
     const bB50 = bestBy(group, 'B_fullCapacity50VsRaw');
     out.push({
       rank: first.rank, element: first.element, shotType: first.shotType, matchup: first.matchup,
+      style: first.style, powerShotCount: first.powerShotCount,
+      powerShotUseRate: first.powerShotUseRate,
       candidates: group.length,
       bestLite: bLite ? { weapon: bLite.weaponName, lv: bLite.level, slot: bLite.slot,
         ratioCurrent: bLite.liteMissionVsRaw, skillCosts: bLite.skillCosts } : null,
