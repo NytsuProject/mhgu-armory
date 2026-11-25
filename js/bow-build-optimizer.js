@@ -138,7 +138,7 @@ function stateKey(state, requirements) {
     effective.join(","),
     keys.map(skill => state.chest[skill] || 0).join(","),
     state.torsoUp,
-    [...state.caps].sort((a, b) => b - a).join(","),
+    state.caps.join(","),
   ].join("|");
 }
 function makeArmorBeam(armorData, requirements, rank, gender, beamWidth) {

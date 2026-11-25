@@ -83,6 +83,7 @@ function main() {
         weaponName: weapon.nEs || weapon.n,
         beamWidth: Number(args["beam-width"] || 700),
         topBuilds: Number(args["top-builds"] || 3),
+        topTalismansPerArmor: Number(args["top-talismans"] || 5),
       });
       output.comparisons.push({ profile, gender, coatingPolicy, coatingUnlocks: resolved.coatingUnlocks, ...result });
     }

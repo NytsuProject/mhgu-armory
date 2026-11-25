@@ -30,7 +30,7 @@ Ejemplo con Elizabeth atenta (árbol 104, nivel 3), carga 3 y dos ranuras:
 node tools/bow-build-optimizer.mjs --weapon-tree 104 --weapon-level 3 --charge-slot 3 --profile all --rank G --gender both --coating-policy low-cost --beam-width 700
 ```
 
-Opciones principales: `--weapon-tree`, `--weapon-level`, `--charge-slot 1..4`, `--profile raw|elemental|hybrid|all`, `--coating-policy native|low-cost|max`, `--rank LR|HR|G`, `--gender male|female|both`, `--beam-width N` y `--top-builds N`.
+Opciones principales: `--weapon-tree`, `--weapon-level`, `--charge-slot 1..4`, `--profile raw|elemental|hybrid|all`, `--coating-policy native|low-cost|max`, `--rank LR|HR|G`, `--gender male|female|both`, `--beam-width N`, `--top-talismans N` y `--top-builds N`.
 
 ## Interpretación y límites
 
