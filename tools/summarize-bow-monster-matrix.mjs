@@ -16,8 +16,8 @@ const profiles = [
   ["elementalFull50", "Element Full · Element Coat 50"],
   ["elementalHybrid", "Element Full · Element Coat II → Power Coat II"],
   ["elementalHybrid50", "Element Full · Element Coat 50 → Power Coat II"],
-  ["elementalHybridLowCost", "Element Full · low-cost coatings I/II vs budget-matched RAW"],
-  ["elementalHybridLowCost50", "Element Full · Element Coat 50 · low-cost coatings vs budget-matched RAW"],
+  ["elementalHybridLowCost", "Element Full · low-cost coatings I/II vs RAW low-cost coating profile"],
+  ["elementalHybridLowCost50", "Element Full · Element Coat 50 · low-cost coatings vs RAW low-cost coating profile"],
 ];
 const scenarios = ["base", "A", "B"];
 const shotTypes = ["Rapid", "Pierce", "Spread", "Heavy"];
@@ -46,6 +46,10 @@ function summarizeGroup({ rank, scenario, profile, label, shotType, chosen, part
       wins: values.filter(value => value > 1).length,
     };
   };
+  const skillCostRows = chosen.map(item => item.value.skillCostComparison)
+    .filter(row => Number.isFinite(row?.pointDelta) && Number.isFinite(row?.skillDelta));
+  const pointDeltas = skillCostRows.map(row => row.pointDelta);
+  const skillDeltas = skillCostRows.map(row => row.skillDelta);
   return {
     rank, scenario, profile, label, shotType,
     matchups: ratios.length,
@@ -65,6 +69,19 @@ function summarizeGroup({ rank, scenario, profile, label, shotType, chosen, part
     favorable25Plus: band(value => value >= 25),
     medium15To24: band(value => value >= 15 && value < 25),
     poor10OrLess: band(value => value <= 10),
+    skillCostDelta: skillCostRows.length ? {
+      count: skillCostRows.length,
+      rawReference: skillCostRows[0].rawReference,
+      meanPoints: average(pointDeltas),
+      medianPoints: median(pointDeltas),
+      minPoints: Math.min(...pointDeltas),
+      maxPoints: Math.max(...pointDeltas),
+      meanSkills: average(skillDeltas),
+      medianSkills: median(skillDeltas),
+      minSkills: Math.min(...skillDeltas),
+      maxSkills: Math.max(...skillDeltas),
+      note: 'Positive values mean the elemental package uses more points or skill lines; this does not prove same-budget armor builds.',
+    } : null,
     candidates: chosen.map(item => ({
       monster: item.monster,
       elementalWeapon: item.value.weapon,
@@ -79,6 +96,7 @@ function summarizeGroup({ rank, scenario, profile, label, shotType, chosen, part
       rawCharge: item.value.rawCharge || null,
       rawPart: item.value.rawPart || null,
       ratio: item.value.vsRaw,
+      skillCostComparison: item.value.skillCostComparison || null,
     })),
   };
 }
