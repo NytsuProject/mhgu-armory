@@ -166,11 +166,13 @@ export function calculateShot(options) {
     weapon, charge, matchup, elementCharge = ELEMENT_CHARGE.base,
     rapidReliability = 1, missionShots = 200, ammoSaverChance = 0,
     ammoSaverEnabled = ammoSaverChance > 0,
-    elementCoatingCapacity = 20, loadUp = false, slotIndex = 2,
+    elementCoatingCapacity = 20, elementCap = null, loadUp = false, slotIndex = 2,
     loadUpForPackage, trueShotUp = false, rawShotMultiplier = 1,
   } = options;
   const parsed = parseCharge(charge);
   const element = elementOf(weapon);
+  const effectiveElementValue = element
+    ? Math.min(element.value, elementCap ?? Number.POSITIVE_INFINITY) : 0;
   if (!parsed) return null;
   if (parsed.requiresLoadUp && !loadUp) return null;
   if (!Number.isInteger(slotIndex) || slotIndex < 0 || slotIndex > 3) {
@@ -184,6 +186,10 @@ export function calculateShot(options) {
   }
   if (!Number.isFinite(elementCoatingCapacity) || elementCoatingCapacity < 0) {
     throw new RangeError('elementCoatingCapacity must be zero or greater.');
+  }
+  if (elementCap !== null && elementCap !== undefined
+      && (!Number.isFinite(elementCap) || elementCap < 0)) {
+    throw new RangeError('elementCap must be zero or greater when supplied.');
   }
   if (!Number.isFinite(rapidReliability) || rapidReliability < 0 || rapidReliability > 1) {
     throw new RangeError('rapidReliability must be between 0 and 1.');
@@ -219,7 +225,7 @@ export function calculateShot(options) {
     * (mvSum / 100) * (matchup.shotHz / 100) * reliability * rawShotMultiplier);
   const rawNoCoat = physicalBase * rawCrit;
   const rawPowerCoated = rawNoCoat * 1.50;
-  const rawBuildBaseElement = element ? (element.value / 10) * eleCharge
+  const rawBuildBaseElement = element ? (effectiveElementValue / 10) * eleCharge
     * (matchup.elementHz / 100) * arrowHits * reliability : 0;
   const rawBuildNoCoat = rawNoCoat + rawBuildBaseElement;
   const rawBuildPowerCoated = rawPowerCoated + rawBuildBaseElement;
@@ -227,8 +233,8 @@ export function calculateShot(options) {
   const elemPhysicalNoCoat = physicalElemBuildBase * normalCrit;
   // Element Focus drops shot-type Up from the physical component, but keeps the same elemental skills.
   const elemFocusedPhysicalNoCoat = (physicalElemBuildBase / shotUp) * normalCrit;
-  const elemLiteValue = element ? Math.floor(element.value * 1.10 + 6) : 0;
-  const elemFullValue = element ? Math.floor(element.value * 1.20 + 6) : 0;
+  const elemLiteValue = element ? Math.floor(effectiveElementValue * 1.10 + 6) : 0;
+  const elemFullValue = element ? Math.floor(effectiveElementValue * 1.20 + 6) : 0;
   const elemCrit = elementAffinityMultiplier(affinity, true);
   const elementalPerValue = (value) => (value / 10) * eleCharge
     * elemCrit * (matchup.elementHz / 100) * arrowHits * reliability;
@@ -267,7 +273,9 @@ export function calculateShot(options) {
   return {
     shotType: shot, shotLevel, slot: slotIndex + 1, charge,
     requiresLoadUp: parsed.requiresLoadUp,
-    arrowHits, mvSum, affinity, element: element?.type || null, elementValue: element?.value || 0,
+    arrowHits, mvSum, affinity, element: element?.type || null,
+    elementValue: element?.value || 0, effectiveElementValue,
+    elementCap: elementCap ?? null,
     shotHz: matchup.shotHz, elementHz: matchup.elementHz,
     rawPhysicalNoCoat: round(rawNoCoat),
     rawPhysicalPowerCoated: round(rawNoCoat * 1.50),
@@ -478,6 +486,7 @@ function weaponRows(trees, options = {}) {
           const base = calculateSequence({
             weapon, charge, matchup, slotIndex, loadUp: options.includeLoadUp,
             elementCharge: ELEMENT_CHARGE.base,
+            elementCap: options.elementCap ?? null,
             missionShots: options.missionShots ?? 200,
             ammoSaverChance: options.ammoSaverChance ?? 0,
             ammoSaverEnabled: options.ammoSaverEnabled ?? (options.ammoSaverChance > 0),
@@ -492,6 +501,7 @@ function weaponRows(trees, options = {}) {
           const scenarioA = calculateSequence({
             weapon, charge, matchup, slotIndex, loadUp: options.includeLoadUp,
             elementCharge: ELEMENT_CHARGE.A,
+            elementCap: options.elementCap ?? null,
             missionShots: options.missionShots ?? 200,
             ammoSaverChance: options.ammoSaverChance ?? 0,
             ammoSaverEnabled: options.ammoSaverEnabled ?? (options.ammoSaverChance > 0),
@@ -505,6 +515,7 @@ function weaponRows(trees, options = {}) {
           const scenarioB = calculateSequence({
             weapon, charge, matchup, slotIndex, loadUp: options.includeLoadUp,
             elementCharge: ELEMENT_CHARGE.B,
+            elementCap: options.elementCap ?? null,
             missionShots: options.missionShots ?? 200,
             ammoSaverChance: options.ammoSaverChance ?? 0,
             ammoSaverEnabled: options.ammoSaverEnabled ?? (options.ammoSaverChance > 0),
@@ -689,6 +700,7 @@ export function runMonsterMatrix(database, monsterData, options = {}) {
               powerShotUseRate: options.powerShotUseRate ?? 1,
               valorStateUptime: options.valorStateUptime ?? 1,
               trueShotUp: options.trueShotUp ?? false,
+              elementCap: options.elementCap ?? null,
             });
             if (!row) continue;
 
@@ -715,6 +727,9 @@ export function runMonsterMatrix(database, monsterData, options = {}) {
               shotHz,
               elementHz: element ? elementHz : 0,
               element: element?.type || null,
+              catalogElementValue: row.elementValue,
+              effectiveElementValue: row.effectiveElementValue,
+              elementCap: row.elementCap,
               skillCosts: row.skillCosts,
             };
 
@@ -822,6 +837,7 @@ export function runMonsterMatrix(database, monsterData, options = {}) {
         powerShotUseRate: options.powerShotUseRate ?? 1,
         valorStateUptime: options.valorStateUptime ?? 1,
         trueShotUp: options.trueShotUp ?? false,
+        elementCap: options.elementCap ?? null,
       },
       note: "Each ratio compares RAW and elemental winners on the same monster part. The per-monster summary selects the part with the highest elemental-to-RAW ratio; full part-level results are retained. Theoretical hits share that part; not actual DPS.",
     },
@@ -918,6 +934,12 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
     style: args.find((arg) => arg.startsWith('--style='))?.slice(8) || 'guild',
     trueShotUp: args.includes('--true-shot-up'),
   };
+  const elementCapArg = args.find((arg) => arg.startsWith('--element-cap='));
+  if (elementCapArg) {
+    const cap = Number(elementCapArg.slice('--element-cap='.length));
+    if (!Number.isFinite(cap) || cap < 0) throw new Error('--element-cap must be zero or greater.');
+    options.elementCap = cap;
+  }
   const hitzonesPath = args.find((arg) => arg.startsWith('--hitzones='))?.slice(11);
   if (hitzonesPath) {
     const source = readFileSync(path.resolve(hitzonesPath), 'utf8').trim();
