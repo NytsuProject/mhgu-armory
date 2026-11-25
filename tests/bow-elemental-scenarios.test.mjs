@@ -289,7 +289,7 @@ test('coating switch cost reduces Power Coat coverage and accepts shot-equivalen
   }), /coatingSwitchShots/);
 });
 
-test('Seregios Close Range coating boost follows Power Coat and adds 40 boosted shots', () => {
+test('Seregios RAW Close Range coating boost follows Power Coat and the generic hybrid supports a third phase', () => {
   const seregios = {
     ...weapon,
     x: {
@@ -315,7 +315,7 @@ test('Seregios Close Range coating boost follows Power Coat and adds 40 boosted 
   assert.equal(boosted.coatings.rawPowerCoatedShots, 70);
   assert.equal(boosted.coatings.rawCloseRangeBoostedShots, 40);
   assert.equal(boosted.coatings.rawCoatingSwitchShots, 0);
-  // The elemental hybrid also spends Element II, then Power II, then boosted Close Range.
+  // Synthetic dual-property fixture: the current Seregios catalog entries are RAW-only.
   assert.equal(boosted.coatings.hybridCurrentElementShots, 30);
   assert.equal(boosted.coatings.hybridCurrentPowerShots, 70);
   assert.equal(boosted.coatings.hybridCurrentCloseRangeBoostedShots, 40);
