@@ -14,6 +14,8 @@ const profiles = [
   ["elementalFull", "Element Full"],
   ["elementalLite50", "Element Core · Element Coat 50"],
   ["elementalFull50", "Element Full · Element Coat 50"],
+  ["elementalHybrid", "Element Full · Element Coat → Power Coat"],
+  ["elementalHybrid50", "Element Full · Element Coat 50 → Power Coat"],
 ];
 const scenarios = ["base", "A", "B"];
 const shotTypes = ["Rapid", "Pierce", "Spread", "Heavy"];
