@@ -4,6 +4,11 @@ export const BOW_DISPLAY_RAW_MULTIPLIER = 1.2;
 export const CRITICAL_DISTANCE_MULTIPLIER = 1.5;
 export const CHARGE_RAW = [0.4, 1.0, 1.5, 1.7];
 export const CHARGE_ELEMENT = [0.70, 0.85, 1.0, 1.125];
+export const ELEMENT_CHARGE_SCENARIOS = {
+  base: { label: "Actual", multipliers: CHARGE_ELEMENT },
+  A: { label: "Escenario A", multipliers: [0.70, 0.90, 1.05, 1.25] },
+  B: { label: "Escenario B", multipliers: [0.70, 0.95, 1.10, 1.30] }
+};
 export const ELEMENTS = { Fire: 0, Water: 1, Thunder: 2, Ice: 3, Dragon: 4 };
 export const SHOT_MVS = {
   Rapid: { 1: [12], 2: [12, 4], 3: [12, 4, 3], 4: [12, 4, 3, 2], 5: [12, 4, 3, 3] },
@@ -181,7 +186,7 @@ export function calculateVolley(weapon, part, options = {}) {
   if (!mv?.length) throw new Error("No hay MV para " + type + " Lv" + shotLevel + ".");
   const slot = weapon.chargeSlot;
   const chargeRaw = CHARGE_RAW[slot - 1];
-  const chargeElement = CHARGE_ELEMENT[slot - 1];
+  const chargeElement = (options.chargeElementMultipliers || CHARGE_ELEMENT)[slot - 1];
   const shotHz = Number(part[4] || 0);
   const elementEntry = weapon.elements?.[0] || null;
   const elementIndex = elementEntry ? ELEMENTS[elementEntry.type] : null;
@@ -258,11 +263,15 @@ export function simulateBowBalance(bowData, hitzoneData, options = {}) {
   const monsters = (hitzoneData.monsters || []).filter(monster => monster.large);
   const ranks = ["LR", "HR", "G"];
   const shotTypes = ["Rapid", "Pierce", "Spread", "Heavy"];
-  const scenarios = [
+  const coatingScenarios = [
     { id: "uncoated", label: "Sin revestimientos", coatingMode: "none", elementCoatingMode: "none" },
     { id: "native-single-stack", label: "Revestimientos nativos, una pila por 100 disparos", coatingMode: "native", elementCoatingMode: "native" },
     { id: "unlocked-II-single-stack", label: "Nivel II desbloqueado, una pila por 100 disparos", coatingMode: "unlock-II", elementCoatingMode: "unlock-II" }
   ];
+  const chargeScenarioIds = options.chargeScenarios || ["base", "A", "B"];
+  for (const id of chargeScenarioIds) {
+    if (!ELEMENT_CHARGE_SCENARIOS[id]) throw new Error("Escenario elemental de carga no reconocido: " + id);
+  }
   const shotsPerStack = Number(options.shotsPerStack || 100);
   const returnRate = Number(options.ammoSaverReturnRate || 0);
   const budgets = options.skillBudgets || [5, 6, 7];
@@ -273,93 +282,122 @@ export function simulateBowBalance(bowData, hitzoneData, options = {}) {
   for (const rank of ranks) {
     for (const shotType of shotTypes) {
       const inRank = weapons.filter(w => w.rank === rank && w.chargeType === shotType);
-      for (const monster of monsters) {
-        const tables = monster.tables || [];
-        const parts = tables[0] || [];
-        if (!parts.length) continue;
-        for (const scenario of scenarios) {
-          const evaluated = [];
-          for (const weapon of inRank) {
-            for (const part of parts) {
-              const raw = bestForWeaponAndPart(weapon, part, PROFILE.raw, {
-                coatingMode: scenario.coatingMode, elementCoatingMode: scenario.elementCoatingMode,
-                shotsPerStack, ammoSaverReturnRate: returnRate
-              });
-              const element = weapon.elements.length ? bestForWeaponAndPart(weapon, part, PROFILE.elemental, {
-                coatingMode: scenario.coatingMode, elementCoatingMode: scenario.elementCoatingMode,
-                shotsPerStack, ammoSaverReturnRate: returnRate
-              }) : null;
-              evaluated.push({ raw, element });
+      for (const chargeScenarioId of chargeScenarioIds) {
+        const chargeScenario = ELEMENT_CHARGE_SCENARIOS[chargeScenarioId];
+        for (const monster of monsters) {
+          const parts = monster.tables?.[0] || [];
+          if (!parts.length) continue;
+          for (const coatingScenario of coatingScenarios) {
+            const evaluated = [];
+            for (const weapon of inRank) {
+              for (const part of parts) {
+                const shared = {
+                  coatingMode: coatingScenario.coatingMode,
+                  elementCoatingMode: coatingScenario.elementCoatingMode,
+                  shotsPerStack,
+                  ammoSaverReturnRate: returnRate,
+                  chargeElementMultipliers: chargeScenario.multipliers
+                };
+                const raw = bestForWeaponAndPart(weapon, part, PROFILE.raw, shared);
+                const element = weapon.elements.length
+                  ? bestForWeaponAndPart(weapon, part, PROFILE.elemental, shared)
+                  : null;
+                evaluated.push({ raw, element });
+              }
             }
-          }
-          for (const budget of budgets) {
-            const rawRows = evaluated.map(row => row.raw).filter(row => row.totalSkillSlots <= budget);
-            const elementRows = evaluated.map(row => row.element).filter(row => row && row.totalSkillSlots <= budget);
-            const bestRaw = rawRows.reduce((best, row) => better(row, best) ? row : best, null);
-            const bestElement = elementRows.reduce((best, row) => better(row, best) ? row : best, null);
-            if (!bestRaw && !bestElement) continue;
-            const ratio = bestRaw && bestElement ? bestElement.totalDamage / Math.max(bestRaw.totalDamage, 1e-9) : null;
-            matchups.push({
-              rank, shotType, monster: monster.name, scenario: scenario.id, skillBudget: budget,
-              firstHitzoneTableOnly: true,
-              assumesEveryArrowHitsSamePart: true,
-              rawBest: bestRaw,
-              elementBest: bestElement,
-              elementalToRawRatio: ratio,
-              elementalAdvantagePercent: ratio === null ? null : (ratio - 1) * 100
-            });
+            for (const budget of budgets) {
+              const rawRows = evaluated.map(row => row.raw).filter(row => row.totalSkillSlots <= budget);
+              const elementRows = evaluated.map(row => row.element).filter(row => row && row.totalSkillSlots <= budget);
+              const bestRaw = rawRows.reduce((best, row) => better(row, best) ? row : best, null);
+              const bestElement = elementRows.reduce((best, row) => better(row, best) ? row : best, null);
+              if (!bestRaw && !bestElement) continue;
+              const ratio = bestRaw && bestElement ? bestElement.totalDamage / Math.max(bestRaw.totalDamage, 1e-9) : null;
+              matchups.push({
+                rank,
+                shotType,
+                monster: monster.name,
+                chargeScenario: chargeScenarioId,
+                coatingScenario: coatingScenario.id,
+                skillBudget: budget,
+                firstHitzoneTableOnly: true,
+                assumesEveryArrowHitsSamePart: true,
+                rawBest: bestRaw,
+                elementBest: bestElement,
+                elementalToRawRatio: ratio,
+                elementalAdvantagePercent: ratio === null ? null : (ratio - 1) * 100
+              });
+            }
           }
         }
       }
     }
   }
 
-  // Same-weapon comparison isolates the loadout choice from differences between weapon stats.
+  // Same-weapon comparison isolates loadout choice from differences between weapon stats.
   for (const rank of ranks) {
     for (const shotType of shotTypes) {
       const sameRank = inRankWeapons(weapons, rank, shotType).filter(w => w.elements.length);
-      for (const weapon of sameRank) {
-        const rawSlots = [];
-        for (const part of [{ 0: 0, 1: "neutral", 4: 45, 5: 20, 6: 20, 7: 20, 8: 20, 9: 20 }]) {
-          const raw = calculateVolley(weapon, part, { profile: PROFILE.raw, coatingMode: "none" });
-          const element = calculateVolley(weapon, part, { profile: PROFILE.elemental, coatingMode: "none" });
-          rawSlots.push({ raw, element });
+      for (const chargeScenarioId of chargeScenarioIds) {
+        const chargeScenario = ELEMENT_CHARGE_SCENARIOS[chargeScenarioId];
+        for (const weapon of sameRank) {
+          const part = [0, "neutral", 0, 0, 45, 20, 20, 20, 20, 20];
+          const shared = { coatingMode: "none", elementCoatingMode: "none", chargeElementMultipliers: chargeScenario.multipliers };
+          const raw = calculateVolley(weapon, part, { ...shared, profile: PROFILE.raw });
+          const element = calculateVolley(weapon, part, { ...shared, profile: PROFILE.elemental });
+          sameWeapon.push({
+            rank,
+            shotType,
+            chargeScenario: chargeScenarioId,
+            treeId: weapon.treeId,
+            weapon: weapon.name,
+            level: weapon.level,
+            requiresLoadUp: weapon.requiresLoadUp,
+            skillSlots: raw.totalSkillSlots,
+            neutralReferencePart: true,
+            rawProfileDamage: raw.totalDamage,
+            elementalProfileDamage: element.totalDamage,
+            elementalToRawRatio: element.totalDamage / Math.max(raw.totalDamage, 1e-9)
+          });
         }
-        const { raw, element } = rawSlots[0];
-        sameWeapon.push({
-          rank, shotType, treeId: weapon.treeId, weapon: weapon.name, level: weapon.level,
-          requiresLoadUp: weapon.requiresLoadUp, skillSlots: raw.totalSkillSlots,
-          neutralReferencePart: true,
-          rawProfileDamage: raw.totalDamage,
-          elementalProfileDamage: element.totalDamage,
-          elementalToRawRatio: element.totalDamage / Math.max(raw.totalDamage, 1e-9)
-        });
       }
     }
   }
 
   for (const rank of ranks) {
     for (const shotType of shotTypes) {
-      for (const scenario of scenarios) {
-        for (const budget of budgets) {
-          const rows = matchups.filter(m => m.rank === rank && m.shotType === shotType && m.scenario === scenario.id && m.skillBudget === budget && m.elementalToRawRatio !== null);
-          if (!rows.length) continue;
-          const ratios = rows.map(row => row.elementalToRawRatio).sort((a, b) => a - b);
-          const mean = ratios.reduce((sum, value) => sum + value, 0) / ratios.length;
-          const favorable = rows.filter(row => (row.elementBest?.elementHz || 0) >= 25);
-          const medium = rows.filter(row => (row.elementBest?.elementHz || 0) >= 15 && (row.elementBest?.elementHz || 0) < 25);
-          const poor = rows.filter(row => (row.elementBest?.elementHz || 0) <= 10);
-          const average = list => list.length ? list.reduce((sum, row) => sum + row.elementalToRawRatio, 0) / list.length : null;
-          summary.push({
-            rank, shotType, scenario: scenario.id, skillBudget: budget,
-            matchups: rows.length,
-            elementalWins: rows.filter(row => row.elementalToRawRatio > 1).length,
-            meanElementToRawRatio: mean,
-            medianElementToRawRatio: ratios[Math.floor(ratios.length / 2)],
-            favorable25Plus: { count: favorable.length, meanRatio: average(favorable), elementalWins: favorable.filter(row => row.elementalToRawRatio > 1).length },
-            medium15To24: { count: medium.length, meanRatio: average(medium), elementalWins: medium.filter(row => row.elementalToRawRatio > 1).length },
-            poor10OrLess: { count: poor.length, meanRatio: average(poor), elementalWins: poor.filter(row => row.elementalToRawRatio > 1).length }
-          });
+      for (const chargeScenarioId of chargeScenarioIds) {
+        for (const coatingScenario of coatingScenarios) {
+          for (const budget of budgets) {
+            const rows = matchups.filter(m =>
+              m.rank === rank &&
+              m.shotType === shotType &&
+              m.chargeScenario === chargeScenarioId &&
+              m.coatingScenario === coatingScenario.id &&
+              m.skillBudget === budget &&
+              m.elementalToRawRatio !== null
+            );
+            if (!rows.length) continue;
+            const ratios = rows.map(row => row.elementalToRawRatio).sort((a, b) => a - b);
+            const mean = ratios.reduce((sum, value) => sum + value, 0) / ratios.length;
+            const favorable = rows.filter(row => (row.elementBest?.elementHz || 0) >= 25);
+            const medium = rows.filter(row => (row.elementBest?.elementHz || 0) >= 15 && (row.elementBest?.elementHz || 0) < 25);
+            const poor = rows.filter(row => (row.elementBest?.elementHz || 0) <= 10);
+            const average = list => list.length ? list.reduce((sum, row) => sum + row.elementalToRawRatio, 0) / list.length : null;
+            summary.push({
+              rank,
+              shotType,
+              chargeScenario: chargeScenarioId,
+              coatingScenario: coatingScenario.id,
+              skillBudget: budget,
+              matchups: rows.length,
+              elementalWins: rows.filter(row => row.elementalToRawRatio > 1).length,
+              meanElementToRawRatio: mean,
+              medianElementToRawRatio: ratios[Math.floor(ratios.length / 2)],
+              favorable25Plus: { count: favorable.length, meanRatio: average(favorable), elementalWins: favorable.filter(row => row.elementalToRawRatio > 1).length },
+              medium15To24: { count: medium.length, meanRatio: average(medium), elementalWins: medium.filter(row => row.elementalToRawRatio > 1).length },
+              poor10OrLess: { count: poor.length, meanRatio: average(poor), elementalWins: poor.filter(row => row.elementalToRawRatio > 1).length }
+            });
+          }
         }
       }
     }
@@ -382,6 +420,11 @@ export function simulateBowBalance(bowData, hitzoneData, options = {}) {
         activeSkillCount: profile.skillCount,
         nominalThresholdPoints: profile.nominalThresholdPoints
       })),
+      elementChargeScenarios: chargeScenarioIds.map(id => ({
+        id,
+        label: ELEMENT_CHARGE_SCENARIOS[id].label,
+        multipliers: ELEMENT_CHARGE_SCENARIOS[id].multipliers
+      })),
       assumptions: [
         "Los paquetes comparados tienen cinco habilidades ofensivas activas; sus puntos umbral nominales (RAW 65, elemental 55) no equivalen a una optimización completa de armadura ni son directamente comparables entre árboles de habilidad.",
         "Attack +3 se aplica como +20 de true RAW; el RAW mostrado del arco se divide por el multiplicador de clase 1,2.",
@@ -394,14 +437,13 @@ export function simulateBowBalance(bowData, hitzoneData, options = {}) {
         "El escenario unlocked-II asume que Power C+ / Elem C+ +15 permite usar el revestimiento II y suma una habilidad adicional cuando no es nativo.",
         "Ammo Saver queda desactivado por defecto: su probabilidad exacta de devolución no se asume."
       ],
-      scenarios: scenarios.map(({ id, label }) => ({ id, label }))
+      coatingScenarios: coatingScenarios.map(({ id, label }) => ({ id, label }))
     },
     summary,
     matchups,
     sameWeapon
   };
 }
-
 function inRankWeapons(weapons, rank, shotType) {
   return weapons.filter(weapon => weapon.rank === rank && weapon.chargeType === shotType);
 }
