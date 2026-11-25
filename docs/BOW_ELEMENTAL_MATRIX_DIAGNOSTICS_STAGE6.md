@@ -62,6 +62,8 @@ Ratio medio de todas las partes del tipo, seguido del ratio en las partes con hi
 
 Estos valores no se utilizan para justificar una compensación de Abanico. Se mantiene la decisión de conservar sus MV, multiplicadores y estadísticas originales. La tabla sirve para señalar que la brecha elemental depende del perfil de flecha y del rango; no se debe aplicar una corrección uniforme antes de desglosar las causas.
 
+En el resumen por monstruo (mejor parte de cada monstruo, no el agregado de todas sus partes), Elemental Full solo supera a RAW en cuatro matchups G: Yian Garuga y Deadeye Yian Garuga (ratio 1,073), Uragaan (1,043) y Bloodbath Diablos (1,009). En los cuatro, el candidato elemental elegido es **Elizabeth atenta**, Agua 30, con **Abanico Lv5!**. Son resultados de sus datos actuales, no de una compensación nueva. Se dejan tal cual: no se modifica Abanico, su MV ni su multiplicador.
+
 ## Decisiones de trabajo después de la matriz
 
 1. Mantener intactos los valores base originales por ahora y medir el cap 30 como escenario aparte. El inventario mostró que el cap reduciría el total de los valores naturales un 4,06 %, pero afectaría a 11 de las 55 líneas terminales.
