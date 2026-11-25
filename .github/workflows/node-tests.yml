@@ -23,6 +23,13 @@ jobs:
           node-version: 20
       - name: Run test suite
         run: npm test
+
+      - name: Run full bow balance matrix smoke test
+        run: |
+          curl -fsSL "https://raw.githubusercontent.com/ArmoredRaven17/MHGU-Monster-Info/2553eb6627fbf73803d83bf10f2deb619b7f4a03/docs/data/hitzones.js" -o "$RUNNER_TEMP/mhgu-hitzones.js"
+          node tools/bow-balance-sim.mjs --hitzones "$RUNNER_TEMP/mhgu-hitzones.js" --out "$RUNNER_TEMP/bow-balance-stage5.json" --load-up-policy match-c3 --shots-per-stack 100 --skill-budgets 5,6,7 > "$RUNNER_TEMP/bow-balance-stage5.log"
+          node -e "const r=JSON.parse(require('node:fs').readFileSync(process.argv[1],'utf8')); if(r.meta.monsterCount!==93) throw new Error('Expected 93 large monsters'); if(!r.matchups.length || !r.summary.length) throw new Error('Empty bow balance matrix'); console.log('Verified '+r.matchups.length+' matchup rows and '+r.summary.length+' summaries across '+r.meta.monsterCount+' large monsters.');" "$RUNNER_TEMP/bow-balance-stage5.json"
+
       - name: Run full bow catalogue scenario smoke test
         run: |
           node tools/bow-elemental-scenarios.mjs --summary > "$RUNNER_TEMP/bow-scenarios.json"
