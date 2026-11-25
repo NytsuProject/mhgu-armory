@@ -146,6 +146,25 @@ test("unlocking missing coating II and Load Up are charged as extra skill slots"
   assert.equal(unlock.totalSkillSlots, 7);
 });
 
+
+test("Ammo Saver costs a skill slot only when the build has an active matching coating", () => {
+  const weapon = makeWeaponCandidates(makeBow()).find(w => w.treeId === 2 && w.chargeSlot === 3);
+  const withCoating = calculateVolley(weapon, part, {
+    profile: PROFILE.elemental,
+    elementCoatingMode: "native",
+    ammoSaverReturnRate: 0.2
+  });
+  assert.equal(withCoating.ammoSaverSkillSlots, 1);
+  assert.equal(withCoating.totalSkillSlots, 6);
+  const withoutCoating = calculateVolley({ ...weapon, coatings: [] }, part, {
+    profile: PROFILE.elemental,
+    elementCoatingMode: "native",
+    ammoSaverReturnRate: 0.2
+  });
+  assert.equal(withoutCoating.ammoSaverSkillSlots, 0);
+  assert.equal(withoutCoating.totalSkillSlots, 5);
+});
+
 test("simulation separates LR and G, reports hitzone assumptions and normalized budgets", () => {
   const result = simulateBowBalance(makeBow(), hitzoneData, {
     loadUpPolicy: "match-c3",
