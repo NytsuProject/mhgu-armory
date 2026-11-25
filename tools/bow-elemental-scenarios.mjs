@@ -296,7 +296,7 @@ export function calculateShot(options) {
 export function calculateSequence(options) {
   const {
     weapon, charge, slotIndex = 2, style = 'none', loadUp = false,
-    powerShotUseRate = 1, trueShotUp = false, missionShots = 200,
+    powerShotUseRate = 1, valorStateUptime = 1, trueShotUp = false, missionShots = 200,
     ...damageOptions
   } = options;
   const supportedStyles = new Set(['none', 'guild', 'adept', 'valor', 'striker', 'alchemy', 'aerial']);
@@ -304,18 +304,23 @@ export function calculateSequence(options) {
   if (!Number.isFinite(powerShotUseRate) || powerShotUseRate < 0 || powerShotUseRate > 1) {
     throw new RangeError('powerShotUseRate must be between 0 and 1.');
   }
+  if (!Number.isFinite(valorStateUptime) || valorStateUptime < 0 || valorStateUptime > 1) {
+    throw new RangeError('valorStateUptime must be between 0 and 1.');
+  }
   const main = parseCharge(charge);
   if (!main) return null;
   if (main.requiresLoadUp && !loadUp) return null;
 
   const powerShotCount = style === 'valor' ? 2
     : (style === 'guild' || style === 'adept') ? 1 : 0;
+  const effectivePowerShotUseRate = style === 'valor'
+    ? powerShotUseRate * valorStateUptime : powerShotUseRate;
   const chargeSlots = (weapon.x?.charges || []).map((value, index, all) =>
     normalizeLoadUpCharge(all, index));
   let powerCharge = charge;
   let powerSlotIndex = slotIndex;
   let powerRequiresLoadUp = main.requiresLoadUp;
-  if (powerShotCount && powerShotUseRate > 0) {
+  if (powerShotCount && effectivePowerShotUseRate > 0) {
     const nextIndex = slotIndex + 1;
     const nextCharge = chargeSlots[nextIndex];
     const nextParsed = parseCharge(nextCharge);
@@ -326,8 +331,8 @@ export function calculateSequence(options) {
     }
   }
   const sequenceRequiresLoadUp = main.requiresLoadUp || powerRequiresLoadUp;
-  const activeTrueShotUp = trueShotUp && powerShotCount > 0 && powerShotUseRate > 0;
-  const expectedVolleys = 1 + powerShotUseRate * powerShotCount;
+  const activeTrueShotUp = trueShotUp && powerShotCount > 0 && effectivePowerShotUseRate > 0;
+  const expectedVolleys = 1 + effectivePowerShotUseRate * powerShotCount;
   const effectiveMissionShots = missionShots * expectedVolleys;
   const shared = {
     ...damageOptions, weapon, matchup: options.matchup, loadUp,
@@ -348,7 +353,7 @@ export function calculateSequence(options) {
       rawShotMultiplier: firstPowerMultiplier,
     });
     if (power1) shots.push({
-      role: 'powerShot', weight: powerShotUseRate,
+      role: 'powerShot', weight: effectivePowerShotUseRate,
       multiplier: firstPowerMultiplier, row: power1,
     });
     if (style === 'valor') {
@@ -358,7 +363,7 @@ export function calculateSequence(options) {
         rawShotMultiplier: secondMultiplier,
       });
       if (power2) shots.push({
-        role: 'valorPowerShot', weight: powerShotUseRate,
+        role: 'valorPowerShot', weight: effectivePowerShotUseRate,
         multiplier: secondMultiplier, row: power2,
       });
     }
@@ -377,6 +382,8 @@ export function calculateSequence(options) {
     style,
     powerShotCount,
     powerShotUseRate,
+    valorStateUptime,
+    effectivePowerShotUseRate,
     expectedVolleysPerSequence: round(expectedVolleys),
     powerShotCharge: powerShotCount ? powerCharge : null,
     powerShotSlot: powerShotCount ? powerSlotIndex + 1 : null,
@@ -436,6 +443,7 @@ function weaponRows(trees, options = {}) {
             rapidReliability: options.rapidReliability ?? 1,
             style: options.style ?? 'guild',
             powerShotUseRate: options.powerShotUseRate ?? 1,
+            valorStateUptime: options.valorStateUptime ?? 1,
             trueShotUp: options.trueShotUp ?? false,
           });
           if (!base) continue;
@@ -551,6 +559,7 @@ export function runMonsterMatrix(database, monsterData, options = {}) {
               rapidReliability: options.rapidReliability ?? 1,
               style: options.style ?? 'guild',
               powerShotUseRate: options.powerShotUseRate ?? 1,
+              valorStateUptime: options.valorStateUptime ?? 1,
               trueShotUp: options.trueShotUp ?? false,
             });
             if (!row) continue;
@@ -618,6 +627,7 @@ export function runMonsterMatrix(database, monsterData, options = {}) {
         rapidReliability: options.rapidReliability ?? 1,
         style: options.style ?? 'guild',
         powerShotUseRate: options.powerShotUseRate ?? 1,
+        valorStateUptime: options.valorStateUptime ?? 1,
         trueShotUp: options.trueShotUp ?? false,
       },
       note: 'Catalogue-wide best same-part damage index; theoretical hits share one part; not actual DPS.',
@@ -710,6 +720,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
     ammoSaverChance: readNumber('--ammo-saver-chance=', 0.20),
     elementCoatingCapacity: readNumber('--element-coat-capacity=', 20),
     powerShotUseRate: readNumber('--power-shot-use-rate=', 1),
+    valorStateUptime: readNumber('--valor-uptime=', 1),
     style: args.find((arg) => arg.startsWith('--style='))?.slice(8) || 'guild',
     trueShotUp: args.includes('--true-shot-up'),
   };
