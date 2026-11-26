@@ -219,7 +219,7 @@ function runClassB({ armorData, decorations, talismanSkills, skillLevels, bowDat
     const buildOutput = runProfileComparison({
       armorData, decorations, talismanSkills, skillLevels, bowData,
       treeId: bow.treeId, level: bow.level, chargeSlot: bow.chargeSlot, shotType,
-      coatingPolicy: "low-cost", rank: "G", genders: ["male", "female"],
+      coatingPolicy: "low-cost", rank: bowRank, genders: ["male", "female"],
       activeSkillBudget: budget, talismanPolicy, allowNegatives: false,
       beamWidth: 300, profiles: [profile],
     });
