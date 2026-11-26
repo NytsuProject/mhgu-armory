@@ -100,7 +100,7 @@ test("class-B comparison uses the requested bow rank and reports candidate cover
   const selector = source.slice(selectStart, runStart);
   const classB = source.slice(runStart, source.indexOf("function main()", runStart));
   assert.match(selector, /rank: bowRank/, "el sondeo debe usar el rango solicitado");
-  assert.match(classB, /rank: bowRank/, "la build final debe usar el rango solicitado");
+  assert.match(classB, /coatingPolicy: "low-cost", rank: bowRank, genders: \["male", "female"\]/, "la build final debe usar el rango solicitado");
   assert.match(selector, /candidateCount: candidates\.length/, "se debe informar el universo de candidatos");
   assert.match(classB, /searchExhaustive: probed === candidateCount/, "se debe declarar si la búsqueda fue exhaustiva");
 });
