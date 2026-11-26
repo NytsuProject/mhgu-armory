@@ -33,6 +33,17 @@ python -m http.server 8765
 # abre http://127.0.0.1:8765/
 ```
 
+## Pruebas y herramientas de investigación
+
+Requiere Node.js 18 o posterior (sin dependencias de terceros):
+
+```bash
+npm test
+npm run bow:scenarios
+```
+
+La auditoría del rebalance elemental de arco de la rama de trabajo está en [docs/BOW_ELEMENTAL_REBALANCE_STAGE5.md](docs/BOW_ELEMENTAL_REBALANCE_STAGE5.md); el modelo, sus supuestos y los comandos para comparar hitzones están en [docs/BOW_ELEMENTAL_SIMULATOR_STAGE5.md](docs/BOW_ELEMENTAL_SIMULATOR_STAGE5.md). La implementación acotada del rebalance (tope de elemento 30, normalización C4 de Recargando y propuesta por los 55 finales elementales) está en [docs/BOW_ELEMENTAL_REBALANCE_STAGE10.md](docs/BOW_ELEMENTAL_REBALANCE_STAGE10.md) y se aplica con `node tools/bow-elemental-rebalance.mjs`.
+
 ## Aviso fan
 
 Proyecto **fan de ayuda a la comunidad, sin ánimo de lucro**, sin publicidad y

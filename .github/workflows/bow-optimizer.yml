@@ -1,0 +1,48 @@
+name: Bow build optimizer smoke
+
+on:
+  push:
+    branches:
+      - balance/bow-elemental-stage5
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: bow-optimizer-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  optimizer:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Test bow build feasibility and optimizer
+        run: node --test tests/bow-build-feasibility.test.mjs tests/bow-build-optimizer.test.mjs tests/bow-build-damage.test.mjs
+      - name: Optimize a real G-rank hybrid bow build
+        run: |
+          node tools/bow-build-optimizer.mjs --weapon-tree 104 --weapon-level 3 --charge-slot 3 --profile all --rank G --gender both --coating-policy low-cost --beam-width 500 --top-talismans 5 --top-builds 1 --out="$RUNNER_TEMP/bow-build-optimizer-stage8.json"
+          node -e "const r=JSON.parse(require('node:fs').readFileSync(process.argv[1],'utf8')); if(r.weapon.treeId!==104 || r.weapon.level!==3 || r.comparisons.length!==6) throw new Error('Expected RAW/elemental/hybrid × male/female comparisons'); for(const c of r.comparisons){ if(!c.builds.length) throw new Error('Missing '+c.profile+'/'+c.gender+' build'); const b=c.builds[0]; if(b.armor.length!==5 || b.armor.some(p=>!p.name)) throw new Error('Expected five named armor pieces'); if(!b.skillPoints.length || !Number.isFinite(b.coverage)) throw new Error('Missing skill diagnostics'); if(new Set(b.armor.map(p=>p.slot)).size!==5) throw new Error('Duplicate or missing armor slot'); if(b.armor.filter(p=>p.slot!=='head').some(p=>!['G','A'].includes(p.cls))) throw new Error('Invalid bow armor class'); const allowed=c.gender==='male'?[0,2]:[1,2]; if(b.armor.some(p=>!allowed.includes(p.gender))) throw new Error('Mixed armor genders'); for(const [slot,jewels] of Object.entries(b.jewelsBySlot)){ const cap=slot==='weapon'?r.weapon.weaponSlots:slot==='talisman'?(b.talisman?.deco||0):(b.armor.find(p=>p.slot===slot)?.deco||0); if(jewels.reduce((n,j)=>n+j.cost,0)>cap) throw new Error('Illegal jewel placement: '+slot); } console.log(c.profile+'/'+c.gender+': '+b.activatedSkills+'/'+b.targetSkillCount+' skills; '+b.jewelSocketsUsed+' jewel sockets.'); }" "$RUNNER_TEMP/bow-build-optimizer-stage8.json"
+      - name: Download pinned MHGU hitzones
+        run: curl -fsSL "https://raw.githubusercontent.com/ArmoredRaven17/MHGU-Monster-Info/2553eb6627fbf73803d83bf10f2deb619b7f4a03/docs/data/hitzones.js" -o "$RUNNER_TEMP/mhgu-hitzones.js"
+      - name: Compare real builds on monster hitzones
+        run: |
+          node tools/bow-build-damage.mjs --builds="$RUNNER_TEMP/bow-build-optimizer-stage8.json" --hitzones="$RUNNER_TEMP/mhgu-hitzones.js" --style=guild --mission-shots=200 --coating-switch-shots=0 --out="$RUNNER_TEMP/bow-build-damage-stage9.json"
+          node -e "const r=JSON.parse(require('node:fs').readFileSync(process.argv[1],'utf8')); if(r.metadata.monsterCount!==93 || r.metadata.partRows===0 || r.rows.length!==r.metadata.partRows) throw new Error('Expected hitzones for 93 monsters'); if(!r.summary.some(x=>x.target==='elemental/male'&&x.reference==='raw/male')) throw new Error('Missing elemental vs RAW result'); if(!r.summary.some(x=>x.target==='hybrid/male'&&x.reference==='raw/male')) throw new Error('Missing hybrid vs RAW result'); const e=r.metadata.armorBuildsCompared.find(x=>x.id==='elemental/male'); if(!e?.complete) throw new Error('Expected complete elemental build'); if(r.buildSkillPoints['elemental/male']['Water Atk']<15) throw new Error('Expected actual Water Atk +2'); console.log('Verified '+r.metadata.monsterCount+' monsters and '+r.metadata.partRows+' monster-part rows; real Water Atk +2 build active.');" "$RUNNER_TEMP/bow-build-damage-stage9.json"
+
+      - name: Upload optimizer result
+        uses: actions/upload-artifact@v4
+        with:
+          name: bow-build-optimizer-stage8
+          path: |
+            ${{ runner.temp }}/bow-build-optimizer-stage8.json
+            ${{ runner.temp }}/bow-build-damage-stage9.json
+          retention-days: 14

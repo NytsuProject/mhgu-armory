@@ -60,7 +60,15 @@ export function combatStats(w, skills) {
     let factor=1, add=0;
     if (elements.has(en)) {
       const n=p(en+' Atk'), generic=p('Elemental');
-      factor=(generic>=10?1.1:generic<=-10?.9:1)*(n>=15?1.1:n>=10?1.05:n<=-10?.75:1);
+      // Los aumentos porcentuales generales y específicos se suman y comparten
+      // un tope del 20%; los puntos planos (+4 / +6) se conservan.
+      // Las penalizaciones mantienen sus multiplicadores propios.
+      if (generic >= 10 && n >= 10) {
+        const specificPct = n >= 15 ? 10 : 5;
+        factor = 1 + Math.min(20, 10 + specificPct) / 100;
+      } else {
+        factor=(generic>=10?1.1:generic<=-10?.9:1)*(n>=15?1.1:n>=10?1.05:n<=-10?.75:1);
+      }
       add=n>=15?6:n>=10?4:0;
     } else if (en==='Blast') factor=p('Bomb Boost')>=10?1.2:1;
     else { const n=p('Status'); factor=n>=15?1.2:n>=10?1.1:n<=-10?.9:1; add=n>=10?1:0; }
