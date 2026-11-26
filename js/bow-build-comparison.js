@@ -12,6 +12,7 @@
 
 import { optimizeBowBuild, resolveBowBuildRequirements } from "./bow-build-optimizer.js";
 import { BOW_SHOT_SKILLS, BOW_ELEMENT_SKILLS } from "./bow-build-feasibility.js";
+import { skillPointsFromOptimizerBuild } from "./bow-build-damage.js";
 
 /**
  * Offensive-skill taxonomy.
@@ -56,6 +57,40 @@ const SHOT_SKILL_BY_TYPE = Object.freeze({
 /** True when a skill directly multiplies or enables bow damage (see taxonomy). */
 export function isOffensive(skill) {
   return Object.prototype.hasOwnProperty.call(OFFENSIVE_SKILL_REASONS, skill);
+}
+
+/**
+ * Activation threshold for a skill: the lowest positive point value in the
+ * skill-level catalog. Skills absent from the catalog default to 10 points.
+ */
+export function skillActivationThreshold(skill, skillLevels = {}) {
+  const levels = skillLevels?.[skill];
+  if (!Array.isArray(levels) || !levels.length) return 10;
+  const positive = levels.map(row => Number(row?.points)).filter(n => Number.isFinite(n) && n > 0);
+  return positive.length ? Math.min(...positive) : 10;
+}
+
+/**
+ * Every offensive skill ACTUALLY activated by a build, reading the real skill
+ * points from the five armor pieces + talisman + decorations (not just the
+ * budgeted requirement set). This also detects offensive skills activated
+ * incidentally, beyond those explicitly budgeted.
+ *
+ * Returns [{ skill, points, threshold }], sorted by the documented priority
+ * order when `priority` is given.
+ */
+export function offensiveSkillsActivated(build, skillLevels = {}, priority = null) {
+  if (!build) return [];
+  const points = skillPointsFromOptimizerBuild(build);
+  const order = Array.isArray(priority) ? priority : Object.keys(OFFENSIVE_SKILL_REASONS);
+  const activated = [];
+  for (const skill of order) {
+    if (!isOffensive(skill)) continue;
+    const value = Number(points[skill] || 0);
+    const threshold = skillActivationThreshold(skill, skillLevels);
+    if (value >= threshold) activated.push({ skill, points: value, threshold });
+  }
+  return activated;
 }
 
 /**

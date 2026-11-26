@@ -98,6 +98,11 @@ export function calculateBowBuildVolley(weapon, part, skillPoints = {}, options 
   const catalogElementValue = num(elementEntry?.display);
   const effectiveElementValue = elementEntry
     ? elementalDisplayValue(catalogElementValue, elementType, skillPoints, options.elementCap) : 0;
+  // Elemental charge multipliers (C1..C4). Defaults to the catalog model; the
+  // sensitivity sweep overrides them one charge at a time.
+  const chargeElementMultipliers = Array.isArray(options.chargeElementMultipliers) && options.chargeElementMultipliers.length === 4
+    ? options.chargeElementMultipliers.map(Number)
+    : CHARGE_ELEMENT;
 
   const affinity = clamp(
     num(weapon.affinity) + expertBonus(num(skillPoints.Expert))
@@ -115,7 +120,7 @@ export function calculateBowBuildVolley(weapon, part, skillPoints = {}, options 
     * physicalCriticalMultiplier(affinity, num(skillPoints["Critical Up"]) >= 10)
     * rawShotMultiplier;
   const elementalDamage = elementEntry
-    ? (effectiveElementValue / 10) * CHARGE_ELEMENT[slotIndex] * motionValues.length
+    ? (effectiveElementValue / 10) * chargeElementMultipliers[slotIndex] * motionValues.length
       * (elementHz / 100)
       * elementalCriticalMultiplier(affinity, num(skillPoints["Crit Element"]) >= 10)
     : 0;
@@ -149,6 +154,7 @@ function sequenceForBow(candidates, mainCandidate, skillPoints, style) {
 export function calculateBowBuildMissionDamage({
   weapon, build, profile, part, volleyCandidates = null,
   style = "guild", missionShots = 200, coatingSwitchShots = 0, elementCap = null,
+  chargeElementMultipliers = null,
 } = {}) {
   if (!["raw", "elemental", "hybrid"].includes(profile)) throw new Error("Perfil RAW, elemental o hybrid obligatorio.");
   if (!Number.isFinite(missionShots) || missionShots <= 0) throw new RangeError("missionShots debe ser positivo.");
@@ -159,7 +165,7 @@ export function calculateBowBuildMissionDamage({
   if (!Array.isArray(sequence) || !sequence.length) throw new Error("La secuencia de disparos está vacía.");
   const volleys = sequence.map(entry => calculateBowBuildVolley(
     entry.candidate || entry, part, skillPoints,
-    { elementCap, rawShotMultiplier: entry.rawShotMultiplier || 1 },
+    { elementCap, rawShotMultiplier: entry.rawShotMultiplier || 1, chargeElementMultipliers },
   ));
   const average = key => sum(volleys.map(row => row[key])) / volleys.length;
   const rawBase = average("rawDamage"), elementBase = average("elementalDamage");
@@ -227,6 +233,7 @@ function averageOrNull(values) { return values.length ? sum(values) / values.len
 export function simulateBowBuildHitzoneMatrix({
   bowData, buildOutput, hitzoneData, style = "guild",
   missionShots = 200, coatingSwitchShots = 0, elementCap = null,
+  chargeElementMultipliers = null,
 } = {}) {
   if (!Array.isArray(buildOutput?.comparisons) || !buildOutput.weapon) {
     throw new Error("El archivo de builds no contiene comparaciones ni arma.");
@@ -259,12 +266,14 @@ export function simulateBowBuildHitzoneMatrix({
       const result = calculateBowBuildMissionDamage({
         weapon: main, build: comparison.build, profile: comparison.profile, part,
         volleyCandidates: comparison.sequence, style, missionShots, coatingSwitchShots, elementCap,
+        chargeElementMultipliers,
       });
       byBuild[comparison.id] = {
         totalDamage: result.totalDamagePerSequence,
         rawDamage: result.rawDamagePerSequence,
         elementalDamage: result.elementalDamagePerSequence,
         complete: comparison.build.complete,
+        comparable: Boolean(comparison.build.complete),
         activatedSkills: comparison.build.activatedSkills,
         targetSkillCount: comparison.build.targetSkillCount,
         coatings: result.coatings,
@@ -286,6 +295,7 @@ export function simulateBowBuildHitzoneMatrix({
     if (!comparisons.some(row => row.id === targetId) || !comparisons.some(row => row.id === referenceId)) continue;
     const ratios = [], bestByMonster = new Map();
     for (const row of rows) {
+      if (row.byBuild[targetId]?.comparable === false || row.byBuild[referenceId]?.comparable === false) continue;
       const value = ratio(row.byBuild[targetId]?.totalDamage, row.byBuild[referenceId]?.totalDamage);
       if (value === null) continue;
       ratios.push(value);
@@ -333,6 +343,7 @@ export function simulateBowBuildHitzoneMatrix({
 export function simulateBuildsAcrossWeapons({
   bowData, builds, hitzoneData, style = "guild",
   missionShots = 200, coatingSwitchShots = 0, elementCap = null,
+  chargeElementMultipliers = null,
 } = {}) {
   if (!Array.isArray(builds) || !builds.length) throw new Error("builds es obligatorio.");
   if (!Array.isArray(hitzoneData?.monsters)) throw new Error("Matriz de hitzones inválida.");
@@ -359,6 +370,7 @@ export function simulateBuildsAcrossWeapons({
       const result = calculateBowBuildMissionDamage({
         weapon: r.main, build: r.build, profile: r.profile, part,
         volleyCandidates: r.sequence, style, missionShots, coatingSwitchShots, elementCap,
+        chargeElementMultipliers,
       });
       byBuild[r.id] = {
         totalDamage: result.totalDamagePerSequence,
@@ -367,6 +379,7 @@ export function simulateBuildsAcrossWeapons({
         elementHz: r.elementType ? num(part[5 + ELEMENTS[r.elementType]]) : 0,
         elementType: r.elementType,
         complete: r.build.complete,
+        comparable: Boolean(r.build.complete),
         activatedSkills: r.build.activatedSkills,
         targetSkillCount: r.build.targetSkillCount,
         coatings: result.coatings,
@@ -387,6 +400,7 @@ export function simulateBuildsAcrossWeapons({
     if (!resolved.some(row => row.id === targetId) || !resolved.some(row => row.id === referenceId)) continue;
     const ratios = [], bestByMonster = new Map();
     for (const row of rows) {
+      if (row.byBuild[targetId]?.comparable === false || row.byBuild[referenceId]?.comparable === false) continue;
       const value = ratio(row.byBuild[targetId]?.totalDamage, row.byBuild[referenceId]?.totalDamage);
       if (value === null) continue;
       ratios.push(value);
@@ -436,6 +450,7 @@ export function simulateBuildsAcrossWeapons({
 export function meanBuildDamage({
   bowData, build, profile, weapon, hitzoneData,
   style = "guild", missionShots = 200, coatingSwitchShots = 0, elementCap = null,
+  chargeElementMultipliers = null,
 } = {}) {
   if (!build || !weapon) throw new Error("build y weapon son obligatorios.");
   const candidates = makeWeaponCandidates(bowData, { loadUpPolicy: "match-c3" })
@@ -450,6 +465,7 @@ export function meanBuildDamage({
     const result = calculateBowBuildMissionDamage({
       weapon: main, build, profile, part,
       volleyCandidates: sequence, style, missionShots, coatingSwitchShots, elementCap,
+      chargeElementMultipliers,
     });
     total += result.totalDamagePerSequence;
     count++;

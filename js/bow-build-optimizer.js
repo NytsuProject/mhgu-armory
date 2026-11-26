@@ -79,13 +79,18 @@ function positiveValues(values) {
  *   positive points, including two skills on one charm. This assumes the best
  *   points of both skills are simultaneously craftable; flagged as an
  *   unverified assumption, not measured in-game.
- * - "legal": legally-possible — every positive point value present in the
- *   catalog is enumerated (single-skill and two-skill combinations).
+ * - "legal": catalog-possible — every positive point value present in the
+ *   catalog is enumerated (single-skill and two-skill combinations). Two-skill
+ *   charms are assumed craftable for any catalog pair; this is a catalog
+ *   possibility, not per-pair in-game evidence.
  * - "conservative": single-skill charms only (no two-skill assumption), any
  *   positive catalog value, deco 0-3.
+ * - "verified": evidence-backed subset — single-skill charms only, restricted
+ *   to point values actually present in the catalog for that skill. No
+ *   two-skill combination is declared legal without per-pair evidence.
  */
 export function getTalismanOptions(talismanSkills, targetSkills, policy = "max") {
-  if (!["max", "legal", "conservative"].includes(policy)) {
+  if (!["max", "legal", "conservative", "verified"].includes(policy)) {
     throw new Error("Política de talismán no válida: " + policy);
   }
   const lookup = new Map(talismanSkills.map(row => [row.en, row]));
@@ -104,7 +109,7 @@ export function getTalismanOptions(talismanSkills, targetSkills, policy = "max")
       add(deco, [[skill, row.es || skill, points]]);
     }
   }
-  if (policy === "conservative") return [...options.values()];
+  if (policy === "conservative" || policy === "verified") return [...options.values()];
   for (const first of keys) for (const second of keys) {
     if (first === second) continue;
     const a = lookup.get(first), b = lookup.get(second);
@@ -277,18 +282,25 @@ export function optimizeBowBuild({
   if (!["LR", "HR", "G"].includes(rank)) throw new Error("Rango no válido.");
   const genderId = normalizeGender(gender);
   if (!Number.isInteger(weaponSlots) || weaponSlots < 0 || weaponSlots > 3) throw new Error("weaponSlots debe ser de 0 a 3.");
-  if (!["max", "legal", "conservative"].includes(talismanPolicy)) {
+  if (!["max", "legal", "conservative", "verified"].includes(talismanPolicy)) {
     throw new Error("Política de talismán no válida: " + talismanPolicy);
   }
   const width = Math.max(50, Math.min(5000, Number(beamWidth) || 700));
 
-  // Budget mode: activate the top-N offensive skills of the documented priority
-  // order instead of the whole requirement set. If the requirement set does not
-  // reach the budget, the remaining slots are filled with extra offensive skills
-  // from the priority list (using extraSkillThreshold points) so every profile
-  // can be compared at an equal activated-skill budget.
+  // Budget mode: activate the top-N OFFENSIVE skills of the documented priority
+  // order. Non-offensive mandatory requirements (e.g. Loading for a `!` charge,
+  // Ammo Saver, coating unlocks) are ALWAYS kept in the optimized set and must
+  // be active for the build to be complete, but they are NOT counted toward the
+  // offensive budget: the budget is the number of offensive skills activated.
+  // If the offensive requirement set does not reach the budget, the remaining
+  // offensive slots are filled with extra offensive skills from the priority
+  // list (using extraSkillThreshold points) so every profile can be compared at
+  // an equal offensive-skill budget.
   let budgetedRequirements = requirements;
-  let budgetMeta = { budget: null, budgetedSkills: Object.keys(requirements), unbudgetedSkills: [] };
+  let budgetMeta = {
+    budget: null, budgetedSkills: Object.keys(requirements),
+    mandatorySkills: [], unbudgetedSkills: [], offensiveSkillCount: Object.keys(requirements).length,
+  };
   if (activeSkillBudget !== null && activeSkillBudget !== undefined) {
     const budget = Number(activeSkillBudget);
     const extraThreshold = Number(extraSkillThreshold) || 10;
@@ -296,18 +308,31 @@ export function optimizeBowBuild({
     const priority = Array.isArray(offensiveSkillPriority) ? offensiveSkillPriority : Object.keys(requirements);
     const ordered = priority.filter(skill => requirements[skill] !== undefined);
     const extra = priority.filter(skill => requirements[skill] === undefined && !ordered.includes(skill));
-    if (ordered.length + extra.length < budget) throw new Error("Presupuesto " + budget + " mayor que habilidades disponibles (requisitos + prioridad): " + (ordered.length + extra.length));
-    const budgetedKeys = [...ordered, ...extra].slice(0, budget);
-    budgetedRequirements = Object.fromEntries(budgetedKeys.map(skill => [
-      skill, requirements[skill] !== undefined ? requirements[skill] : extraThreshold,
-    ]));
+    if (ordered.length + extra.length < budget) throw new Error("Presupuesto " + budget + " mayor que habilidades ofensivas disponibles (requisitos + prioridad): " + (ordered.length + extra.length));
+    const offensiveKeys = [...ordered, ...extra].slice(0, budget);
+    // Offensive skills define the set of skills considered for the budget.
+    const offensiveSkillSet = new Set(priority);
+    // Mandatory, NON-offensive requirements stay in the optimized set and must
+    // be active for the build to be complete/legal (Loading for a `!` charge,
+    // Ammo Saver, coating unlocks such as Elem C+). They are never counted as
+    // offensive budget slots. Offensive skills outside the top-N budget are NOT
+    // mandatory: they may be activated incidentally but are not required.
+    const mandatoryKeys = Object.keys(requirements)
+      .filter(skill => !offensiveKeys.includes(skill) && !offensiveSkillSet.has(skill));
+    budgetedRequirements = Object.fromEntries([
+      ...offensiveKeys.map(skill => [skill, requirements[skill] !== undefined ? requirements[skill] : extraThreshold]),
+      ...mandatoryKeys.map(skill => [skill, requirements[skill]]),
+    ]);
     budgetMeta = {
       budget,
-      budgetedSkills: budgetedKeys,
-      unbudgetedSkills: Object.keys(requirements).filter(skill => !budgetedKeys.includes(skill)),
+      budgetedSkills: offensiveKeys,
+      mandatorySkills: mandatoryKeys,
+      unbudgetedSkills: Object.keys(requirements)
+        .filter(skill => !offensiveKeys.includes(skill) && !mandatoryKeys.includes(skill)),
       priorityOrder: priority,
-      extraSkills: budgetedKeys.filter(skill => requirements[skill] === undefined),
+      extraSkills: offensiveKeys.filter(skill => requirements[skill] === undefined),
       extraSkillThreshold: extraThreshold,
+      offensiveSkillCount: offensiveKeys.length,
     };
   }
 
@@ -368,6 +393,14 @@ export function optimizeBowBuild({
       negativeSkills: allocation.summary.negativeSkills,
       activatedSkills: allocation.summary.activatedSkills,
       targetSkillCount: allocation.summary.targetSkillCount,
+      // Offensive-budget accounting: mandatory non-offensive skills are optimized
+      // and required for completeness, but never counted as offensive budget.
+      offensiveSkills: budgetMeta.budgetedSkills,
+      mandatorySkills: budgetMeta.mandatorySkills,
+      offensiveSkillCount: budgetMeta.budget ? budgetMeta.budgetedSkills.length : target.length,
+      activatedOffensiveSkills: budgetMeta.budget
+        ? budgetMeta.budgetedSkills.filter(skill => target.find(row => row.skill === skill)?.active).length
+        : allocation.summary.activatedSkills,
       coverage: allocation.summary.coverage,
       complete: allocation.summary.activatedSkills === allocation.summary.targetSkillCount,
       jewelSocketsUsed: allocation.usedSockets,
@@ -425,8 +458,10 @@ export function optimizeBowBuild({
         talismanPolicy === "max"
           ? "Política de talismán max: puntos máximos de ambas habilidades a la vez; suposición no verificada en juego."
           : talismanPolicy === "legal"
-            ? "Política de talismán legal: todos los valores positivos presentes en el catálogo, talismánes de una y dos habilidades."
-            : "Política de talismán conservadora: solo talismánes de una habilidad.",
+            ? "Política de talismán legal: todos los valores positivos presentes en el catálogo, talismánes de una y dos habilidades (posibilidad de catálogo, no evidencia por pares en juego)."
+            : talismanPolicy === "verified"
+              ? "Política de talismán verificada: solo talismánes de una habilidad con valores presentes en el catálogo; sin combinaciones de dos habilidades sin evidencia."
+              : "Política de talismán conservadora: solo talismánes de una habilidad.",
       ],
     },
     requirements: budgetedRequirements, builds: unique,
