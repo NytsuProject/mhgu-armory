@@ -1,13 +1,15 @@
-// Stage 15 — pruebas de rebalance del catálogo (propias, puristas).
-// Verifica:
-//   - el motor de propuestas genera 12 conversiones + 7 ramas nuevas para los
-//     19 objetivos sin cobertura terminal, 0 inválidas;
-//   - aplicar las propuestas en memoria cubre los 72 objetivos;
+// Stage 15 — pruebas del rebalance del catálogo aplicado (RAW / elemental).
+// El catálogo data/weapons/bow.json ya incluye las 10 conversiones y las 9
+// ramas nuevas propuestas. Verifica:
+//   - 116 líneas reconstruidas (107 originales + 9 ramas nuevas);
+//   - la matriz de 72 objetivos está totalmente cubierta;
+//   - cobertura RAW preservada (cada objetivo RAW mantiene ≥1 opción RAW);
 //   - progresiones válidas (RAW no decreciente, elemento creciente al tope 30);
-//   - C4 `!` alineada con C3 en conversiones y ramas nuevas;
-//   - no se convierten referencias RAW (Power Coating 2) si hay alternativa;
-//   - el motor es purista: NO toca data/weapons/bow.json;
-//   - las ramas nuevas heredan la flecha objetivo en C3/C4 y rango correcto.
+//   - C4 `!` alineada con C3;
+//   - los 10 árboles convertidos tienen elemento natural al tope 30 y RAW
+//     reducido (no aumentado);
+//   - las 9 ramas nuevas cubren sus objetivos (rank, elemento ≥20, flecha);
+//   - no queda objetivo elemental sin cobertura terminal.
 
 import test from "node:test";
 import assert from "node:assert/strict";
@@ -18,182 +20,170 @@ import { dirname, resolve } from "node:path";
 import {
   reconstructLines, buildCoverageMatrix,
 } from "../tools/bow-specialization-audit.mjs";
-import {
-  ELEMENT_CAP,
-  proposeLineConversion, proposeNewBranch,
-  uncoveredTerminalObjectives, matchObjectivesToLines,
-  validateProposal, validateBranchProposal,
-  BRANCH_SPECS, BRANCH_TARGET_RAW,
-} from "../tools/bow-specialization-proposals.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = resolve(here, "..");
 const readJson = p => JSON.parse(readFileSync(resolve(root, p), "utf8"));
 
 const bowData = readJson("data/weapons/bow.json");
-const bowBefore = JSON.stringify(bowData);
+const lines = reconstructLines(bowData);
+const matrix = buildCoverageMatrix(lines);
 
-// ---------- helpers ----------
+// Árboles convertidos (Stage 15): id -> elemento objetivo
+const CONVERTED = {
+  80: "Fire", 93: "Thunder", 103: "Thunder",
+  60: "Ice", 91: "Water", 87: "Dragon",
+  106: "Fire", 98: "Thunder", 100: "Thunder",
+  13: "Water",
+};
+// RAW objetivo de referencia (documentado en el reporte Stage 15)
+const RAW_REF = {
+  80: 310, 93: 270, 103: 310, 60: 310, 91: 300, 87: 410,
+  106: 300, 98: 310, 100: 330, 13: 340,
+};
+const EXPECTED_SHOT = {
+  80: "Rapid", 93: "Spread", 103: "Heavy",
+  60: "Spread", 91: "Pierce", 87: "Pierce",
+  106: "Rapid", 98: "Rapid", 100: "Spread",
+  13: "Heavy",
+};
 
-function applyProposalsInMemory(bow, lines) {
-  const { assignments, unresolved } = matchObjectivesToLines(lines, uncoveredTerminalObjectives(lines));
-  const treesById = new Map(bow.trees.filter(t => !t.dummy).map(t => [Number(t.id), t]));
-  const applied = [];
-  for (const { objective, candidate } of assignments) {
-    const proposal = proposeLineConversion(lines, candidate, objective.element, objective.rank);
-    const tree = treesById.get(proposal.treeId);
-    for (const lv of proposal.levelPlan) {
-      const level = tree.levels.find(row => Number(row.lv) === lv.localLevel);
-      if (!level) continue;
-      level.raw = lv.after.raw;
-      level.ele = [[lv.after.element.type, lv.after.element.type, lv.after.element.value]];
-    }
-    proposal.objective = objective;
-    applied.push(proposal);
-  }
-  const branchProposals = [];
-  let nextBranchId = Math.max(0, ...bow.trees.filter(t => !t.dummy).map(t => Number(t.id))) + 1;
-  for (const u of unresolved) {
-    const spec = BRANCH_SPECS.find(sp =>
-      sp.objective.rank === u.objective.rank && sp.objective.element === u.objective.element && sp.objective.shot === u.objective.shot);
-    if (!spec) continue;
-    const proposal = proposeNewBranch(lines, bow, spec, nextBranchId);
-    proposal.objective = u.objective;
-    bow.trees.push(proposal.tree);
-    branchProposals.push(proposal);
-    nextBranchId++;
-  }
-  return { applied, branchProposals };
-}
+// Ramas nuevas: id -> objetivo
+const BRANCHES = [
+  { id: 108, name: "Arco de hollín", rank: "HR", element: "Fire", shot: "Heavy" },
+  { id: 109, name: "Arco de mareas", rank: "HR", element: "Water", shot: "Heavy" },
+  { id: 110, name: "Arco de la corriente", rank: "G", element: "Water", shot: "Rapid" },
+  { id: 111, name: "Arco de escarcha", rank: "G", element: "Ice", shot: "Rapid" },
+  { id: 112, name: "Arco de ventisquero", rank: "G", element: "Ice", shot: "Spread" },
+  { id: 113, name: "Arco glacial", rank: "G", element: "Ice", shot: "Heavy" },
+  { id: 114, name: "Arco del abismo", rank: "G", element: "Dragon", shot: "Heavy" },
+  { id: 115, name: "Arco de trueno torvo", rank: "LR", element: "Thunder", shot: "Heavy" },
+  { id: 116, name: "Arco de hielo torvo", rank: "LR", element: "Ice", shot: "Heavy" },
+];
 
-// ---------- 1. Cobertura inicial y asignación ----------
+// ---------- 1. Reconstrucción ----------
 
-test("Stage 15: hay 19 objetivos sin cobertura terminal y el motor asigna los 19", () => {
-  const lines = reconstructLines(bowData);
-  const objectives = uncoveredTerminalObjectives(lines);
-  assert.equal(objectives.length, 19);
-  const { assignments, unresolved } = matchObjectivesToLines(lines, objectives);
-  assert.equal(assignments.length, 12, "12 conversiones de líneas existentes");
-  assert.equal(unresolved.length, 7, "7 objetivos sin línea libre");
-});
-
-test("Stage 15: cada conversión se valida (elemento creciente, RAW no invertido, tope 30)", () => {
-  const lines = reconstructLines(bowData);
-  const { assignments } = matchObjectivesToLines(lines, uncoveredTerminalObjectives(lines));
-  for (const { objective, candidate } of assignments) {
-    const proposal = proposeLineConversion(lines, candidate, objective.element, objective.rank);
-    const validation = validateProposal(proposal);
-    assert.equal(validation.ok, true, `${proposal.treeName}: ${validation.errors.join("; ")}`);
-    // el terminal alcanza el tope de elemento
-    assert.equal(proposal.terminalAfter.element.value, ELEMENT_CAP);
-    // el RAW terminal no aumenta
-    assert.ok(proposal.terminalAfter.raw <= proposal.terminalBefore.raw);
+test("Stage 15: se reconstruyen 116 líneas (107 originales + 9 ramas nuevas)", () => {
+  assert.equal(lines.length, 116);
+  for (const b of BRANCHES) {
+    const line = lines.find(l => l.treeId === b.id);
+    assert.ok(line, `rama ${b.id} presente`);
+    assert.ok(line.parent, `rama ${b.id} tiene padre`);
   }
 });
 
-test("Stage 15: las referencias RAW (Power Coating 2) solo se convierten como última opción", () => {
-  const lines = reconstructLines(bowData);
-  const { assignments } = matchObjectivesToLines(lines, uncoveredTerminalObjectives(lines));
-  const rawRefs = assignments.filter(({ candidate }) => candidate.terminal.coatings.includes("Power Coating 2"));
-  // Ninguna conversión elegida debe ser una referencia RAW si para su objetivo
-  // existía al menos una línea no-referencia libre en el pool.
-  for (const { objective, candidate } of rawRefs) {
-    const pool = lines.filter(l => {
-      const t = l.terminal;
-      if (!t || t.rank !== objective.rank) return false;
-      if (!t.mainChargeTypes.includes(objective.shot)) return false;
-      if (t.element && t.element.value >= 20) return false;
-      if (t.element && t.element.type === objective.element) return false;
-      return true;
-    });
-    const nonRef = pool.filter(l => !l.terminal.coatings.includes("Power Coating 2"));
-    // si hay líneas no-referencia, la referencia no debe ser la elegida
-    assert.equal(nonRef.length, 0,
-      `${candidate.treeName} es referencia RAW pero existían ${nonRef.length} líneas no-referencia para ${objective.rank} ${objective.element} ${objective.shot}`);
-  }
-});
+// ---------- 2. Cobertura de 72 objetivos ----------
 
-// ---------- 2. Ramas nuevas ----------
-
-test("Stage 15: las 7 ramas nuevas se generan y validan (C4 ! alineado, elemento al tope)", () => {
-  const lines = reconstructLines(bowData);
-  const { unresolved } = matchObjectivesToLines(lines, uncoveredTerminalObjectives(lines));
-  let nextId = 108;
-  for (const u of unresolved) {
-    const spec = BRANCH_SPECS.find(sp =>
-      sp.objective.rank === u.objective.rank && sp.objective.element === u.objective.element && sp.objective.shot === u.objective.shot);
-    assert.ok(spec, `especificación para ${u.objective.rank} ${u.objective.element} ${u.objective.shot}`);
-    const proposal = proposeNewBranch(lines, bowData, spec, nextId++);
-    const validation = validateBranchProposal(proposal);
-    assert.equal(validation.ok, true, `${proposal.treeName}: ${validation.errors.join("; ")}`);
-    assert.equal(proposal.terminalAfter.element.value, ELEMENT_CAP);
-    assert.equal(proposal.terminalAfter.raw, BRANCH_TARGET_RAW[u.objective.rank]);
-    // la flecha objetivo está en C3/C4
-    const terminal = proposal.tree.levels[proposal.tree.levels.length - 1];
-    const c3 = terminal.x.charges[2], c4 = terminal.x.charges[3];
-    assert.ok(c3.startsWith(u.objective.shot), `C3 debe ser ${u.objective.shot}`);
-    assert.ok(c4.startsWith(u.objective.shot), `C4 debe ser ${u.objective.shot}`);
-    assert.ok(c4.endsWith("!"), "C4 tiene Recargando");
-  }
-});
-
-test("Stage 15: cada rama nueva cubre su objetivo (rank, elemento ≥20, flecha en C3/C4)", () => {
-  const lines = reconstructLines(bowData);
-  const bow = JSON.parse(JSON.stringify(bowData));
-  const { branchProposals } = applyProposalsInMemory(bow, lines);
-  const afterLines = reconstructLines(bow);
-  for (const p of branchProposals) {
-    const line = afterLines.find(l => l.treeId === p.treeId);
-    assert.ok(line, `rama ${p.treeName} presente en el catálogo`);
-    const t = line.terminal;
-    assert.equal(t.element.type, p.objective.element);
-    assert.ok(t.element.value >= 20);
-    assert.ok(t.mainChargeTypes.includes(p.objective.shot));
-    assert.equal(t.rank, p.objective.rank);
-  }
-});
-
-// ---------- 3. Cobertura total de 72 objetivos ----------
-
-test("Stage 15: aplicar propuestas en memoria cubre los 72 objetivos", () => {
-  const lines = reconstructLines(bowData);
-  const bow = JSON.parse(JSON.stringify(bowData));
-  const { applied, branchProposals } = applyProposalsInMemory(bow, lines);
-  assert.equal(applied.length, 12);
-  assert.equal(branchProposals.length, 7);
-  const afterLines = reconstructLines(bow);
-  const matrix = buildCoverageMatrix(afterLines);
+test("Stage 15: la matriz de 72 objetivos está totalmente cubierta", () => {
+  assert.equal(matrix.length, 72);
   const uncovered = matrix.filter(o => o.specialization === "raw" ? !o.coveredStructural : !o.coveredTerminal);
   assert.equal(uncovered.length, 0, `sin cobertura: ${uncovered.map(o => `${o.specialization} ${o.rank} ${o.element || "-"} ${o.shot}`).join(", ")}`);
 });
 
-// ---------- 4. Progresiones y reglas protegidas ----------
+test("Stage 15: ningún objetivo elemental queda sin cobertura terminal", () => {
+  const uncoveredEle = matrix.filter(o => o.specialization === "elemental" && !o.coveredTerminal);
+  assert.equal(uncoveredEle.length, 0);
+});
 
-test("Stage 15: todas las progresiones (conversciones + ramas) son válidas (RAW no decreciente)", () => {
-  const lines = reconstructLines(bowData);
-  const bow = JSON.parse(JSON.stringify(bowData));
-  const { applied, branchProposals } = applyProposalsInMemory(bow, lines);
-  const treesById = new Map(bow.trees.filter(t => !t.dummy).map(t => [Number(t.id), t]));
-  for (const p of applied) {
-    const levels = [...treesById.get(p.treeId).levels].sort((a, b) => a.lv - b.lv);
-    for (let i = 1; i < levels.length; i++) {
-      assert.ok(levels[i].raw >= levels[i - 1].raw, `RAW invertido en ${p.treeName} L${levels[i].lv}`);
-    }
-  }
-  for (const p of branchProposals) {
-    const levels = [...p.tree.levels].sort((a, b) => a.lv - b.lv);
-    for (let i = 1; i < levels.length; i++) {
-      assert.ok(levels[i].raw >= levels[i - 1].raw, `RAW invertido en ${p.treeName} L${levels[i].lv}`);
+test("Stage 15: cada objetivo RAW mantiene al menos una opción RAW-elegible", () => {
+  // Cobertura RAW real: árbol con la flecha en C3/C4 y elemento natural <20.
+  for (const rank of ["LR", "HR", "G"]) {
+    for (const shot of ["Rapid", "Pierce", "Spread", "Heavy"]) {
+      const rawOpts = lines.filter(l =>
+        l.terminal.rank === rank
+        && l.terminal.mainChargeTypes.includes(shot)
+        && (!l.terminal.element || l.terminal.element.value < 20));
+      assert.ok(rawOpts.length >= 1, `RAW ${rank} ${shot} sin opción RAW (${rawOpts.length})`);
     }
   }
 });
 
-test("Stage 15: C4 ! alineada con C3 en todo el catálogo tras aplicar propuestas", () => {
-  const lines = reconstructLines(bowData);
-  const bow = JSON.parse(JSON.stringify(bowData));
-  applyProposalsInMemory(bow, lines);
+// ---------- 3. Árboles convertidos ----------
+
+test("Stage 15: los 10 árboles convertidos tienen elemento al tope 30 y RAW no aumentado", () => {
+  for (const [idStr, element] of Object.entries(CONVERTED)) {
+    const id = Number(idStr);
+    const line = lines.find(l => l.treeId === id);
+    assert.ok(line, `árbol ${id} presente`);
+    const t = line.terminal;
+    assert.equal(t.element.type, element, `árbol ${id} es ${element}`);
+    assert.equal(t.element.value, 30, `árbol ${id} elemento al tope 30`);
+    assert.ok(t.raw <= RAW_REF[id], `RAW de ${line.treeName} no aumenta (${t.raw} ≤ ${RAW_REF[id]})`);
+  }
+});
+
+test("Stage 15: los árboles convertidos mantienen la flecha objetivo en C3/C4", () => {
+  for (const [idStr, shot] of Object.entries(EXPECTED_SHOT)) {
+    const line = lines.find(l => l.treeId === Number(idStr));
+    assert.ok(line.terminal.mainChargeTypes.includes(shot), `árbol ${idStr} tiene ${shot} en C3/C4`);
+  }
+});
+
+// ---------- 4. Ramas nuevas ----------
+
+test("Stage 15: las 9 ramas nuevas cubren sus objetivos (rank, elemento, flecha)", () => {
+  for (const exp of BRANCHES) {
+    const line = lines.find(l => l.treeId === exp.id);
+    assert.ok(line, `rama ${exp.id} presente`);
+    const t = line.terminal;
+    assert.equal(t.element.type, exp.element);
+    assert.ok(t.element.value >= 20);
+    assert.equal(t.element.value, 30, `rama ${exp.id} elemento al tope 30`);
+    assert.ok(t.mainChargeTypes.includes(exp.shot), `rama ${exp.id} tiene ${exp.shot} en C3/C4`);
+    assert.equal(t.rank, exp.rank);
+  }
+});
+
+test("Stage 15: las ramas nuevas tienen C4 ! alineada con C3 en todos sus niveles", () => {
+  for (const b of BRANCHES) {
+    const tree = bowData.trees.find(t => Number(t.id) === b.id);
+    assert.ok(tree, `árbol ${b.id} presente`);
+    for (const level of tree.levels) {
+      const charges = level.x.charges;
+      assert.ok(charges[3].endsWith("!"), `C4 con Recargando en ${b.id} L${level.lv}`);
+      const c3Type = charges[2].split(" ")[0];
+      const c4Type = charges[3].split(" ")[0];
+      assert.equal(c4Type, c3Type, `C4 ! alineado con C3 en ${b.id} L${level.lv}`);
+    }
+  }
+});
+
+// ---------- 5. Progresiones y reglas protegidas ----------
+
+test("Stage 15: todas las progresiones son válidas (RAW no decreciente)", () => {
+  for (const tree of bowData.trees.filter(t => !t.dummy)) {
+    const levels = [...tree.levels].sort((a, b) => a.lv - b.lv);
+    for (let i = 1; i < levels.length; i++) {
+      assert.ok(levels[i].raw >= levels[i - 1].raw,
+        `RAW invertido en ${tree.nameEs} L${levels[i].lv} (${levels[i].raw} < ${levels[i - 1].raw})`);
+    }
+  }
+});
+
+test("Stage 15: el elemento natural no supera el cap 30 y crece sin inversión", () => {
+  for (const tree of bowData.trees.filter(t => !t.dummy)) {
+    const levels = [...tree.levels].sort((a, b) => a.lv - b.lv);
+    for (let i = 0; i < levels.length; i++) {
+      for (const row of levels[i].ele || []) {
+        if (["Fire", "Water", "Thunder", "Ice", "Dragon"].includes(row[1])) {
+          assert.ok(row[2] <= 30, `${tree.nameEs} L${levels[i].lv} supera el cap`);
+        }
+      }
+      if (i + 1 < levels.length) {
+        const cur = levels[i].ele?.[0];
+        const next = levels[i + 1].ele?.[0];
+        if (cur && next && ["Fire", "Water", "Thunder", "Ice", "Dragon"].includes(cur[1])
+          && ["Fire", "Water", "Thunder", "Ice", "Dragon"].includes(next[1])) {
+          assert.ok(next[2] >= cur[2], `inversión de elemento en ${tree.nameEs} L${levels[i + 1].lv}`);
+        }
+      }
+    }
+  }
+});
+
+test("Stage 15: C4 ! alineada con C3 en todo el catálogo", () => {
   let total = 0, ok = 0;
-  for (const tree of bow.trees.filter(t => !t.dummy)) {
+  for (const tree of bowData.trees.filter(t => !t.dummy)) {
     for (const level of tree.levels) {
       const charges = level.x?.charges || [];
       if (charges[3] && charges[3].endsWith("!")) {
@@ -204,25 +194,18 @@ test("Stage 15: C4 ! alineada con C3 en todo el catálogo tras aplicar propuesta
       }
     }
   }
-  assert.ok(total > 0, "hay C4 con Recargando en el catálogo");
+  assert.ok(total > 0);
   assert.equal(ok, total, "todas las C4 ! están alineadas con C3");
 });
 
-// ---------- 5. Purismo: no se toca bow.json ----------
-
-test("Stage 15: el motor de propuestas es purista (no modifica bow.json)", () => {
-  const lines = reconstructLines(bowData);
-  const bow = JSON.parse(JSON.stringify(bowData));
-  applyProposalsInMemory(bow, lines);
-  // bow.json en disco no cambia
-  assert.equal(JSON.stringify(readJson("data/weapons/bow.json")), bowBefore);
-});
-
-test("Stage 15: la matriz de cobertura inicial tiene 19 objetivos elementales sin cobertura terminal", () => {
-  const lines = reconstructLines(bowData);
-  const matrix = buildCoverageMatrix(lines);
-  const uncoveredElemental = matrix.filter(o => o.specialization === "elemental" && !o.coveredTerminal);
-  assert.equal(uncoveredElemental.length, 19);
-  const uncoveredRaw = matrix.filter(o => o.specialization === "raw" && !o.coveredStructural);
-  assert.equal(uncoveredRaw.length, 0, "RAW tiene cobertura estructural completa");
+test("Stage 15: las cargas C1-C4 de las ramas nuevas respetan el formato y la flecha objetivo", () => {
+  for (const b of BRANCHES) {
+    const tree = bowData.trees.find(t => Number(t.id) === b.id);
+    for (const level of tree.levels) {
+      const charges = level.x.charges;
+      assert.equal(charges.length, 4);
+      assert.ok(charges[2].startsWith(b.shot), `C3 = ${b.shot} en ${b.id} L${level.lv}`);
+      assert.ok(charges[3].startsWith(b.shot), `C4 = ${b.shot} en ${b.id} L${level.lv}`);
+    }
+  }
 });

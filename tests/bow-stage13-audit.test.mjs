@@ -23,8 +23,8 @@ const bowData = JSON.parse(readFileSync(resolve(__dirname, "../data/weapons/bow.
 const lines = reconstructLines(bowData);
 const objectives = buildCoverageMatrix(lines);
 
-test("Stage 13: reconstruye las 107 líneas del catálogo", () => {
-  assert.equal(lines.length, 107);
+test("Stage 13: reconstruye las 116 líneas del catálogo (107 originales + 9 ramas nuevas Stage 15)", () => {
+  assert.equal(lines.length, 116);
   for (const line of lines) {
     assert.ok(line.treeId, "treeId presente");
     assert.ok(line.levelRecords.length >= 1, "al menos un nivel");

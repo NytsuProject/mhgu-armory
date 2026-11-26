@@ -40,6 +40,45 @@ function isRawReference(line) {
   return Boolean(line.terminal?.coatings?.includes("Power Coating 2"));
 }
 
+/**
+ * ¿La línea es elegible como opción RAW para su (rank, shot)?
+ * Elemento natural ausente o < 20 (no es un elemental especializado).
+ */
+function isRawEligible(line) {
+  const t = line.terminal;
+  if (!t) return false;
+  return !t.element || t.element.value < 20;
+}
+
+/**
+ * Guarda de cobertura RAW: para cada (rank, shot), nunca convertir TODAS las
+ * líneas RAW-elegibles. Se reserva al menos una como opción RAW competitiva
+ * (la matriz de 72 objetivos exige cobertura RAW, no solo elemental).
+ * Devuelve { total, used } donde `used` se incrementa al asignar una
+ * conversión de una línea RAW-elegible.
+ */
+function rawEligibilityIndex(lines) {
+  const total = new Map(); // `${rank}|${shot}` -> count
+  for (const line of lines) {
+    const t = line.terminal;
+    if (!t || !isRawEligible(line)) continue;
+    for (const shot of t.mainChargeTypes) {
+      const k = `${t.rank}|${shot}`;
+      total.set(k, (total.get(k) || 0) + 1);
+    }
+  }
+  return total;
+}
+
+/** ¿Convertir esta línea dejaría 0 opciones RAW para su (rank, shot)? */
+function wouldDestroyRawCoverage(rawIndex, usedRaw, rank, shot, line) {
+  if (!isRawEligible(line)) return false;
+  const k = `${rank}|${shot}`;
+  const total = rawIndex.get(k) || 0;
+  if (total === 0) return false;
+  return (usedRaw.get(k) || 0) + 1 >= total;
+}
+
 /** RAW típico de los elementales del rango (media de terminales elementales). */
 function typicalElementalRaw(lines, rank) {
   const vals = lines
@@ -184,7 +223,13 @@ export function matchObjectivesToLines(lines, objectives) {
   const assignments = [];
   const unresolved = [];
 
-  // Para cada objetivo, listar líneas candidatas (sin reutilizar).
+  // Índice de elegibilidad RAW por (rank, shot) y reserva de cobertura.
+  const rawIndex = rawEligibilityIndex(lines);
+  const usedRaw = new Map(); // `${rank}|${shot}` -> conversiones RAW-elegibles
+
+  // Para cada objetivo, listar líneas candidatas base (sin reutilizar).
+  // La guarda de cobertura RAW se aplica en el momento de la asignación
+  // (depende de las conversiones ya realizadas).
   const pools = objectives.map(obj => {
     const all = lines.filter(line => {
       const t = line.terminal;
@@ -204,7 +249,8 @@ export function matchObjectivesToLines(lines, objectives) {
   const order = objectives.map((_, i) => i).sort((a, b) => pools[a].length - pools[b].length);
   for (const idx of order) {
     const obj = objectives[idx];
-    const pool = pools[idx].filter(line => !used.has(line.treeId));
+    const pool = pools[idx].filter(line => !used.has(line.treeId)
+      && !wouldDestroyRawCoverage(rawIndex, usedRaw, obj.rank, obj.shot, line));
     if (!pool.length) {
       // Registrar las opciones que existían (todas ya usadas) para documentar
       // por qué queda sin solución.
@@ -221,6 +267,10 @@ export function matchObjectivesToLines(lines, objectives) {
     }
     const candidate = pool[0];
     used.add(candidate.treeId);
+    if (isRawEligible(candidate)) {
+      const k = `${obj.rank}|${obj.shot}`;
+      usedRaw.set(k, (usedRaw.get(k) || 0) + 1);
+    }
     assignments.push({ objective: obj, candidate });
   }
   return { assignments, unresolved };
@@ -237,6 +287,14 @@ const ELEMENT_LABELS = { Fire: "Fuego", Water: "Agua", Thunder: "Rayo", Ice: "Hi
  * C3/C4; la rama es un árbol nuevo (identidad elemental propia).
  */
 export const BRANCH_SPECS = [
+  {
+    objective: { rank: "HR", element: "Fire", shot: "Heavy" },
+    parentTreeId: 53, parentLevel: 1,
+    nameEs: "Arco de hollín", name: "Ember Bow",
+    finalNameEs: "Arco de hollín abrasador", finalName: "Scorching Ember Bow",
+    rarity: 7, arc: "Focus",
+    rationale: "Rama nueva especializada en Fire: elemento natural al tope 30 y RAW típico de elemental HR, con Heavy en C3/C4. La única línea RAW HR Heavy (Arco casco demoníaco) se conserva como referencia RAW (guarda de cobertura).",
+  },
   {
     objective: { rank: "HR", element: "Water", shot: "Heavy" },
     parentTreeId: 35, parentLevel: 1,
@@ -284,6 +342,22 @@ export const BRANCH_SPECS = [
     finalNameEs: "Arco del abismo dragón", finalName: "Dragon Abyss Bow",
     rarity: 11, arc: "Blast",
     rationale: "Rama nueva especializada en Dragon: elemento natural al tope 30 y RAW típico de elemental G, con Heavy en C3/C4.",
+  },
+  {
+    objective: { rank: "LR", element: "Water", shot: "Heavy" },
+    parentTreeId: 50, parentLevel: 1,
+    nameEs: "Arco de oleaje torvo", name: "Grimsurf Bow",
+    finalNameEs: "Arco de oleaje eterno", finalName: "Eternal Grimsurf Bow",
+    rarity: 3, arc: "Wide",
+    rationale: "Rama nueva especializada en Water: elemento natural al tope 30 y RAW típico de elemental LR, con Heavy en C3/C4. Se conserva al menos una línea RAW LR Heavy (guarda de cobertura).",
+  },
+  {
+    objective: { rank: "LR", element: "Thunder", shot: "Heavy" },
+    parentTreeId: 22, parentLevel: 1,
+    nameEs: "Arco de trueno torvo", name: "Grimthunder Bow",
+    finalNameEs: "Arco de trueno eterno", finalName: "Eternal Grimthunder Bow",
+    rarity: 3, arc: "Wide",
+    rationale: "Rama nueva especializada en Thunder: elemento natural al tope 30 y RAW típico de elemental LR, con Heavy en C3/C4. Se conserva al menos una línea RAW LR Heavy (guarda de cobertura).",
   },
   {
     objective: { rank: "LR", element: "Ice", shot: "Heavy" },

@@ -362,12 +362,14 @@ function main() {
       }
     }
   }
+  if (payload.classB) {
   for (const row of payload.classB.profiles) {
     console.log("  B " + row.profile + ": " + (row.bow ? row.bow.name + " (slot " + row.bow.chargeSlot + (row.bow.requiresLoadUp ? ", C4!)" : "") + ")" : row.note) + (row.comparable ? "" : " [NO COMPARABLE]"));
     for (const c of row.builds || []) {
       const b = c.build;
       console.log("    " + c.profile + "/" + c.gender + ": " + (b ? b.activatedSkills + "/" + b.targetSkillCount + (b.complete ? " completa" : " parcial") + " ofensivas=" + (c.offensiveSkillsActivated || []).map(s => s.skill).join(",") : "sin build"));
     }
+  }
   }
   console.log("Informe JSON: " + out);
 }

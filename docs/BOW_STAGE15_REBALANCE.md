@@ -102,10 +102,28 @@ memoria y re-reconstruye las 107+7 líneas:
   discrepancias previas son marcadores **C3** de árboles originales — Worn
   Bow, Akantor Bow — fuera de la regla y sin tocar).
 
-## 4. Próximos pasos
+## 4. Aplicación
 
-- **Aplicar** las propuestas a `data/weapons/bow.json` (conversciones + ramas
-  nuevas) — paso de implementación, con re-verificación de la matriz.
+`tools/apply-stage15-proposals.mjs` aplica las 19 propuestas (10 conversiones
++ 9 ramas nuevas) a `data/weapons/bow.json` y re-verifica:
+
+- **116 líneas** reconstruidas (107 originales + 9 ramas nuevas);
+- **matriz 72/72** cubiertos;
+- **progresiones 116/116** válidas (RAW no decreciente);
+- **C4 `!` 728/728** alineadas.
+
+## 4.1 Guarda de cobertura RAW
+
+El motor **protege la cobertura RAW** de la matriz: nunca convierte *todas*
+las líneas RAW-elegibles de un `(rank, shot)`. Esto preserva una referencia
+RAW competitiva donde la conversión elemental destruiría la opción RAW del
+objetivo (por ejemplo, `Arco casco demoníaco` y `Arco de Yekla`, las únicas
+opciones RAW para HR/LR Heavy, se conservan). Los objetivos así protegidos
+quedan cubiertos por **rama nueva** (ej. `Arco de hollín` HR Fire Heavy,
+`Arco de trueno torvo` LR Thunder Heavy).
+
+## 5. Próximos pasos
+
 - **Stage 16:** validación completa (12 RAW + 60 elementales, 93 monstruos,
   5 elementos, 4 tipos de flecha, 3 rangos, búsquedas por género, C1–C4,
   auditoría C4 `!` completa).
@@ -114,10 +132,11 @@ memoria y re-reconstruye las 107+7 líneas:
 ## Artefactos
 
 - `tools/bow-specialization-proposals.mjs` — motor de propuestas (purista).
+- `tools/apply-stage15-proposals.mjs` — aplicación al catálogo + re-verificación.
 - `tools/out/stage15/bow-specialization-proposals.json` — propuestas +
   no resueltos + inválidas.
 - `tools/out/stage15/bow-specialization-proposals.csv` — tabla antes/después
   por arma y nivel.
 - `tools/out/stage15/stage15-simulation.txt` — salida de la simulación de
   justificación.
-- `tests/bow-stage15-rebalance.test.mjs` — 10 pruebas de Stage 15.
+- `tests/bow-stage15-rebalance.test.mjs` — 12 pruebas de Stage 15 (catálogo aplicado).
