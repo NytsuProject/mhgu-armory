@@ -14,7 +14,7 @@
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { parseHitzones } from "../js/bow-balance-sim.js";
-import { simulateBowBuildHitzoneMatrix } from "../js/bow-build-damage.js";
+import { simulateBowBuildHitzoneMatrix, simulateBuildsAcrossWeapons, meanBuildDamage } from "../js/bow-build-damage.js";
 import { runProfileComparison, offensivePriority } from "../js/bow-build-comparison.js";
 import { BOW_ELEMENT_SKILLS } from "../js/bow-build-feasibility.js";
 
@@ -82,7 +82,7 @@ function selectBestBow(bowData, shotType, requireElement) {
   return candidates[0];
 }
 
-function runClassA({ armorData, decorations, talismanSkills, skillLevels, bowData, hitzoneData, shotType, budget, switchShots, out }) {
+function runClassA({ armorData, decorations, talismanSkills, skillLevels, bowData, hitzoneData, shotType, budget, switchShots, out, talismanPolicy }) {
   // Controlled class: one fixed bow (Elizabeth atenta, tree 104, level 3) and
   // one shot type. Spread is the control shot type (never modified).
   const treeId = 104, level = 3;
@@ -90,12 +90,17 @@ function runClassA({ armorData, decorations, talismanSkills, skillLevels, bowDat
   const weapon = tree.levels.find(row => Number(row.lv) === level);
   const charges = parseCharges(weapon);
   const slot = charges.findIndex(c => c.type === shotType);
-  if (slot < 0) throw new Error("El arco control no tiene carga " + shotType);
+  if (slot < 0) {
+    return {
+      class: "A", shotType, budget, switchShots,
+      bow: null, note: "El arco control (Elizabeth atenta, tree 104 lv3) no tiene carga " + shotType + ": clase A no aplicable.",
+    };
+  }
   const buildOutput = runProfileComparison({
     armorData, decorations, talismanSkills, skillLevels, bowData,
     treeId, level, chargeSlot: slot + 1, shotType, coatingPolicy: "low-cost",
     rank: "G", genders: ["male", "female"], activeSkillBudget: budget,
-    talismanPolicy: "max", allowNegatives: false, beamWidth: 300,
+    talismanPolicy, allowNegatives: false, beamWidth: 300,
   });
   const matrix = simulateBowBuildHitzoneMatrix({
     bowData, buildOutput, hitzoneData, style: "guild",
@@ -109,91 +114,139 @@ function runClassA({ armorData, decorations, talismanSkills, skillLevels, bowDat
   };
 }
 
-function selectBestBowCompletable({ armorData, decorations, talismanSkills, skillLevels, bowData, shotType, requireElement, profile, budget }) {
-  // Enumerate candidate G bows for the shot type, then keep only those whose
-  // optimized build can actually complete the budget. Among completable bows,
-  // rank by catalog score (raw display, plus element value for elemental/hybrid).
-  // If none completes, fall back to the best-ranked bow and flag it.
+// Rango por rareza del catálogo: G >= 8, HR 4..7, LR < 4.
+function rankFromRarity(rarity) {
+  const value = Number(rarity || 0);
+  if (value >= 8) return "G";
+  if (value >= 4) return "HR";
+  return "LR";
+}
+
+// Enumerate candidate bows for a shot type and bow rank (LR/HR/G). Only
+// non-`!` charges are considered: a `!` charge demands the non-offensive
+// Loading skill, which breaks the equal offensive-skill budget. For each bow,
+// take its highest non-`!` charge of the requested shot type.
+function enumerateProfileCandidates(bowData, shotType, requireElement, bowRank = "G") {
   const candidates = [];
   for (const tree of bowData.trees) {
     for (const level of tree.levels || []) {
-      const rank = Number(level.rar || 0) >= 8 ? "G" : (Number(level.rar || 0) >= 4 ? "HR" : "LR");
-      if (rank !== "G") continue;
+      const rank = rankFromRarity(level.rar);
+      if (rank !== bowRank) continue;
       const charges = parseCharges(level);
       const slots = charges.map((c, i) => ({ ...c, slot: i + 1 }))
-        .filter(c => c.type === shotType);
+        .filter(c => c.type === shotType && !c.requiresLoadUp);
       if (!slots.length) continue;
       const element = findElement(level);
       if (requireElement && !element) continue;
-      // Prefer a charge without the `!` marker (no Load Up requirement): a `!`
-      // charge demands the non-offensive Loading skill, which breaks the equal
-      // offensive-skill budget. Fall back only when the shot type has none.
-      const noLoadUp = slots.filter(c => !c.requiresLoadUp);
-      const bestSlot = (noLoadUp.length ? noLoadUp : slots).reduce((a, b) => (b.level > a.level ? b : a));
+      const bestSlot = slots.reduce((a, b) => (b.level > a.level ? b : a));
       const raw = Number(level.raw || 0);
       const elemValue = element ? Number(element[2]) : 0;
       const score = requireElement ? raw + elemValue * 2 : raw;
-      candidates.push({ treeId: Number(tree.id), level: Number(level.lv), chargeSlot: bestSlot.slot, shotType, element, weapon: level, rank, rarity: Number(level.rar || 0), raw, elemValue, score });
+      candidates.push({
+        treeId: Number(tree.id), level: Number(level.lv), chargeSlot: bestSlot.slot,
+        shotType, element, weapon: level, rank, rarity: Number(level.rar || 0),
+        raw, elemValue, score,
+        weaponSpec: { treeId: Number(tree.id), level: Number(level.lv), chargeSlot: bestSlot.slot, rank, shotType, name: level.nEs || level.n },
+      });
     }
   }
-  if (!candidates.length) return { bow: null, note: "No hay arco G con esa carga" + (requireElement ? " y elemento" : "") + "." };
-  const completable = [];
-  const incomplete = [];
-  for (const candidate of candidates) {
+  return candidates;
+}
+
+/**
+ * Class-B bow selection for one profile. Candidates are pruned to those whose
+ * optimized build completes the budget, the top candidates by catalog score
+ * are evaluated by REAL mean damage over the 93-monster matrix, and the best
+ * is selected. Each profile therefore picks its own bow by actual damage.
+ */
+function selectProfileBow({ armorData, decorations, talismanSkills, skillLevels, bowData, hitzoneData, shotType, requireElement, profile, budget, talismanPolicy, bowRank = "G", topCandidates = 4, probeLimit = 12 }) {
+  const candidates = enumerateProfileCandidates(bowData, shotType, requireElement, bowRank);
+  if (!candidates.length) {
+    return { bow: null, note: "No hay arco G con esa carga (sin Recargando)" + (requireElement ? " y elemento" : "") + "." };
+  }
+  // Probe completability only for the best-ranked candidates by catalog score:
+  // the optimizer run is the expensive step, and the low-score bows are not
+  // going to win a real-damage comparison anyway.
+  const sorted = [...candidates].sort((a, b) => b.score - a.score || b.raw - a.raw);
+  const probed = sorted.slice(0, Math.max(1, Number(probeLimit) || 12));
+  const completable = [], incomplete = [];
+  for (const candidate of probed) {
     const probe = runProfileComparison({
       armorData, decorations, talismanSkills, skillLevels, bowData,
       treeId: candidate.treeId, level: candidate.level, chargeSlot: candidate.chargeSlot,
       shotType, coatingPolicy: "low-cost", rank: "G", genders: ["male"],
-      activeSkillBudget: budget, talismanPolicy: "max", allowNegatives: false,
+      activeSkillBudget: budget, talismanPolicy, allowNegatives: false,
       beamWidth: 80, topBuilds: 1, topTalismansPerArmor: 3,
       profiles: [profile],
     });
     const build = probe.comparisons[0]?.builds?.[0];
-    if (build && build.complete) completable.push(candidate);
-    else incomplete.push(candidate);
+    if (build && build.complete) completable.push({ ...candidate, build });
+    else incomplete.push({ ...candidate, build });
   }
   const pool = completable.length ? completable : incomplete;
   pool.sort((a, b) => b.score - a.score || b.raw - a.raw);
-  const bow = pool[0];
-  return { bow, completable: completable.length, incomplete: incomplete.length };
+  const evaluated = pool.slice(0, Math.max(1, Number(topCandidates) || 4));
+  for (const candidate of evaluated) {
+    candidate.damage = meanBuildDamage({
+      bowData, build: candidate.build, profile,
+      weapon: candidate.weaponSpec, hitzoneData,
+      style: "guild", missionShots: 200, elementCap: 30,
+    });
+  }
+  evaluated.sort((a, b) => b.damage - a.damage || b.score - a.score);
+  const bow = evaluated[0];
+  return { bow, completable: completable.length, incomplete: incomplete.length, probed: probed.length, evaluated };
 }
 
-function runClassB({ armorData, decorations, talismanSkills, skillLevels, bowData, hitzoneData, shotType, budget, switchShots, out }) {
+function runClassB({ armorData, decorations, talismanSkills, skillLevels, bowData, hitzoneData, shotType, budget, switchShots, out, talismanPolicy, bowRank = "G", topCandidates = 4 }) {
   const profiles = [
     { profile: "raw", requireElement: false },
     { profile: "elemental", requireElement: true },
     { profile: "hybrid", requireElement: true },
   ];
-  const results = [];
+  const selected = [];
+  const allBuilds = [];
   for (const { profile, requireElement } of profiles) {
-    const { bow, note, completable, incomplete } = selectBestBowCompletable({
-      armorData, decorations, talismanSkills, skillLevels, bowData,
-      shotType, requireElement, profile, budget,
+    const { bow, note, completable, incomplete, probed, evaluated } = selectProfileBow({
+      armorData, decorations, talismanSkills, skillLevels, bowData, hitzoneData,
+      shotType, requireElement, profile, budget, talismanPolicy, bowRank, topCandidates,
     });
     if (!bow) {
-      results.push({ profile, shotType, budget, switchShots, bow: null, note: note || "No hay arco G con esa carga." });
+      selected.push({ profile, shotType, budget, switchShots, bow: null, note: note || "No hay arco G con esa carga." });
       continue;
     }
+    // Final build for the selected bow, full beam, both genders.
     const buildOutput = runProfileComparison({
       armorData, decorations, talismanSkills, skillLevels, bowData,
       treeId: bow.treeId, level: bow.level, chargeSlot: bow.chargeSlot, shotType,
       coatingPolicy: "low-cost", rank: "G", genders: ["male", "female"],
-      activeSkillBudget: budget, talismanPolicy: "max", allowNegatives: false,
-      beamWidth: 300,
+      activeSkillBudget: budget, talismanPolicy, allowNegatives: false,
+      beamWidth: 300, profiles: [profile],
     });
-    const matrix = simulateBowBuildHitzoneMatrix({
-      bowData, buildOutput, hitzoneData, style: "guild",
-      missionShots: 200, coatingSwitchShots: switchShots, elementCap: 30,
-    });
-    results.push({
+    const builds = [];
+    for (const comparison of buildOutput.comparisons) {
+      const build = comparison.builds?.[0];
+      if (!build) continue;
+      const entry = {
+        id: comparison.profile + "/" + comparison.gender,
+        profile: comparison.profile, gender: comparison.gender,
+        build, weapon: bow.weaponSpec,
+      };
+      builds.push(entry);
+      allBuilds.push(entry);
+    }
+    selected.push({
       profile, shotType, budget, switchShots,
-      bow: { treeId: bow.treeId, level: bow.level, name: bow.weapon.nEs, chargeSlot: bow.chargeSlot, raw: bow.raw, element: bow.element },
-      selection: { completable, incomplete, completed: completable > 0 },
+      bow: { treeId: bow.treeId, level: bow.level, name: bow.weapon.nEs, chargeSlot: bow.chargeSlot, raw: bow.raw, element: bow.element, damage: bow.damage },
+      selection: { completable, incomplete, probed, completed: completable > 0, evaluated: evaluated.map(e => ({ name: e.weapon.nEs, damage: e.damage, raw: e.raw, elemValue: e.elemValue })) },
       builds: buildOutput.comparisons,
-      matrix,
     });
   }
-  return { class: "B", shotType, budget, switchShots, profiles: results };
+  const matrix = simulateBuildsAcrossWeapons({
+    bowData, builds: allBuilds, hitzoneData, style: "guild",
+    missionShots: 200, coatingSwitchShots: switchShots, elementCap: 30,
+  });
+  return { class: "B", shotType, budget, switchShots, profiles: selected, matrix };
 }
 
 function main() {
@@ -211,25 +264,36 @@ function main() {
   const switchShots = Number(args["switch-shots"] || 0);
   const classArg = args.class || "both";
   if (!["a", "b", "both"].includes(classArg)) throw new Error("--class debe ser a, b o both.");
+  const talismanPolicy = args["talisman-policy"] || "conservative";
+  if (!["max", "legal", "conservative"].includes(talismanPolicy)) {
+    throw new Error("--talisman-policy debe ser max, legal o conservative.");
+  }
+  const bowRank = args["bow-rank"] || "G";
+  if (!["LR", "HR", "G"].includes(bowRank)) throw new Error("--bow-rank debe ser LR, HR o G.");
   const out = resolve(args.out || "tools/out/stage11/bow-build-comparison.json");
   if (!SHOT_TYPES.includes(shotType)) throw new Error("shot-type debe ser Spread, Pierce, Rapid o Heavy.");
 
   const payload = {
     model: "MHGU bow build fair comparison stage 11",
     generatedAt: new Date().toISOString(),
-    shotType, budget, switchShots, elementCap: 30,
-    ...(classArg === "b" ? {} : { classA: runClassA({ armorData, decorations, talismanSkills, skillLevels, bowData, hitzoneData, shotType, budget, switchShots, out }) }),
-    ...(classArg === "a" ? {} : { classB: runClassB({ armorData, decorations, talismanSkills, skillLevels, bowData, hitzoneData, shotType, budget, switchShots, out }) }),
+    shotType, budget, switchShots, elementCap: 30, talismanPolicy, bowRank,
+    theoretical: talismanPolicy === "max",
+    ...(classArg === "b" ? {} : { classA: runClassA({ armorData, decorations, talismanSkills, skillLevels, bowData, hitzoneData, shotType, budget, switchShots, out, talismanPolicy }) }),
+    ...(classArg === "a" ? {} : { classB: runClassB({ armorData, decorations, talismanSkills, skillLevels, bowData, hitzoneData, shotType, budget, switchShots, out, talismanPolicy, bowRank }) }),
   };
   mkdirSync(dirname(out), { recursive: true });
   writeFileSync(out, JSON.stringify(payload, null, 2) + "\n", "utf8");
   console.log("MHGU bow build fair comparison (stage 11)");
-  console.log("shot type=" + shotType + " | budget=" + budget + " | switch shots=" + switchShots);
+  console.log("shot type=" + shotType + " | budget=" + budget + " | switch shots=" + switchShots + " | bow rank=" + bowRank + " | talismans=" + talismanPolicy + (talismanPolicy === "max" ? " (TEÓRICO, no es build legal confirmado)" : " (confirmado legal)"));
   if (payload.classA) {
-    console.log("clase A: arco fijo tree 104 lv3 | arco=" + payload.classA.bow.name);
-    for (const row of payload.classA.builds) {
-      const b = row.builds?.[0];
-      console.log("  A " + row.profile + "/" + row.gender + ": " + (b ? b.activatedSkills + "/" + b.targetSkillCount + (b.complete ? " completa" : " parcial") : "sin build"));
+    if (!payload.classA.matrix) {
+      console.log("clase A: " + (payload.classA.note || "no disponible"));
+    } else {
+      console.log("clase A: arco fijo tree 104 lv3 | arco=" + payload.classA.bow.name);
+      for (const row of payload.classA.builds) {
+        const b = row.builds?.[0];
+        console.log("  A " + row.profile + "/" + row.gender + ": " + (b ? b.activatedSkills + "/" + b.targetSkillCount + (b.complete ? " completa" : " parcial") : "sin build"));
+      }
     }
   }
   for (const row of payload.classB.profiles) {

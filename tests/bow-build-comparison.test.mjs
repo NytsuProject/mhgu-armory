@@ -11,11 +11,12 @@ import {
   optimizeBowBuild, getTalismanOptions, resolveBowBuildRequirements, buildSignature,
 } from "../js/bow-build-optimizer.js";
 import {
-  offensivePriority, runProfileComparison,
+  offensivePriority, runProfileComparison, isOffensive, OFFENSIVE_SKILL_REASONS,
 } from "../js/bow-build-comparison.js";
 import { simulateBowBuildHitzoneMatrix } from "../js/bow-build-damage.js";
 import { parseHitzones } from "../js/bow-balance-sim.js";
 import { ELEMENT_CAP, proposeElementalRebalance } from "../js/bow-elemental-rebalance.js";
+import { bandFor } from "../tools/summarize-bow-build-comparison.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = resolve(here, "..");
@@ -38,6 +39,41 @@ test("talisman policy: max includes dual-skill charms, conservative excludes the
   assert.ok(dual(legal) >= dual(max), "legal debe enumerar al menos los duales de max");
   assert.ok(legal.length >= conservative.length, "legal debe ser superconjunto de conservadora");
   assert.throws(() => getTalismanOptions(talismanSkills, targets, "bogus"), /Política de talismán no válida/);
+});
+
+test("bandFor classifies elemental hitzones into favorable/medium/poor", () => {
+  assert.equal(bandFor(5), "poor");
+  assert.equal(bandFor(15), "medium");
+  assert.equal(bandFor(20), "medium");
+  assert.equal(bandFor(25), "favorable");
+  assert.equal(bandFor(35), "favorable");
+  // boundaries: 14 is poor, 24 is medium, 25 is favorable
+  assert.equal(bandFor(14), "poor");
+  assert.equal(bandFor(24), "medium");
+  assert.equal(bandFor(0), "poor");
+  assert.equal(bandFor(100), "favorable");
+});
+
+test("offensive budget: every prioritized skill is offensive and coating multipliers count", () => {
+  // Power C+ and Elemental are coating multipliers: they multiply damage per
+  // shot, so they count toward the offensive budget (same criterion for all
+  // three profiles). Loading is utility and must NOT count.
+  assert.equal(isOffensive("Power C+"), true, "Power C+ multiplica el daño físico: es ofensiva");
+  assert.equal(isOffensive("Elemental"), true, "Elemental multiplica el daño elemental: es ofensiva");
+  assert.equal(isOffensive("Loading"), false, "Loading es utilidad: no es ofensiva");
+  assert.equal(isOffensive("Ammo Saver"), false, "Ammo Saver es utilidad: no es ofensiva");
+  assert.ok(OFFENSIVE_SKILL_REASONS["Power C+"], "Power C+ debe tener razón documentada");
+  assert.ok(OFFENSIVE_SKILL_REASONS["Elemental"], "Elemental debe tener razón documentada");
+  // Every entry of every profile's priority is offensive.
+  for (const [profile, element] of [["raw", null], ["elemental", "Water"], ["hybrid", "Fire"]]) {
+    for (const shotType of ["Spread", "Pierce", "Rapid", "Heavy"]) {
+      const priority = offensivePriority(profile, shotType, element);
+      assert.ok(priority.length > 0, profile + "/" + shotType + " debe tener prioridad");
+      for (const skill of priority) {
+        assert.equal(isOffensive(skill), true, profile + "/" + shotType + ": " + skill + " debe ser ofensiva");
+      }
+    }
+  }
 });
 
 test("offensive priority includes the shot skill and the element skill where required", () => {
@@ -120,6 +156,35 @@ test("rebalance-invariant conservation: element cap 30 and untouched RAW/Spread 
     assert.ok(Number.isFinite(elementValue) && elementValue <= 30, "propuesta dentro del cap 30");
     assert.ok(row.element !== undefined && row.raw !== undefined);
   }
+});
+
+test("elemental progression: 55 finals at 30 without inversions (problem 7)", () => {
+  let finalsEle = 0;
+  let inversiones = 0;
+  let maxValue = 0;
+  for (const tree of bowData.trees) {
+    const levels = (tree.levels || []).slice().sort((a, b) => Number(a.lv) - Number(b.lv));
+    if (!levels.length) continue;
+    const maxLevel = Number(tree.maxLevel ?? levels[levels.length - 1].lv);
+    for (let i = 0; i < levels.length; i++) {
+      const element = levels[i].ele?.[0];
+      if (!element) continue;
+      const value = Number(element[2] || 0);
+      maxValue = Math.max(maxValue, value);
+      assert.ok(value <= 30, "ningún nivel supera el cap 30 (arbol " + tree.id + " lv " + levels[i].lv + ")");
+      if (Number(levels[i].lv) === maxLevel && element[1] !== "Blast") {
+        finalsEle++;
+        assert.equal(value, 30, "final elemental debe estar en 30 (arbol " + tree.id + ")");
+      }
+      if (i + 1 < levels.length) {
+        const next = levels[i + 1].ele?.[0];
+        if (next && Number(next[2] || 0) < value) inversiones++;
+      }
+    }
+  }
+  assert.equal(finalsEle, 55, "exactamente 55 finales elementales (sin Explosión)");
+  assert.equal(inversiones, 0, "no puede haber progresiones invertidas");
+  assert.ok(maxValue <= 30, "elemento máximo dentro del cap 30");
 });
 
 test("damage matrix runs over vendored hitzones and keeps the two ratio aggregations", () => {

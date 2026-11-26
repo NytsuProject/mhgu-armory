@@ -14,25 +14,76 @@ import { optimizeBowBuild, resolveBowBuildRequirements } from "./bow-build-optim
 import { BOW_SHOT_SKILLS, BOW_ELEMENT_SKILLS } from "./bow-build-feasibility.js";
 
 /**
+ * Offensive-skill taxonomy.
+ *
+ * A skill counts toward the "offensive skill budget" when it directly multiplies
+ * or enables the damage a bow deal in a mission. The budget is the number of
+ * such skills activated, and it is defined identically for RAW, Elemental and
+ * Hybrid so the three profiles are compared at equal offensive firepower.
+ *
+ * Coating multiplier skills (Power C+, Elemental) DO count: they multiply the
+ * raw / elemental damage of every shot, exactly like Attack or elementAtk. The
+ * earlier report text that excluded Power C+ from the offensive budget was
+ * wrong and is corrected here.
+ *
+ * Non-offensive (utility / defensive) skills are excluded from the budget:
+ * Loading (charge speed), Ammo Saver (ammo economy), and resistances. They may
+ * still be required to use a `!` charge, but they are never counted as offensive.
+ */
+export const OFFENSIVE_SKILL_REASONS = Object.freeze({
+  Attack: "Multiplica el RAW de display del arco (daño físico base).",
+  Expert: "Afinidad + y, con Crit Up, multiplica el daño crítico.",
+  Tenderizer: "Multiplica el daño contra partes débiles (hitzone debilidad).",
+  "Critical Up": "Aumenta la probabilidad de golpe crítico (daño medio).",
+  "Crit Element": "Aumenta la probabilidad de golpe crítico elemental.",
+  "Power C+": "Multiplicador de revestimiento Potencia: multiplica el daño físico de cada disparo.",
+  Elemental: "Multiplicador de revestimiento Elemental: multiplica el daño elemental de cada disparo.",
+  "Pellet Up": "Multiplicador de Abanico: multiplica el daño de cada perdigón.",
+  "Normal Up": "Multiplicador de Rapid: multiplica el daño de Rapid.",
+  "Pierce Up": "Multiplicador de Pierce: multiplica el daño de Pierce.",
+  "Heavy Up": "Multiplicador de Heavy: multiplica el daño de Heavy.",
+  "Fire Atk": "Multiplicador de elemento Fuego: multiplica el daño elemental.",
+  "Water Atk": "Multiplicador de elemento Agua: multiplica el daño elemental.",
+  "Thunder Atk": "Multiplicador de elemento Rayo: multiplica el daño elemental.",
+  "Ice Atk": "Multiplicador de elemento Hielo: multiplica el daño elemental.",
+  "Dragon Atk": "Multiplicador de elemento Dragon: multiplica el daño elemental.",
+});
+
+const SHOT_SKILL_BY_TYPE = Object.freeze({
+  Rapid: "Normal Up", Pierce: "Pierce Up", Spread: "Pellet Up", Heavy: "Heavy Up",
+});
+
+/** True when a skill directly multiplies or enables bow damage (see taxonomy). */
+export function isOffensive(skill) {
+  return Object.prototype.hasOwnProperty.call(OFFENSIVE_SKILL_REASONS, skill);
+}
+
+/**
  * Offensive-skill priority order for a profile + shot type + element.
- * The first N entries are activated when activeSkillBudget = N. Extra skills
- * beyond the requirement set are appended so profiles with fewer base
- * requirements can still reach the same budget.
+ * The first N entries are activated when activeSkillBudget = N. Every entry is
+ * an offensive skill (see OFFENSIVE_SKILL_REASONS); coating multipliers Power C+
+ * and Elemental are included because they multiply damage per shot.
  */
 export function offensivePriority(profile, shotType, element) {
   if (!BOW_SHOT_SKILLS[shotType]) throw new Error("Tipo de flecha no válido: " + shotType);
-  const shotSkill = BOW_SHOT_SKILLS[shotType];
+  const shotSkill = SHOT_SKILL_BY_TYPE[shotType];
+  if (!shotSkill) throw new Error("Tipo de flecha sin habilidad ofensiva: " + shotType);
   if (profile === "raw") {
+    // RAW: shot multiplier first, then physical multipliers, then Attack (high
+    // threshold, often the first skill that cannot be reached in G).
     return [shotSkill, "Expert", "Tenderizer", "Critical Up", "Power C+", "Attack"];
   }
   if (profile === "elemental") {
     const elementSkill = BOW_ELEMENT_SKILLS[element];
     if (!elementSkill) throw new Error("Elemento no válido para perfil elemental: " + element);
+    // Elemental: elemental damage multipliers first, then shot multiplier.
     return [elementSkill, "Crit Element", "Tenderizer", shotSkill, "Elemental", "Critical Up"];
   }
   if (profile === "hybrid") {
     const elementSkill = BOW_ELEMENT_SKILLS[element];
     if (!elementSkill) throw new Error("Elemento no válido para perfil híbrido: " + element);
+    // Hybrid: elemental multipliers, then shot multiplier, then physical
+    // coating multiplier and the remaining physical multipliers.
     return [elementSkill, "Crit Element", "Tenderizer", shotSkill, "Power C+", "Elemental", "Critical Up", "Expert"];
   }
   throw new Error("Perfil no válido: " + profile);
