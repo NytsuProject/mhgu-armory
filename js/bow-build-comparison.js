@@ -82,14 +82,23 @@ export function skillActivationThreshold(skill, skillLevels = {}) {
 export function offensiveSkillsActivated(build, skillLevels = {}, priority = null) {
   if (!build) return [];
   const points = skillPointsFromOptimizerBuild(build);
-  const order = Array.isArray(priority) ? priority : Object.keys(OFFENSIVE_SKILL_REASONS);
+  // Review EVERY offensive skill in OFFENSIVE_SKILL_REASONS, not just those in
+  // the priority list. The priority list only ORDERS the result; it must not
+  // exclude offensive skills that are activated incidentally by the build but
+  // were not part of the budgeted top-N set.
+  const prioritySet = new Set(Array.isArray(priority) ? priority : []);
+  const rankFor = skill => {
+    const idx = Array.isArray(priority) ? priority.indexOf(skill) : -1;
+    return idx >= 0 ? idx : Object.keys(OFFENSIVE_SKILL_REASONS).indexOf(skill);
+  };
   const activated = [];
-  for (const skill of order) {
+  for (const skill of Object.keys(OFFENSIVE_SKILL_REASONS)) {
     if (!isOffensive(skill)) continue;
     const value = Number(points[skill] || 0);
     const threshold = skillActivationThreshold(skill, skillLevels);
-    if (value >= threshold) activated.push({ skill, points: value, threshold });
+    if (value >= threshold) activated.push({ skill, points: value, threshold, inPriority: prioritySet.has(skill) });
   }
+  activated.sort((a, b) => rankFor(a.skill) - rankFor(b.skill));
   return activated;
 }
 

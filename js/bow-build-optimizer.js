@@ -96,9 +96,21 @@ export function getTalismanOptions(talismanSkills, targetSkills, policy = "max")
   const lookup = new Map(talismanSkills.map(row => [row.en, row]));
   const keys = targetSkills.filter(skill => lookup.has(skill));
   const options = new Map();
+  // Evidence for a (skill, points, deco) pair. The catalog only demonstrates
+  // that a points VALUE exists for a skill; it does NOT demonstrate that a
+  // specific value is craftable with a specific number of slots (deco). Only
+  // pairs with real in-game evidence are confirmed.
+  const confirmedPairs = new Set();
   const add = (deco, skills) => {
     const key = deco + ":" + skills.map(row => row[0] + "=" + row[2]).join(",");
-    if (!options.has(key)) options.set(key, { slot: "talisman", name: "Talismán optimizado", deco, sk: skills });
+    // A pair is confirmed only when every (skill, points, deco) triple has
+    // explicit evidence. With catalog-only data, points values are known but
+    // their craftability at a given deco is NOT verified, so these are
+    // candidates, not confirmed.
+    const confirmed = policy === "verified"
+      ? skills.every(row => confirmedPairs.has(row[0] + "|" + row[2] + "|" + deco))
+      : false;
+    if (!options.has(key)) options.set(key, { slot: "talisman", name: "Talismán optimizado", deco, sk: skills, confirmed });
   };
   for (let deco = 1; deco <= 3; deco++) add(deco, []);
   for (const skill of keys) {
@@ -382,6 +394,7 @@ export function optimizeBowBuild({
       })),
       talisman: candidate.talisman ? {
         name: candidate.talisman.name, deco: candidate.talisman.deco, skills: candidate.talisman.sk,
+        confirmed: Boolean(candidate.talisman.confirmed),
       } : null,
       weapon: { name: weaponName, deco: weaponSlots },
       jewelsBySlot: Object.fromEntries(Object.entries(allocation.jewelsBySlot).map(([slot, rows]) => [

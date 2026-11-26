@@ -117,7 +117,7 @@ function screeningScore({ weapon, chargeSlot, shotType, element, profile, ctx })
 // Enumerate ALL eligible bows for a shot type and rank, INCLUDING `!` (C4)
 // charges. Each candidate keeps its highest charge of the requested shot type
 // (preferring a non-`!` charge only as a tie-break on level).
-function enumerateProfileCandidates(bowData, shotType, requireElement, bowRank = "G") {
+function enumerateProfileCandidates(bowData, shotType, requireElement, bowRank = "G", preferredChargeSlot = null) {
   const candidates = [];
   for (const tree of bowData.trees) {
     for (const level of tree.levels || []) {
@@ -129,8 +129,16 @@ function enumerateProfileCandidates(bowData, shotType, requireElement, bowRank =
       if (!slots.length) continue;
       const element = findElement(level);
       if (requireElement && !element) continue;
-      // Highest charge level; prefer non-`!` only when levels tie.
-      const bestSlot = slots.slice().sort((a, b) => b.level - a.level || Number(a.requiresLoadUp) - Number(b.requiresLoadUp))[0];
+      // If a preferred charge slot is requested (e.g. C1 for early-progression
+      // study), the bow must HAVE that slot; bows lacking it are skipped so the
+      // study is restricted to bows that actually use the requested charge.
+      let bestSlot;
+      if (preferredChargeSlot) {
+        bestSlot = slots.find(c => c.slot === preferredChargeSlot) || null;
+        if (!bestSlot) continue;
+      } else {
+        bestSlot = slots.slice().sort((a, b) => b.level - a.level || Number(a.requiresLoadUp) - Number(b.requiresLoadUp))[0];
+      }
       const raw = Number(level.raw || 0);
       const elemValue = element ? Number(element[2]) : 0;
       candidates.push({
@@ -151,9 +159,9 @@ function enumerateProfileCandidates(bowData, shotType, requireElement, bowRank =
  * evaluated by real mean damage; the best is selected. If no shortlist bow
  * completes the budget, the profile is marked non-comparable.
  */
-function selectProfileBow({ armorData, decorations, talismanSkills, skillLevels, bowData, hitzoneData, shotType, requireElement, profile, budget, talismanPolicy, bowRank = "G", selectionLimit = 16 }) {
+function selectProfileBow({ armorData, decorations, talismanSkills, skillLevels, bowData, hitzoneData, shotType, requireElement, profile, budget, talismanPolicy, bowRank = "G", selectionLimit = 16, preferredChargeSlot = null }) {
   const ctx = screeningContext(hitzoneData);
-  const candidates = enumerateProfileCandidates(bowData, shotType, requireElement, bowRank);
+  const candidates = enumerateProfileCandidates(bowData, shotType, requireElement, bowRank, preferredChargeSlot);
   if (!candidates.length) {
     return { bow: null, note: "No hay arco " + bowRank + " con esa carga." + (requireElement ? " y elemento." : ""), screening: { totalEligible: 0, shortlistSize: 0 } };
   }
@@ -230,7 +238,7 @@ function runClassA({ armorData, decorations, talismanSkills, skillLevels, bowDat
   };
 }
 
-function runClassB({ armorData, decorations, talismanSkills, skillLevels, bowData, hitzoneData, shotType, budget, switchShots, out, talismanPolicy, bowRank = "G", selectionLimit = 16 }) {
+function runClassB({ armorData, decorations, talismanSkills, skillLevels, bowData, hitzoneData, shotType, budget, switchShots, out, talismanPolicy, bowRank = "G", selectionLimit = 16, preferredChargeSlot = null }) {
   const profiles = [
     { profile: "raw", requireElement: false },
     { profile: "elemental", requireElement: true },
@@ -240,6 +248,7 @@ function runClassB({ armorData, decorations, talismanSkills, skillLevels, bowDat
   const allBuilds = [];
   for (const { profile, requireElement } of profiles) {
     const { bow, note, completable, incomplete, shortlistSize, screening } = selectProfileBow({
+      preferredChargeSlot,
       armorData, decorations, talismanSkills, skillLevels, bowData, hitzoneData,
       shotType, requireElement, profile, budget, talismanPolicy, bowRank, selectionLimit,
     });
@@ -315,6 +324,7 @@ function main() {
   const bowRank = args["bow-rank"] || "G";
   if (!["LR", "HR", "G"].includes(bowRank)) throw new Error("--bow-rank debe ser LR, HR o G.");
   const selectionLimit = Number(args["selection-limit"] || 16);
+  const preferredChargeSlot = args["preferred-charge-slot"] != null ? Number(args["preferred-charge-slot"]) : null;
   const out = resolve(args.out || "tools/out/stage12/bow-build-comparison.json");
   if (!SHOT_TYPES.includes(shotType)) throw new Error("shot-type debe ser Spread, Pierce, Rapid o Heavy.");
 
@@ -325,12 +335,12 @@ function main() {
     selectionLimit,
     theoretical: talismanPolicy === "max",
     ...(classArg === "b" ? {} : { classA: runClassA({ armorData, decorations, talismanSkills, skillLevels, bowData, hitzoneData, shotType, budget, switchShots, out, talismanPolicy }) }),
-    ...(classArg === "a" ? {} : { classB: runClassB({ armorData, decorations, talismanSkills, skillLevels, bowData, hitzoneData, shotType, budget, switchShots, out, talismanPolicy, bowRank, selectionLimit }) }),
+    ...(classArg === "a" ? {} : { classB: runClassB({ armorData, decorations, talismanSkills, skillLevels, bowData, hitzoneData, shotType, budget, switchShots, out, talismanPolicy, bowRank, selectionLimit, preferredChargeSlot }) }),
   };
   mkdirSync(dirname(out), { recursive: true });
   writeFileSync(out, JSON.stringify(payload, null, 2) + "\n", "utf8");
   console.log("MHGU bow build fair comparison (stage 12)");
-  console.log("shot type=" + shotType + " | budget=" + budget + " | bow rank=" + bowRank + " | talismans=" + talismanPolicy + (talismanPolicy === "max" ? " (TEÓRICO)" : "") + " | shortlist=" + selectionLimit);
+  console.log("shot type=" + shotType + " | budget=" + budget + " | bow rank=" + bowRank + " | talismans=" + talismanPolicy + (talismanPolicy === "max" ? " (TEÓRICO)" : "") + " | shortlist=" + selectionLimit + (preferredChargeSlot ? " | carga preferida=C" + preferredChargeSlot : ""));
   if (payload.classA) {
     if (!payload.classA.matrix) {
       console.log("clase A: " + (payload.classA.note || "no disponible"));

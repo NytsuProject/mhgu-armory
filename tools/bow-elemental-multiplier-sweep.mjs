@@ -4,20 +4,22 @@
 //
 // Modelo actual: C1 x0.70 / C2 x0.85 / C3 x1.00 / C4 x1.125.
 // El barrido modifica UN multiplicador a la vez (los demás mantienen el valor
-// base) y evalúa la ratio elemental/RAW (y híbrido/RAW) sobre los 93 monstruos
-// grandes, agregada por:
-//   - rango (LR/HR/G), elemento, tipo de disparo, carga (C1..C4),
-//   - banda de hitzone elemental (favorable/media/pobre).
-// Luego se combinan solo los candidatos prometedores en una propuesta.
+// base) y evalúa la ratio elemental/RAW sobre los 93 monstruos grandes.
 //
-// Los builds y arcos provienen de los artefactos de clase B (cmp-*.json): cada
-// perfil ya usa su propio arco y su propia carga. El daño elemental de un build
-// que usa la carga k se escala por (m / multiplicador_base[k]); el daño RAW
-// no cambia. Se reportan victorias por parte y por monstruo, no solo el promedio.
+// CORRECCIÓN (stage 12 feedback): NO se escala el elemento agregado con una
+// única cifra. Se RE-EJECUTA la simulación de daño con `chargeElementMultipliers`
+// (array de 4, uno por carga) de modo que cada carga de la secuencia Guild
+// aplique su propio multiplicador. La secuencia puede contener más de una
+// carga; el simulador ya aplica chargeElementMultipliers[slotIndex] por voltaje.
+//
+// Se desglosa por rango (LR/HR/G), elemento (Fuego/Agua/Rayo/Hielo/Dragón),
+// tipo de disparo, carga (C1..C4) y banda de hitzone elemental
+// (favorable/media/pobre). Luego se combinan los candidatos en una propuesta.
 
 import { readFileSync, writeFileSync, mkdirSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
-import { CHARGE_ELEMENT, ELEMENTS } from "../js/bow-balance-sim.js";
+import { CHARGE_ELEMENT, parseHitzones } from "../js/bow-balance-sim.js";
+import { simulateBuildsAcrossWeapons } from "../js/bow-build-damage.js";
 import { bandFor } from "./summarize-bow-build-comparison.mjs";
 
 function readJson(path) { return JSON.parse(readFileSync(resolve(path), "utf8")); }
@@ -26,7 +28,12 @@ const BASELINE = CHARGE_ELEMENT.slice(); // [0.70, 0.85, 1.00, 1.125]
 const GRID = [];
 for (let m = 0.70; m <= 1.50 + 1e-9; m += 0.05) GRID.push(Math.round(m * 100) / 100);
 
-const DESIGN = { favorable: 1.10, mediumMax: 1.08, poorMax: 0.95 };
+const DESIGN = { favorable: 1.10, mediumMin: 1.00, mediumMax: 1.08, poorMax: 0.95 };
+
+function average(values) {
+  if (!values.length) return -1;
+  return values.reduce((a, b) => a + b, 0) / values.length;
+}
 
 function aggregate(values) {
   if (!values.length) return { count: 0, mean: null, wins: 0 };
@@ -34,54 +41,114 @@ function aggregate(values) {
   return { count: values.length, mean: sum / values.length, wins: values.filter(v => v > 1).length };
 }
 
+// Carga los builds raw+elemental de un artifact para re-simular con distintos
+// chargeElementMultipliers. Devuelve { builds, elementType, shotType, rank }.
+function loadBuilds(j) {
+  const b = j.classB;
+  const builds = [];
+  for (const p of b.profiles) {
+    if (!["raw", "elemental"].includes(p.profile)) continue;
+    for (const e of p.builds) {
+      if (!e.comparable) continue;
+      builds.push({ id: e.id, profile: e.profile, gender: e.gender, build: e.build, weapon: e.weapon });
+    }
+  }
+  const elemWeapon = b.matrix.metadata.weapons?.["elemental/male"] || {};
+  return {
+    builds,
+    elementType: elemWeapon.elementType || null,
+    shotType: j.shotType,
+    rank: j.bowRank,
+  };
+}
+
+// Simula un artifact con un conjunto de multiplicadores y devuelve los rows
+// con { monster, part, elementHz, ratio } ya calculados.
+function simulateWith(data, bowData, hitzoneData, multipliers) {
+  const matrix = simulateBuildsAcrossWeapons({
+    bowData, builds: data.builds, hitzoneData, style: "guild",
+    missionShots: 200, elementCap: 30, chargeElementMultipliers: multipliers,
+  });
+  const rows = [];
+  for (const row of matrix.rows || []) {
+    const elem = row.byBuild?.["elemental/male"], raw = row.byBuild?.["raw/male"];
+    if (!elem || !raw || !raw.totalDamage || !elem.totalDamage) continue;
+    rows.push({
+      monster: row.monster, part: row.part,
+      ratio: elem.totalDamage / raw.totalDamage,
+      elementHz: row.elementHz || elem.elementHz || 0,
+    });
+  }
+  return rows;
+}
+
 function main() {
   const outDir = resolve("tools/out/stage12");
-  const files = readdirSync(outDir).filter(f => /^cmp-.*-b4\.json$/.test(f)).sort();
+  const bowData = readJson("data/weapons/bow.json");
+  const hitzoneData = parseHitzones(readFileSync(resolve("tools/data-hitzones.js"), "utf8"));
+
+  const files = readdirSync(outDir)
+    .filter(f => /^cmp-.*-b4\.json$/.test(f))
+    .sort();
   if (!files.length) throw new Error("No hay artefactos cmp-*.json en " + outDir + ". Ejecuta primero el driver de clase B.");
 
-  // Extract per-artifact build info and per-row damage.
   const artifacts = files.map(file => {
     const j = readJson(resolve(outDir, file));
-    const matrix = j.classB?.matrix;
-    if (!matrix) return null;
-    const weapons = matrix.metadata.weapons || {};
-    const rows = matrix.rows || [];
-    return {
-      shotType: j.shotType, bowRank: j.bowRank, budget: j.budget,
-      weapons, rows,
-      elemCharge: weapons["elemental/male"] ? Number(weapons["elemental/male"].chargeSlot) - 1 : null,
-    };
+    if (!j.classB?.matrix) return null;
+    return { ...loadBuilds(j), file };
   }).filter(Boolean);
 
   // sensitivity[shot][rank][charge][band][m] = aggregate
+  // Also sensitivityByElement[shot][rank][charge][element][band][m]
   const sensitivity = {};
-  const perShotRank = {}; // for monster/part wins at chosen m
+  const sensitivityByElement = {};
 
+  // sensitivity[shot|rank][charge][band][m] accumulates ratios across ALL
+  // artifacts sharing a key (regular + C1 progresion), each contributing its
+  // own rows. A build only changes when its own charge multiplier changes.
+  const acc = {}; // key -> charge -> band -> m -> []
   for (const art of artifacts) {
-    const key = art.shotType + "|" + art.bowRank;
+    const key = art.shotType + "|" + art.rank;
+    for (let k = 0; k < 4; k++) {
+      acc[key] = acc[key] || {};
+      acc[key][k] = acc[key][k] || { favorable: {}, medium: {}, poor: {}, all: {} };
+      for (const m of GRID) {
+        const multipliers = BASELINE.slice();
+        multipliers[k] = m;
+        const rows = simulateWith(art, bowData, hitzoneData, multipliers);
+        for (const row of rows) {
+          const band = art.elementType ? bandFor(row.elementHz) : "all";
+          (acc[key][k][band][m] = acc[key][k][band][m] || []).push(row.ratio);
+          (acc[key][k].all[m] = acc[key][k].all[m] || []).push(row.ratio);
+          const elem = art.elementType || "SinElemento";
+          acc[key][k]["_byElem_" + elem] = acc[key][k]["_byElem_" + elem] || { favorable: {}, medium: {}, poor: {}, all: {} };
+          const ebucket = acc[key][k]["_byElem_" + elem];
+          (ebucket[band][m] = ebucket[band][m] || []).push(row.ratio);
+          (ebucket.all[m] = ebucket.all[m] || []).push(row.ratio);
+        }
+      }
+    }
+  }
+  for (const key of Object.keys(acc)) {
     sensitivity[key] = sensitivity[key] || {};
-    perShotRank[key] = perShotRank[key] || { rows: art.rows, weapons: art.weapons };
+    sensitivityByElement[key] = sensitivityByElement[key] || {};
     for (let k = 0; k < 4; k++) {
       sensitivity[key][k] = sensitivity[key][k] || { favorable: {}, medium: {}, poor: {}, all: {} };
-      for (const m of GRID) {
-        const ratios = { favorable: [], medium: [], poor: [], all: [] };
-        for (const row of art.rows) {
-          const elem = row.byBuild["elemental/male"];
-          const raw = row.byBuild["raw/male"];
-          if (!elem || !raw || !raw.totalDamage) continue;
-          const elemWeapon = art.weapons["elemental/male"];
-          const usesCharge = elemWeapon && Number(elemWeapon.chargeSlot) - 1 === k;
-          const elemScale = usesCharge ? m / BASELINE[k] : 1;
-          const elemTotal = elem.rawDamage + elem.elementalDamage * elemScale;
-          const ratio = raw.totalDamage > 0 ? elemTotal / raw.totalDamage : null;
-          if (ratio == null) continue;
-          const hz = elem.elementHz || 0;
-          const band = elemWeapon?.elementType ? bandFor(hz) : "all";
-          ratios[band].push(ratio);
-          ratios.all.push(ratio);
+      sensitivityByElement[key][k] = sensitivityByElement[key][k] || {};
+      for (const [band, bucket] of Object.entries(acc[key][k])) {
+        if (band.startsWith("_byElem_")) continue;
+        for (const m of GRID) {
+          if (bucket[m]) sensitivity[key][k][band][m] = aggregate(bucket[m]);
         }
-        for (const band of Object.keys(ratios)) {
-          sensitivity[key][k][band][m] = aggregate(ratios[band]);
+      }
+      for (const [ebKey, ebucket] of Object.entries(acc[key][k])) {
+        if (!ebKey.startsWith("_byElem_")) continue;
+        const elem = ebKey.slice("_byElem_".length);
+        sensitivityByElement[key][k][elem] = sensitivityByElement[key][k][elem] || { favorable: {}, medium: {}, poor: {}, all: {} };
+        for (const [band, bucket] of Object.entries(ebucket)) {
+          for (const m of GRID) {
+            if (bucket[m]) sensitivityByElement[key][k][elem][band][m] = aggregate(bucket[m]);
+          }
         }
       }
     }
@@ -99,7 +166,7 @@ function main() {
           const agg = bucket[m];
           if (!agg || agg.mean == null) continue;
           const ok = band === "favorable" ? agg.mean >= DESIGN.favorable
-            : band === "medium" ? agg.mean >= 1.0 && agg.mean <= DESIGN.mediumMax
+            : band === "medium" ? agg.mean >= DESIGN.mediumMin && agg.mean <= DESIGN.mediumMax
               : agg.mean <= DESIGN.poorMax;
           if (ok) {
             if (!targets[k][band]) targets[k][band] = { m, seen: 1 };
@@ -108,36 +175,22 @@ function main() {
         }
       }
     }
-    // Choose the m with the most segment agreement for each band.
-    for (const band of ["favorable", "medium", "poor"]) {
-      const best = Object.entries(sensitivity).flatMap(([key]) => {
-        const bucket = sensitivity[key][k]?.[band] || {};
-        return GRID.map(m => ({ key, m, agg: bucket[m] })).filter(x => x.agg && x.agg.mean != null);
-      });
-      // pick m maximizing the number of segments satisfying the target
-      const score = {};
-      for (const { m, agg } of best) {
-        const ok = band === "favorable" ? agg.mean >= DESIGN.favorable
-          : band === "medium" ? agg.mean >= 1.0 && agg.mean <= DESIGN.mediumMax
-            : agg.mean <= DESIGN.poorMax;
-        if (ok) score[m] = (score[m] || 0) + 1;
-      }
-      let bestM = null, bestCount = -1;
-      for (const [m, c] of Object.entries(score)) if (c > bestCount) { bestCount = c; bestM = Number(m); }
-      if (bestM != null) targets[k][band] = { m: bestM, segments: bestCount };
-    }
   }
 
   // Combine promising candidates: one multiplier per charge. For each charge k,
   // consider only the segments whose elemental build USES charge k. A candidate m
   // is valid when, across those segments, the poor-band ratio stays <= 0.95 and
-  // the medium-band ratio stays <= 1.08. Among valid m, pick the one whose mean
-  // favorable-band ratio is CLOSEST to the +10% target (ratio ~ 1.10), NOT the
-  // unbounded maximum: this avoids inflating the elemental value beyond the
-  // design goal. If no m is fully valid, pick the m with the fewest violations.
+  // the medium-band ratio stays within [1.00, 1.08]. Among valid m, pick the one
+  // whose mean favorable-band ratio is CLOSEST to the +10% target (ratio ~ 1.10),
+  // NOT the unbounded maximum: this avoids inflating the elemental value beyond
+  // the design goal. If no m is fully valid, pick the m with the fewest violations.
   const proposal = {};
   for (let k = 0; k < 4; k++) {
-    const segKeys = artifacts.filter(a => a.elemCharge === k).map(a => a.shotType + "|" + a.bowRank);
+    const segKeys = artifacts.filter(a => {
+      // Which charge does the elemental build use? Re-derive from weapon.
+      const el = a.builds.find(x => x.profile === "elemental");
+      return el && Number(el.weapon.chargeSlot) - 1 === k;
+    }).map(a => a.shotType + "|" + a.rank);
     const valid = [];
     const violations = {};
     for (const m of GRID) {
@@ -148,7 +201,9 @@ function main() {
         const medium = sensitivity[key]?.[k]?.medium?.[m];
         const fav = sensitivity[key]?.[k]?.favorable?.[m];
         if (poor && poor.mean != null) { if (poor.mean > DESIGN.poorMax) { poorOk = false; viol++; } }
-        if (medium && medium.mean != null) { if (medium.mean > DESIGN.mediumMax) { mediumOk = false; viol++; } }
+        if (medium && medium.mean != null) {
+          if (medium.mean < DESIGN.mediumMin || medium.mean > DESIGN.mediumMax) { mediumOk = false; viol++; }
+        }
         if (fav && fav.mean != null) { favSum += fav.mean; favN++; }
       }
       if (poorOk && mediumOk) valid.push({ m, favMean: favN ? favSum / favN : -1, viol });
@@ -159,15 +214,23 @@ function main() {
       chosen = valid.reduce((a, b) =>
         Math.abs(b.favMean - DESIGN.favorable) < Math.abs(a.favMean - DESIGN.favorable) ? b : a);
     } else {
-      // No fully valid m: minimize violations, then maximize favorable.
       let minViol = Math.min(...Object.values(violations));
       const tied = GRID.filter(m => violations[m] === minViol);
+      // Among the least-violating m, pick the one whose mean favorable ratio is
+      // highest (closest to the target), and record its real favorable mean.
       chosen = tied.reduce((a, m) => {
-        const favA = sensitivity[segKeys[0]]?.[k]?.favorable?.[a]?.mean ?? -1;
-        const favM = sensitivity[segKeys[0]]?.[k]?.favorable?.[m]?.mean ?? -1;
+        const favA = segKeys.length
+          ? average(segKeys.map(key => sensitivity[key]?.[k]?.favorable?.[a]?.mean).filter(v => v != null))
+          : -1;
+        const favM = segKeys.length
+          ? average(segKeys.map(key => sensitivity[key]?.[k]?.favorable?.[m]?.mean).filter(v => v != null))
+          : -1;
         return favM > favA ? m : a;
       }, tied[0]);
-      chosen = { m: chosen, favMean: -1, viol: minViol, partial: true };
+      const chosenFav = segKeys.length
+        ? average(segKeys.map(key => sensitivity[key]?.[k]?.favorable?.[chosen]?.mean).filter(v => v != null))
+        : -1;
+      chosen = { m: chosen, favMean: chosenFav, viol: minViol, partial: true };
     }
     proposal["C" + (k + 1)] = {
       baseline: BASELINE[k],
@@ -179,7 +242,7 @@ function main() {
       valid: !chosen.partial,
       violations: chosen.viol,
       note: segKeys.length === 0
-        ? "Sin builds elementales observados en esta carga: se mantiene el valor base (sin evidencia de sensibilidad)."
+        ? "Sin builds elementales que usen esta carga en la muestra de clase B. Ver estudio de progresión C1 aparte."
         : chosen.partial
           ? "Sin m totalmente válido: se elige el m con menos violaciones de ventana."
           : (chosen.favMean >= DESIGN.favorable
@@ -189,30 +252,29 @@ function main() {
   }
 
   // Evaluate the proposal (combined) per segment: recompute with all four
-  // multipliers set to the candidate values.
+  // multipliers set to the candidate values (correct per-charge application).
   const proposalEval = {};
   for (const art of artifacts) {
-    const key = art.shotType + "|" + art.bowRank;
-    proposalEval[key] = proposalEval[key] || { favorable: [], medium: [], poor: [], all: [], monsterWins: 0, partsCompared: 0 };
-    const monsterWins = new Set();
-    for (const row of art.rows) {
-      const elem = row.byBuild["elemental/male"], raw = row.byBuild["raw/male"];
-      if (!elem || !raw || !raw.totalDamage) continue;
-      const elemWeapon = art.weapons["elemental/male"];
-      const k = elemWeapon ? Number(elemWeapon.chargeSlot) - 1 : 0;
-      const m = proposal["C" + (k + 1)].candidate;
-      const elemTotal = elem.rawDamage + elem.elementalDamage * (m / BASELINE[k]);
-      const ratio = raw.totalDamage > 0 ? elemTotal / raw.totalDamage : null;
-      if (ratio == null) continue;
-      const band = elemWeapon?.elementType ? bandFor(elem.elementHz || 0) : "all";
-      proposalEval[key][band].push(ratio);
-      proposalEval[key].all.push(ratio);
+    const key = art.shotType + "|" + art.rank;
+    // Accumulate raw arrays across all artifacts for this key before aggregating.
+    const fresh = { favorable: [], medium: [], poor: [], all: [], monsterWins: new Set(), partsCompared: 0 };
+    proposalEval[key] = proposalEval[key] || fresh;
+    const multipliers = BASELINE.slice();
+    for (let k = 0; k < 4; k++) multipliers[k] = proposal["C" + (k + 1)].candidate;
+    const rows = simulateWith(art, bowData, hitzoneData, multipliers);
+    for (const row of rows) {
+      const band = art.elementType ? bandFor(row.elementHz) : "all";
+      proposalEval[key][band].push(row.ratio);
+      proposalEval[key].all.push(row.ratio);
       proposalEval[key].partsCompared++;
-      if (ratio > 1) monsterWins.add(row.monster);
+      if (row.ratio > 1) proposalEval[key].monsterWins.add(row.monster);
     }
-    proposalEval[key].monsterWins = monsterWins.size;
-    for (const band of Object.keys(proposalEval[key])) {
-      if (Array.isArray(proposalEval[key][band])) proposalEval[key][band] = aggregate(proposalEval[key][band]);
+  }
+  for (const key of Object.keys(proposalEval)) {
+    const e = proposalEval[key];
+    e.monsterWins = e.monsterWins.size;
+    for (const band of ["favorable", "medium", "poor", "all"]) {
+      if (Array.isArray(e[band])) e[band] = aggregate(e[band]);
     }
   }
 
@@ -222,11 +284,12 @@ function main() {
     baselineMultipliers: BASELINE,
     grid: GRID,
     designTargets: DESIGN,
-    searchLimit: "one multiplier varied at a time; all other charges keep the baseline value",
+    searchLimit: "one multiplier varied at a time; all other charges keep the baseline value; damage re-simulated with chargeElementMultipliers per charge in the Guild sequence",
     targets,
     proposal,
     proposalEvaluation: proposalEval,
     sensitivity,
+    sensitivityByElement,
   };
   mkdirSync(outDir, { recursive: true });
   writeFileSync(resolve(outDir, "multiplier-sensitivity.json"), JSON.stringify(payload, null, 2) + "\n", "utf8");
@@ -250,6 +313,26 @@ function main() {
   writeFileSync(resolve(outDir, "multiplier-sensitivity.csv"), header + "\n"
     + csvRows.map(r => r.map(v => { const s = String(v); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; }).join(",")).join("\n") + "\n", "utf8");
 
+  // CSV: desglose por elemento.
+  const elCsvRows = [];
+  for (const key of Object.keys(sensitivityByElement)) {
+    const [shot, rank] = key.split("|");
+    for (let k = 0; k < 4; k++) {
+      for (const [elem, bands] of Object.entries(sensitivityByElement[key][k])) {
+        for (const band of ["favorable", "medium", "poor", "all"]) {
+          for (const m of GRID) {
+            const agg = bands[band]?.[m];
+            if (!agg || agg.mean == null) continue;
+            elCsvRows.push([shot, rank, "C" + (k + 1), elem, band, m, agg.mean.toFixed(4), agg.count, agg.wins]);
+          }
+        }
+      }
+    }
+  }
+  writeFileSync(resolve(outDir, "multiplier-sensitivity-by-element.csv"),
+    "shotType,bowRank,charge,element,band,multiplier,meanRatio,count,partWins\n"
+    + elCsvRows.map(r => r.map(v => { const s = String(v); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; }).join(",")).join("\n") + "\n", "utf8");
+
   console.log("MHGU bow elemental multiplier sensitivity (stage 12)");
   console.log("artefactos procesados: " + artifacts.length + " | rejilla: " + GRID.length + " valores x 4 cargas");
   console.log("propuesta combinada:");
@@ -265,6 +348,7 @@ function main() {
       + " pobre=" + (e.poor.mean ?? "n/a") + " | victorias monstruo=" + e.monsterWins + "/" + (e.partsCompared > 0 ? 93 : 0));
   }
   console.log("JSON: " + resolve(outDir, "multiplier-sensitivity.json"));
-  console.log("CSV: " + resolve(outDir, "multiplier-sensitivity.csv"));
+  console.log("CSV:  " + resolve(outDir, "multiplier-sensitivity.csv"));
+  console.log("CSV:  " + resolve(outDir, "multiplier-sensitivity-by-element.csv"));
 }
 try { main(); } catch (error) { console.error("Error: " + error.message); process.exitCode = 1; }

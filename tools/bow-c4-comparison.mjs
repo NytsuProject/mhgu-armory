@@ -188,12 +188,38 @@ function main() {
       }
       const elemC3 = matrixRatios(matrices["c3"], "elemental/male", "raw/male");
       const elemC4 = matrixRatios(matrices["c4"], "elemental/male", "raw/male");
-      // C4 vs C3 elemental damage ratio: same bow, same budget, elemental build.
+      // C4 vs C3 elemental damage ratio over ALL matched parts of the 93
+      // monsters (NOT a single row). Reports the mean elemental damage, mean
+      // total damage and monster-level wins for the same bow + same budget.
       let c4vsC3 = null;
-      const r0 = matrices["c3"].rows[0], r1 = matrices["c4"].rows[0];
-      if (r0 && r1) {
-        const a = r1.byBuild["elemental/male"]?.totalDamage, b = r0.byBuild["elemental/male"]?.totalDamage;
-        c4vsC3 = b > 0 ? a / b : null;
+      let c4Cmp = { meanElemC3: null, meanElemC4: null, meanTotalC3: null, meanTotalC4: null,
+        meanRatio: null, partsCompared: 0, monsterWins: 0, monstersCompared: 0 };
+      const rowsC3 = matrices["c3"].rows || [], rowsC4 = matrices["c4"].rows || [];
+      // Match by (monster, part) so the comparison is per-part, not row[0].
+      const mapC4 = new Map();
+      for (const r of rowsC4) mapC4.set(r.monster + "|" + r.part, r);
+      const elemDeltas = [], monsterWinSet = new Set();
+      const monstersSeen = new Set();
+      let sumElemC3 = 0, sumElemC4 = 0, sumTotC3 = 0, sumTotC4 = 0, n = 0;
+      for (const r of rowsC3) {
+        const r4 = mapC4.get(r.monster + "|" + r.part);
+        if (!r4) continue;
+        const e3 = r.byBuild?.["elemental/male"], e4 = r4.byBuild?.["elemental/male"];
+        if (!e3 || !e4 || !e3.totalDamage || !e4.totalDamage) continue;
+        sumElemC3 += e3.elementalDamage; sumElemC4 += e4.elementalDamage;
+        sumTotC3 += e3.totalDamage; sumTotC4 += e4.totalDamage; n++;
+        elemDeltas.push(e4.elementalDamage / e3.elementalDamage);
+        if (e4.elementalDamage > e3.elementalDamage) monsterWinSet.add(r.monster);
+        monstersSeen.add(r.monster);
+      }
+      if (n > 0) {
+        c4vsC3 = sumElemC3 > 0 ? sumElemC4 / sumElemC3 : null;
+        c4Cmp = {
+          meanElemC3: sumElemC3 / n, meanElemC4: sumElemC4 / n,
+          meanTotalC3: sumTotC3 / n, meanTotalC4: sumTotC4 / n,
+          meanRatio: elemDeltas.reduce((a, b) => a + b, 0) / elemDeltas.length,
+          partsCompared: n, monsterWins: monsterWinSet.size, monstersCompared: monstersSeen.size,
+        };
       }
       const elemBuildC4 = builds["c4"].comparisons.find(c => c.profile === "elemental").builds[0];
       const loadingActive = elemBuildC4.activeSkills.includes("Loading");
@@ -207,6 +233,7 @@ function main() {
         offensiveSkillsActivated: offensive.map(s => s.skill),
         elementalC3Raw: elemC3, elementalC4Raw: elemC4,
         c4VsC3ElementalDamage: c4vsC3,
+        c4Comparison: c4Cmp,
         c4Complete: elemBuildC4.complete,
         c4Comparable: Boolean(elemBuildC4.complete),
         c4Note: elemBuildC4.complete

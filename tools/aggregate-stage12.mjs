@@ -25,8 +25,10 @@ function main() {
     const j = readJson(resolve(OUT, f));
     const b = j.classB;
     const m = b.matrix;
+    const isC1 = /-c1-b4\.json$/.test(f);
     const seg = {
-      shot: j.shotType, rank: j.bowRank, budget: b.budget,
+      shot: j.shotType, rank: j.bowRank, budget: b.budget, charge: isC1 ? "C1" : "C3/C4",
+      file: f,
       comparable: b.profiles.filter(p => p.comparable).length,
       bows: b.profiles.map(p => (p.bow?.name || "-") + "(" + p.profile + ")").join(" | "),
     };
@@ -91,9 +93,9 @@ function main() {
 
   // CSV: segment ratios.
   const csv = [
-    "shot,rank,budget,bow,element,comparable,partsCompared,elemRawRatioMean,partWins",
+    "shot,rank,charge,budget,bow,element,comparable,partsCompared,elemRawRatioMean,partWins",
     ...segments.map(s => [
-      s.shot, s.rank, s.budget, s.bowName, s.element, s.comparable, s.partsCompared,
+      s.shot, s.rank, s.charge, s.budget, s.bowName, s.element, s.comparable, s.partsCompared,
       s.elemRawRatioMean != null ? s.elemRawRatioMean.toFixed(4) : "", s.partWins,
     ].join(",")),
   ].join("\n") + "\n";
@@ -116,7 +118,7 @@ function main() {
   console.log("segmentos procesados:", segments.length);
   console.log("ratio elem/RAW base por segmento:");
   for (const s of segments) {
-    console.log("  " + s.shot + "|" + s.rank + " b" + s.budget + " " + (s.bowName || "-")
+    console.log("  " + s.shot + "|" + s.rank + " b" + s.budget + " [" + s.charge + "] " + (s.bowName || "-")
       + " [" + (s.element || "-") + "] ratio=" + (s.elemRawRatioMean != null ? s.elemRawRatioMean.toFixed(3) : "n/a")
       + " venc=" + s.partWins + "/" + s.partsCompared);
   }
