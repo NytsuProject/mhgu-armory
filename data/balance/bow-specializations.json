@@ -1,0 +1,1172 @@
+{
+  "version": 1,
+  "identities": {
+    "raw-especializado": "Arco RAW puro o restaurado; sin elemento. Enfoque en RAW y cobertura.",
+    "elemental-moderado": "Elemento natural moderado (terminal ~<=24).",
+    "elemental-equilibrado": "Elemento natural medio (terminal ~25-34).",
+    "elemental-especializado": "Elemento natural alto (terminal ~35-44).",
+    "elemental-extremo": "Elemento natural extremo (terminal >=45, hasta 60)."
+  },
+  "trees": [
+    {
+      "treeId": 1,
+      "nameEs": "Arco petrificado",
+      "identity": "raw-especializado",
+      "element": null,
+      "originalTerminalElement": null,
+      "proposedTerminalElement": null,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 4,
+      "nameEs": "Arko Nulo amarillo",
+      "identity": "elemental-equilibrado",
+      "element": "Thunder",
+      "originalTerminalElement": 34,
+      "proposedTerminalElement": 34,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 5,
+      "nameEs": "Arko Nulo blanco",
+      "identity": "elemental-equilibrado",
+      "element": "Ice",
+      "originalTerminalElement": 33,
+      "proposedTerminalElement": 33,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 6,
+      "nameEs": "Arco sónico",
+      "identity": "elemental-equilibrado",
+      "element": "Thunder",
+      "originalTerminalElement": 33,
+      "proposedTerminalElement": 33,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 7,
+      "nameEs": "Calima",
+      "identity": "raw-especializado",
+      "element": null,
+      "originalTerminalElement": null,
+      "proposedTerminalElement": null,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 8,
+      "nameEs": "Calígine",
+      "identity": "elemental-moderado",
+      "element": "Water",
+      "originalTerminalElement": 18,
+      "proposedTerminalElement": 18,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 9,
+      "nameEs": "Arco pluma",
+      "identity": "raw-especializado",
+      "element": null,
+      "originalTerminalElement": null,
+      "proposedTerminalElement": null,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 11,
+      "nameEs": "Arco de Daimyo",
+      "identity": "elemental-equilibrado",
+      "element": "Water",
+      "originalTerminalElement": 26,
+      "proposedTerminalElement": 26,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 12,
+      "nameEs": "Arco de hoja de oso",
+      "identity": "raw-especializado",
+      "element": null,
+      "originalTerminalElement": null,
+      "proposedTerminalElement": null,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 10,
+      "nameEs": "Arco oculto",
+      "identity": "raw-especializado",
+      "element": null,
+      "originalTerminalElement": null,
+      "proposedTerminalElement": null,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 97,
+      "nameEs": "Cresta de hielo",
+      "identity": "elemental-moderado",
+      "element": "Ice",
+      "originalTerminalElement": 20,
+      "proposedTerminalElement": 20,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 2,
+      "nameEs": "Arco de obsidiana",
+      "identity": "raw-especializado",
+      "element": null,
+      "originalTerminalElement": null,
+      "proposedTerminalElement": null,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 3,
+      "nameEs": "Retumbar usurpador",
+      "identity": "elemental-moderado",
+      "element": "Thunder",
+      "originalTerminalElement": 24,
+      "proposedTerminalElement": 24,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 101,
+      "nameEs": "Choque del déspota",
+      "identity": "elemental-moderado",
+      "element": "Thunder",
+      "originalTerminalElement": 21,
+      "proposedTerminalElement": 21,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 29,
+      "nameEs": "Arco de cazador",
+      "identity": "raw-especializado",
+      "element": null,
+      "originalTerminalElement": null,
+      "proposedTerminalElement": null,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 34,
+      "nameEs": "Arco de piel de Blango",
+      "identity": "elemental-equilibrado",
+      "element": "Ice",
+      "originalTerminalElement": 32,
+      "proposedTerminalElement": 32,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 36,
+      "nameEs": "Arco esponja",
+      "identity": "elemental-moderado",
+      "element": "Water",
+      "originalTerminalElement": 24,
+      "proposedTerminalElement": 24,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 37,
+      "nameEs": "Lanzarrayos",
+      "identity": "elemental-moderado",
+      "element": "Thunder",
+      "originalTerminalElement": 14,
+      "proposedTerminalElement": 14,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 35,
+      "nameEs": "Arco abominable",
+      "identity": "elemental-moderado",
+      "element": "Ice",
+      "originalTerminalElement": 12,
+      "proposedTerminalElement": 12,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 100,
+      "nameEs": "Arco salvaje",
+      "identity": "raw-especializado",
+      "element": null,
+      "originalTerminalElement": null,
+      "proposedTerminalElement": null,
+      "isNewBranch": false,
+      "converted": true
+    },
+    {
+      "treeId": 96,
+      "nameEs": "Arco poder salvaje",
+      "identity": "raw-especializado",
+      "element": null,
+      "originalTerminalElement": null,
+      "proposedTerminalElement": null,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 31,
+      "nameEs": "Arco Kut-Ku",
+      "identity": "elemental-equilibrado",
+      "element": "Fire",
+      "originalTerminalElement": 25,
+      "proposedTerminalElement": 25,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 32,
+      "nameEs": "Arco de cuervo",
+      "identity": "raw-especializado",
+      "element": null,
+      "originalTerminalElement": null,
+      "proposedTerminalElement": null,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 33,
+      "nameEs": "Arco vil",
+      "identity": "raw-especializado",
+      "element": null,
+      "originalTerminalElement": null,
+      "proposedTerminalElement": null,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 30,
+      "nameEs": "Aguijón Kelbi",
+      "identity": "raw-especializado",
+      "element": null,
+      "originalTerminalElement": null,
+      "proposedTerminalElement": null,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 95,
+      "nameEs": "Diablos enroscacola",
+      "identity": "raw-especializado",
+      "element": null,
+      "originalTerminalElement": null,
+      "proposedTerminalElement": null,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 13,
+      "nameEs": "Arco recio de cazador",
+      "identity": "raw-especializado",
+      "element": null,
+      "originalTerminalElement": null,
+      "proposedTerminalElement": null,
+      "isNewBranch": false,
+      "converted": true
+    },
+    {
+      "treeId": 18,
+      "nameEs": "Multiarco tipo 64",
+      "identity": "elemental-moderado",
+      "element": "Water",
+      "originalTerminalElement": 24,
+      "proposedTerminalElement": 24,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 19,
+      "nameEs": "Arquero Tigrex",
+      "identity": "raw-especializado",
+      "element": null,
+      "originalTerminalElement": null,
+      "proposedTerminalElement": null,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 20,
+      "nameEs": "Arco de Shalya",
+      "identity": "raw-especializado",
+      "element": null,
+      "originalTerminalElement": null,
+      "proposedTerminalElement": null,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 21,
+      "nameEs": "Flecha insurrecta",
+      "identity": "raw-especializado",
+      "element": null,
+      "originalTerminalElement": null,
+      "proposedTerminalElement": null,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 22,
+      "nameEs": "Cordel metálico",
+      "identity": "elemental-moderado",
+      "element": "Fire",
+      "originalTerminalElement": 15,
+      "proposedTerminalElement": 15,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 23,
+      "nameEs": "Volador Brach",
+      "identity": "elemental-moderado",
+      "element": "Blast",
+      "originalTerminalElement": 16,
+      "proposedTerminalElement": 16,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 24,
+      "nameEs": "Arco de demolición",
+      "identity": "elemental-moderado",
+      "element": "Blast",
+      "originalTerminalElement": 20,
+      "proposedTerminalElement": 20,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 93,
+      "nameEs": "Arco parterrayos",
+      "identity": "elemental-moderado",
+      "element": "Blast",
+      "originalTerminalElement": 24,
+      "proposedTerminalElement": 24,
+      "isNewBranch": false,
+      "converted": true
+    },
+    {
+      "treeId": 25,
+      "nameEs": "Flor cristalina",
+      "identity": "elemental-extremo",
+      "element": "Ice",
+      "originalTerminalElement": 60,
+      "proposedTerminalElement": 60,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 28,
+      "nameEs": "Arco Khezu",
+      "identity": "elemental-equilibrado",
+      "element": "Thunder",
+      "originalTerminalElement": 26,
+      "proposedTerminalElement": 26,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 26,
+      "nameEs": "Llamas azules",
+      "identity": "elemental-equilibrado",
+      "element": "Ice",
+      "originalTerminalElement": 25,
+      "proposedTerminalElement": 25,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 27,
+      "nameEs": "Llamas heladas",
+      "identity": "elemental-moderado",
+      "element": "Ice",
+      "originalTerminalElement": 18,
+      "proposedTerminalElement": 18,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 17,
+      "nameEs": "Ira de la reina",
+      "identity": "elemental-moderado",
+      "element": "Fire",
+      "originalTerminalElement": 19,
+      "proposedTerminalElement": 19,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 16,
+      "nameEs": "Arco de prominencia",
+      "identity": "elemental-moderado",
+      "element": "Fire",
+      "originalTerminalElement": 22,
+      "proposedTerminalElement": 22,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 14,
+      "nameEs": "Arco de Yekla",
+      "identity": "raw-especializado",
+      "element": null,
+      "originalTerminalElement": null,
+      "proposedTerminalElement": null,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 15,
+      "nameEs": "Arco casco demoníaco",
+      "identity": "raw-especializado",
+      "element": null,
+      "originalTerminalElement": null,
+      "proposedTerminalElement": null,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 98,
+      "nameEs": "Puño de Scylla",
+      "identity": "raw-especializado",
+      "element": null,
+      "originalTerminalElement": null,
+      "proposedTerminalElement": null,
+      "isNewBranch": false,
+      "converted": true
+    },
+    {
+      "treeId": 99,
+      "nameEs": "Entrelazado de Scylla",
+      "identity": "raw-especializado",
+      "element": null,
+      "originalTerminalElement": null,
+      "proposedTerminalElement": null,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 62,
+      "nameEs": "Arco Yukumo",
+      "identity": "raw-especializado",
+      "element": null,
+      "originalTerminalElement": null,
+      "proposedTerminalElement": null,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 63,
+      "nameEs": "Pureza Yukumo",
+      "identity": "raw-especializado",
+      "element": null,
+      "originalTerminalElement": null,
+      "proposedTerminalElement": null,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 66,
+      "nameEs": "Arco de exquisitez",
+      "identity": "raw-especializado",
+      "element": null,
+      "originalTerminalElement": null,
+      "proposedTerminalElement": null,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 64,
+      "nameEs": "Taketori de bambú",
+      "identity": "raw-especializado",
+      "element": null,
+      "originalTerminalElement": null,
+      "proposedTerminalElement": null,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 60,
+      "nameEs": "Arco de marfil",
+      "identity": "raw-especializado",
+      "element": null,
+      "originalTerminalElement": null,
+      "proposedTerminalElement": null,
+      "isNewBranch": false,
+      "converted": true
+    },
+    {
+      "treeId": 67,
+      "nameEs": "Arco del caos",
+      "identity": "raw-especializado",
+      "element": null,
+      "originalTerminalElement": null,
+      "proposedTerminalElement": null,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 68,
+      "nameEs": "Arco de Felyne",
+      "identity": "raw-especializado",
+      "element": null,
+      "originalTerminalElement": null,
+      "proposedTerminalElement": null,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 69,
+      "nameEs": "Arco de Arácnido",
+      "identity": "raw-especializado",
+      "element": null,
+      "originalTerminalElement": null,
+      "proposedTerminalElement": null,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 44,
+      "nameEs": "Lluvia bendita",
+      "identity": "elemental-equilibrado",
+      "element": "Water",
+      "originalTerminalElement": 32,
+      "proposedTerminalElement": 32,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 42,
+      "nameEs": "Arco de relámpago",
+      "identity": "elemental-equilibrado",
+      "element": "Thunder",
+      "originalTerminalElement": 28,
+      "proposedTerminalElement": 28,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 43,
+      "nameEs": "Arco de gigante",
+      "identity": "elemental-equilibrado",
+      "element": "Ice",
+      "originalTerminalElement": 28,
+      "proposedTerminalElement": 28,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 45,
+      "nameEs": "Ira de ceniza",
+      "identity": "elemental-equilibrado",
+      "element": "Fire",
+      "originalTerminalElement": 26,
+      "proposedTerminalElement": 26,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 46,
+      "nameEs": "Visión de desaliento",
+      "identity": "elemental-moderado",
+      "element": "Dragon",
+      "originalTerminalElement": 22,
+      "proposedTerminalElement": 22,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 47,
+      "nameEs": "Secuestrador",
+      "identity": "elemental-moderado",
+      "element": "Dragon",
+      "originalTerminalElement": 15,
+      "proposedTerminalElement": 15,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 49,
+      "nameEs": "Valor y esperanza",
+      "identity": "elemental-equilibrado",
+      "element": "Blast",
+      "originalTerminalElement": 30,
+      "proposedTerminalElement": 30,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 50,
+      "nameEs": "Arco óseo",
+      "identity": "elemental-equilibrado",
+      "element": "Dragon",
+      "originalTerminalElement": 30,
+      "proposedTerminalElement": 30,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 51,
+      "nameEs": "Pájaro estrella polar",
+      "identity": "elemental-moderado",
+      "element": "Dragon",
+      "originalTerminalElement": 18,
+      "proposedTerminalElement": 18,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 61,
+      "nameEs": "Arco de ónice",
+      "identity": "elemental-moderado",
+      "element": "Dragon",
+      "originalTerminalElement": 20,
+      "proposedTerminalElement": 20,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 41,
+      "nameEs": "Arca Raptora",
+      "identity": "raw-especializado",
+      "element": null,
+      "originalTerminalElement": null,
+      "proposedTerminalElement": null,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 65,
+      "nameEs": "Arpa caballito mar",
+      "identity": "elemental-extremo",
+      "element": "Water",
+      "originalTerminalElement": 60,
+      "proposedTerminalElement": 60,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 52,
+      "nameEs": "Arco rayo bestial",
+      "identity": "elemental-moderado",
+      "element": "Thunder",
+      "originalTerminalElement": 22,
+      "proposedTerminalElement": 22,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 53,
+      "nameEs": "Rayo archibestial",
+      "identity": "elemental-moderado",
+      "element": "Thunder",
+      "originalTerminalElement": 20,
+      "proposedTerminalElement": 20,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 102,
+      "nameEs": "Arco investigación",
+      "identity": "raw-especializado",
+      "element": null,
+      "originalTerminalElement": null,
+      "proposedTerminalElement": null,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 81,
+      "nameEs": "Arco del héroe",
+      "identity": "raw-especializado",
+      "element": null,
+      "originalTerminalElement": null,
+      "proposedTerminalElement": null,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 106,
+      "nameEs": "Arco pirata J",
+      "identity": "raw-especializado",
+      "element": null,
+      "originalTerminalElement": null,
+      "proposedTerminalElement": null,
+      "isNewBranch": false,
+      "converted": true
+    },
+    {
+      "treeId": 107,
+      "nameEs": "Arco ancestral",
+      "identity": "raw-especializado",
+      "element": null,
+      "originalTerminalElement": null,
+      "proposedTerminalElement": null,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 48,
+      "nameEs": "Grimorio del genio",
+      "identity": "raw-especializado",
+      "element": null,
+      "originalTerminalElement": null,
+      "proposedTerminalElement": null,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 54,
+      "nameEs": "Hiperión",
+      "identity": "elemental-moderado",
+      "element": "Fire",
+      "originalTerminalElement": 18,
+      "proposedTerminalElement": 18,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 55,
+      "nameEs": "Selene Lunarrota",
+      "identity": "elemental-equilibrado",
+      "element": "Fire",
+      "originalTerminalElement": 32,
+      "proposedTerminalElement": 32,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 56,
+      "nameEs": "Arco Akantor",
+      "identity": "elemental-moderado",
+      "element": "Dragon",
+      "originalTerminalElement": 24,
+      "proposedTerminalElement": 24,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 57,
+      "nameEs": "Arco Ukanlos",
+      "identity": "elemental-moderado",
+      "element": "Ice",
+      "originalTerminalElement": 13,
+      "proposedTerminalElement": 13,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 59,
+      "nameEs": "Tormenta nocturna",
+      "identity": "elemental-moderado",
+      "element": "Water",
+      "originalTerminalElement": 14,
+      "proposedTerminalElement": 14,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 58,
+      "nameEs": "Arco de Alatreon",
+      "identity": "elemental-equilibrado",
+      "element": "Dragon",
+      "originalTerminalElement": 26,
+      "proposedTerminalElement": 26,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 83,
+      "nameEs": "Arco ala plata",
+      "identity": "elemental-moderado",
+      "element": "Dragon",
+      "originalTerminalElement": 18,
+      "proposedTerminalElement": 18,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 105,
+      "nameEs": "Arco atávico",
+      "identity": "raw-especializado",
+      "element": null,
+      "originalTerminalElement": null,
+      "proposedTerminalElement": null,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 103,
+      "nameEs": "Tirachinas Kayancha",
+      "identity": "raw-especializado",
+      "element": null,
+      "originalTerminalElement": null,
+      "proposedTerminalElement": null,
+      "isNewBranch": false,
+      "converted": true
+    },
+    {
+      "treeId": 104,
+      "nameEs": "Ala Victoria",
+      "identity": "elemental-equilibrado",
+      "element": "Water",
+      "originalTerminalElement": 30,
+      "proposedTerminalElement": 30,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 94,
+      "nameEs": "Gewinn/Pérdida",
+      "identity": "elemental-moderado",
+      "element": "Dragon",
+      "originalTerminalElement": 22,
+      "proposedTerminalElement": 22,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 89,
+      "nameEs": "Arco dragón de tierra",
+      "identity": "elemental-equilibrado",
+      "element": "Dragon",
+      "originalTerminalElement": 26,
+      "proposedTerminalElement": 26,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 82,
+      "nameEs": "Arco áurico",
+      "identity": "raw-especializado",
+      "element": null,
+      "originalTerminalElement": null,
+      "proposedTerminalElement": null,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 90,
+      "nameEs": "Choque y desolación",
+      "identity": "elemental-equilibrado",
+      "element": "Dragon",
+      "originalTerminalElement": 25,
+      "proposedTerminalElement": 25,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 91,
+      "nameEs": "Ira y debacle",
+      "identity": "elemental-moderado",
+      "element": "Blast",
+      "originalTerminalElement": 21,
+      "proposedTerminalElement": 21,
+      "isNewBranch": false,
+      "converted": true
+    },
+    {
+      "treeId": 92,
+      "nameEs": "Victoria gloriosa",
+      "identity": "elemental-especializado",
+      "element": "Dragon",
+      "originalTerminalElement": 35,
+      "proposedTerminalElement": 35,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 70,
+      "nameEs": "Arco carmesí",
+      "identity": "raw-especializado",
+      "element": null,
+      "originalTerminalElement": null,
+      "proposedTerminalElement": null,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 71,
+      "nameEs": "Arco de Herm. Pétreo",
+      "identity": "elemental-moderado",
+      "element": "Water",
+      "originalTerminalElement": 17,
+      "proposedTerminalElement": 17,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 72,
+      "nameEs": "Fulgor real",
+      "identity": "elemental-moderado",
+      "element": "Fire",
+      "originalTerminalElement": 17,
+      "proposedTerminalElement": 17,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 73,
+      "nameEs": "Arco demoníaco",
+      "identity": "raw-especializado",
+      "element": null,
+      "originalTerminalElement": null,
+      "proposedTerminalElement": null,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 74,
+      "nameEs": "Arco de Argénteo",
+      "identity": "raw-especializado",
+      "element": null,
+      "originalTerminalElement": null,
+      "proposedTerminalElement": null,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 75,
+      "nameEs": "Arco de Grobo",
+      "identity": "elemental-moderado",
+      "element": "Fire",
+      "originalTerminalElement": 18,
+      "proposedTerminalElement": 18,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 76,
+      "nameEs": "Arco malvado",
+      "identity": "raw-especializado",
+      "element": null,
+      "originalTerminalElement": null,
+      "proposedTerminalElement": null,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 77,
+      "nameEs": "Arco del terror",
+      "identity": "elemental-equilibrado",
+      "element": "Fire",
+      "originalTerminalElement": 31,
+      "proposedTerminalElement": 31,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 78,
+      "nameEs": "Arco retumbante",
+      "identity": "elemental-moderado",
+      "element": "Thunder",
+      "originalTerminalElement": 19,
+      "proposedTerminalElement": 19,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 79,
+      "nameEs": "Arco de Rudra",
+      "identity": "raw-especializado",
+      "element": null,
+      "originalTerminalElement": null,
+      "proposedTerminalElement": null,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 80,
+      "nameEs": "Ira infernal",
+      "identity": "elemental-moderado",
+      "element": "Blast",
+      "originalTerminalElement": 18,
+      "proposedTerminalElement": 18,
+      "isNewBranch": false,
+      "converted": true
+    },
+    {
+      "treeId": 88,
+      "nameEs": "Tirador acerado",
+      "identity": "raw-especializado",
+      "element": null,
+      "originalTerminalElement": null,
+      "proposedTerminalElement": null,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 85,
+      "nameEs": "Invierno perpetuo",
+      "identity": "elemental-especializado",
+      "element": "Water",
+      "originalTerminalElement": 40,
+      "proposedTerminalElement": 40,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 84,
+      "nameEs": "Arco Zephra",
+      "identity": "elemental-equilibrado",
+      "element": "Thunder",
+      "originalTerminalElement": 25,
+      "proposedTerminalElement": 25,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 86,
+      "nameEs": "Arco Glacial",
+      "identity": "elemental-moderado",
+      "element": "Ice",
+      "originalTerminalElement": 20,
+      "proposedTerminalElement": 20,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 87,
+      "nameEs": "Arco masacre",
+      "identity": "raw-especializado",
+      "element": null,
+      "originalTerminalElement": null,
+      "proposedTerminalElement": null,
+      "isNewBranch": false,
+      "converted": true
+    },
+    {
+      "treeId": 38,
+      "nameEs": "Arco gastado",
+      "identity": "raw-especializado",
+      "element": null,
+      "originalTerminalElement": null,
+      "proposedTerminalElement": null,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 40,
+      "nameEs": "Arco de acero gélido",
+      "identity": "elemental-equilibrado",
+      "element": "Ice",
+      "originalTerminalElement": 25,
+      "proposedTerminalElement": 25,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 39,
+      "nameEs": "Pata de ángel",
+      "identity": "elemental-moderado",
+      "element": "Dragon",
+      "originalTerminalElement": 16,
+      "proposedTerminalElement": 16,
+      "isNewBranch": false,
+      "converted": false
+    },
+    {
+      "treeId": 108,
+      "nameEs": "Arco de hollín",
+      "identity": "elemental-moderado",
+      "element": "Fire",
+      "originalTerminalElement": 30,
+      "proposedTerminalElement": 21,
+      "isNewBranch": true,
+      "converted": false
+    },
+    {
+      "treeId": 109,
+      "nameEs": "Arco de mareas",
+      "identity": "elemental-equilibrado",
+      "element": "Water",
+      "originalTerminalElement": 30,
+      "proposedTerminalElement": 25,
+      "isNewBranch": true,
+      "converted": false
+    },
+    {
+      "treeId": 110,
+      "nameEs": "Arco de la corriente",
+      "identity": "elemental-equilibrado",
+      "element": "Water",
+      "originalTerminalElement": 30,
+      "proposedTerminalElement": 25,
+      "isNewBranch": true,
+      "converted": false
+    },
+    {
+      "treeId": 111,
+      "nameEs": "Arco de escarcha",
+      "identity": "elemental-equilibrado",
+      "element": "Ice",
+      "originalTerminalElement": 30,
+      "proposedTerminalElement": 25,
+      "isNewBranch": true,
+      "converted": false
+    },
+    {
+      "treeId": 112,
+      "nameEs": "Arco de ventisquero",
+      "identity": "elemental-equilibrado",
+      "element": "Ice",
+      "originalTerminalElement": 30,
+      "proposedTerminalElement": 25,
+      "isNewBranch": true,
+      "converted": false
+    },
+    {
+      "treeId": 113,
+      "nameEs": "Arco glacial",
+      "identity": "elemental-equilibrado",
+      "element": "Ice",
+      "originalTerminalElement": 30,
+      "proposedTerminalElement": 25,
+      "isNewBranch": true,
+      "converted": false
+    },
+    {
+      "treeId": 114,
+      "nameEs": "Arco del abismo",
+      "identity": "elemental-moderado",
+      "element": "Dragon",
+      "originalTerminalElement": 30,
+      "proposedTerminalElement": 22,
+      "isNewBranch": true,
+      "converted": false
+    },
+    {
+      "treeId": 115,
+      "nameEs": "Arco de trueno torvo",
+      "identity": "elemental-moderado",
+      "element": "Thunder",
+      "originalTerminalElement": 30,
+      "proposedTerminalElement": 24,
+      "isNewBranch": true,
+      "converted": false
+    },
+    {
+      "treeId": 116,
+      "nameEs": "Arco de hielo torvo",
+      "identity": "elemental-equilibrado",
+      "element": "Ice",
+      "originalTerminalElement": 30,
+      "proposedTerminalElement": 25,
+      "isNewBranch": true,
+      "converted": false
+    }
+  ]
+}
