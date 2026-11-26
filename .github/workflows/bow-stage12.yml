@@ -1,0 +1,84 @@
+name: Bow stage 12 validation
+
+on:
+  push:
+    branches:
+      - balance/bow-elemental-stage5
+  pull_request:
+    branches:
+      - main
+      - balance/bow-elemental-stage5
+
+concurrency:
+  group: bow-stage12-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  stage12:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run stage 12 test suite
+        run: npm test
+
+      - name: Generate class-B build artifacts (12 shot x rank)
+        run: |
+          set -e
+          OUT="tools/out/stage12"
+          mkdir -p "$OUT"
+          # Budget = max completable per rank: LR/HR=3, G=4.
+          for spec in "Spread LR 3" "Spread HR 3" "Spread G 4" "Pierce LR 3" "Pierce HR 3" "Pierce G 4" "Rapid LR 3" "Rapid HR 3" "Rapid G 4" "Heavy LR 3" "Heavy HR 3" "Heavy G 3"; do
+            set -- $spec
+            node tools/bow-build-comparison.mjs --shot-type "$1" --budget "$3" --class b \
+              --talisman-policy verified --bow-rank "$2" --selection-limit 16 \
+              --out "$OUT/cmp-$1-$2-b4.json"
+          done
+
+      - name: Generate C1 early-progression artifacts
+        run: |
+          set -e
+          OUT="tools/out/stage12"
+          for spec in "Spread LR 2" "Spread HR 2" "Spread G 3" "Pierce LR 2" "Pierce HR 2" "Pierce G 3" "Rapid LR 2" "Rapid HR 3" "Heavy LR 2" "Heavy HR 3" "Heavy G 3"; do
+            set -- $spec
+            node tools/bow-build-comparison.mjs --shot-type "$1" --budget "$3" --class b \
+              --talisman-policy verified --bow-rank "$2" --selection-limit 16 \
+              --preferred-charge-slot 1 --out "$OUT/cmp-$1-$2-c1-b4.json"
+          done
+
+      - name: C3/C4 comparison with Loading
+        run: |
+          node tools/bow-c4-comparison.mjs --budget 4 --ranks LR,HR,G \
+            --out "tools/out/stage12/c4-comparison.json" \
+            --csv "tools/out/stage12/c4-comparison.csv"
+
+      - name: Multiplier sensitivity sweep
+        run: node tools/bow-elemental-multiplier-sweep.mjs
+
+      - name: Aggregate stage 12 results
+        run: node tools/aggregate-stage12.mjs
+
+      - name: Upload stage 12 artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: bow-stage12-results
+          path: |
+            tools/out/stage12/cmp-*.json
+            tools/out/stage12/c4-comparison.json
+            tools/out/stage12/c4-comparison.csv
+            tools/out/stage12/multiplier-sensitivity.json
+            tools/out/stage12/multiplier-sensitivity.csv
+            tools/out/stage12/multiplier-sensitivity-by-element.csv
+            tools/out/stage12/stage12-summary.json
+            tools/out/stage12/stage12-ratios.csv
+            tools/out/stage12/stage12-c4.csv
+          retention-days: 14

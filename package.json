@@ -1,0 +1,17 @@
+{
+  "name": "mhgu-armory",
+  "private": true,
+  "engines": {
+    "node": ">=18"
+  },
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "bow:scenarios": "node tools/bow-elemental-scenarios.mjs --summary",
+    "bow:balance": "node tools/bow-balance-sim.mjs",
+    "bow:audit": "node tools/bow-branch-audit.mjs",
+    "bow:build-audit": "node tools/bow-build-feasibility-audit.mjs --rank G",
+    "bow:optimize": "node tools/bow-build-optimizer.mjs",
+    "bow:damage": "node tools/bow-build-damage.mjs"
+  }
+}
