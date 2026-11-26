@@ -89,6 +89,22 @@ test("offensive priority includes the shot skill and the element skill where req
   assert.ok(hybridRapid.includes("Power C+"), "híbrido debe priorizar Power C+");
 });
 
+test("class-B comparison uses the requested bow rank and reports candidate coverage", () => {
+  // Regression guard for the CLI driver: LR/HR weapon candidates must not be
+  // optimized with G-rank armor. The selection output must disclose whether it
+  // searched the entire eligible candidate pool or only a shortlist.
+  const source = readFileSync(resolve(root, "tools/bow-build-comparison.mjs"), "utf8");
+  const selectStart = source.indexOf("function selectProfileBow(");
+  const runStart = source.indexOf("function runClassB(", selectStart);
+  assert.ok(selectStart >= 0 && runStart > selectStart, "selector de clase B debe existir");
+  const selector = source.slice(selectStart, runStart);
+  const classB = source.slice(runStart, source.indexOf("function main()", runStart));
+  assert.match(selector, /rank: bowRank/, "el sondeo debe usar el rango solicitado");
+  assert.match(classB, /rank: bowRank/, "la build final debe usar el rango solicitado");
+  assert.match(selector, /candidateCount: candidates\.length/, "se debe informar el universo de candidatos");
+  assert.match(classB, /searchExhaustive: probed === candidateCount/, "se debe declarar si la búsqueda fue exhaustiva");
+});
+
 test("budget mode activates only the top-N priority skills and records the budget", () => {
   const requirements = { "Water Atk": 10, "Crit Element": 10, "Tenderizer": 10 };
   const result = optimizeBowBuild({

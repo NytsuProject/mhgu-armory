@@ -7,6 +7,8 @@ generadas. 12 comparaciones completas (Spread/Pierce/Rapid/Heavy × LR/HR/G),
 con talismánes conservadores y opciones verificadas. Auditoría de progresión
 elemental completa. 100/100 pruebas pasan.
 
+> **Aviso de revisión posterior (Stage 12): resultados provisionales.** La revisión del selector encontró que las comparaciones de clase B para LR y HR estaban construyendo las armaduras con rango G, aunque los arcos candidatos sí se filtraban por LR/HR. Ese error ya está corregido en el driver; por tanto, las filas LR/HR de las tablas siguientes no son válidas como comparaciones de progresión por rango hasta regenerarlas. Además, el selector solo sondea los 12 candidatos mejor puntuados por un heurístico de catálogo y calcula daño real para un máximo de 4; no demuestra que haya encontrado el mejor arco de todo el catálogo. Los artefactos futuros registrarán el tamaño del universo y si la búsqueda fue exhaustiva. No se han cambiado las estadísticas de armas ni se deben usar estas cifras para aprobar nuevos multiplicadores.
+
 ## 1. Objetivo
 
 Comparar builds de arco reales en tres perfiles — **RAW**, **Elemental** y

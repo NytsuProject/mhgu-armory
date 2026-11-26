@@ -99,7 +99,7 @@ function runClassA({ armorData, decorations, talismanSkills, skillLevels, bowDat
   const buildOutput = runProfileComparison({
     armorData, decorations, talismanSkills, skillLevels, bowData,
     treeId, level, chargeSlot: slot + 1, shotType, coatingPolicy: "low-cost",
-    rank: "G", genders: ["male", "female"], activeSkillBudget: budget,
+    rank: bowRank, genders: ["male", "female"], activeSkillBudget: budget,
     talismanPolicy, allowNegatives: false, beamWidth: 300,
   });
   const matrix = simulateBowBuildHitzoneMatrix({
@@ -174,7 +174,7 @@ function selectProfileBow({ armorData, decorations, talismanSkills, skillLevels,
     const probe = runProfileComparison({
       armorData, decorations, talismanSkills, skillLevels, bowData,
       treeId: candidate.treeId, level: candidate.level, chargeSlot: candidate.chargeSlot,
-      shotType, coatingPolicy: "low-cost", rank: "G", genders: ["male"],
+      shotType, coatingPolicy: "low-cost", rank: bowRank, genders: ["male"],
       activeSkillBudget: budget, talismanPolicy, allowNegatives: false,
       beamWidth: 80, topBuilds: 1, topTalismansPerArmor: 3,
       profiles: [profile],
@@ -195,7 +195,7 @@ function selectProfileBow({ armorData, decorations, talismanSkills, skillLevels,
   }
   evaluated.sort((a, b) => b.damage - a.damage || b.score - a.score);
   const bow = evaluated[0];
-  return { bow, completable: completable.length, incomplete: incomplete.length, probed: probed.length, evaluated };
+  return { bow, candidateCount: candidates.length, completable: completable.length, incomplete: incomplete.length, probed: probed.length, evaluated };
 }
 
 function runClassB({ armorData, decorations, talismanSkills, skillLevels, bowData, hitzoneData, shotType, budget, switchShots, out, talismanPolicy, bowRank = "G", topCandidates = 4 }) {
@@ -207,7 +207,7 @@ function runClassB({ armorData, decorations, talismanSkills, skillLevels, bowDat
   const selected = [];
   const allBuilds = [];
   for (const { profile, requireElement } of profiles) {
-    const { bow, note, completable, incomplete, probed, evaluated } = selectProfileBow({
+    const { bow, note, candidateCount, completable, incomplete, probed, evaluated } = selectProfileBow({
       armorData, decorations, talismanSkills, skillLevels, bowData, hitzoneData,
       shotType, requireElement, profile, budget, talismanPolicy, bowRank, topCandidates,
     });
@@ -238,7 +238,7 @@ function runClassB({ armorData, decorations, talismanSkills, skillLevels, bowDat
     selected.push({
       profile, shotType, budget, switchShots,
       bow: { treeId: bow.treeId, level: bow.level, name: bow.weapon.nEs, chargeSlot: bow.chargeSlot, raw: bow.raw, element: bow.element, damage: bow.damage },
-      selection: { completable, incomplete, probed, completed: completable > 0, evaluated: evaluated.map(e => ({ name: e.weapon.nEs, damage: e.damage, raw: e.raw, elemValue: e.elemValue })) },
+      selection: { candidateCount, completable, incomplete, probed, completed: completable > 0, searchExhaustive: probed === candidateCount, evaluated: evaluated.map(e => ({ name: e.weapon.nEs, damage: e.damage, raw: e.raw, elemValue: e.elemValue })) },
       builds: buildOutput.comparisons,
     });
   }
