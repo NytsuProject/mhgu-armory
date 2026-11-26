@@ -42,7 +42,7 @@ npm test
 npm run bow:scenarios
 ```
 
-La auditoría del rebalance elemental de arco de la rama de trabajo está en [docs/BOW_ELEMENTAL_REBALANCE_STAGE5.md](docs/BOW_ELEMENTAL_REBALANCE_STAGE5.md); el modelo, sus supuestos y los comandos para comparar hitzones están en [docs/BOW_ELEMENTAL_SIMULATOR_STAGE5.md](docs/BOW_ELEMENTAL_SIMULATOR_STAGE5.md).
+La auditoría del rebalance elemental de arco de la rama de trabajo está en [docs/BOW_ELEMENTAL_REBALANCE_STAGE5.md](docs/BOW_ELEMENTAL_REBALANCE_STAGE5.md); el modelo, sus supuestos y los comandos para comparar hitzones están en [docs/BOW_ELEMENTAL_SIMULATOR_STAGE5.md](docs/BOW_ELEMENTAL_SIMULATOR_STAGE5.md). La implementación acotada del rebalance (tope de elemento 30, normalización C4 de Recargando y propuesta por los 55 finales elementales) está en [docs/BOW_ELEMENTAL_REBALANCE_STAGE10.md](docs/BOW_ELEMENTAL_REBALANCE_STAGE10.md) y se aplica con `node tools/bow-elemental-rebalance.mjs`.
 
 ## Aviso fan
 

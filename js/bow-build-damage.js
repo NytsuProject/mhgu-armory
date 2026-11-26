@@ -320,3 +320,139 @@ export function simulateBowBuildHitzoneMatrix({
     summary: groups, rows,
   };
 }
+
+/**
+ * Class-B comparison: each build may use its OWN bow (RAW, Elemental and Hybrid
+ * each pick their best available bow). Computes per-build damage over the 93
+ * large-monster hitzones and the ratio groups (elemental/raw, hybrid/raw,
+ * hybrid/elemental), matching monsters and parts across builds.
+ *
+ * `builds` is an array of:
+ *   { id, profile, gender, build, weapon: { treeId, level, chargeSlot, rank, shotType, name } }
+ */
+export function simulateBuildsAcrossWeapons({
+  bowData, builds, hitzoneData, style = "guild",
+  missionShots = 200, coatingSwitchShots = 0, elementCap = null,
+} = {}) {
+  if (!Array.isArray(builds) || !builds.length) throw new Error("builds es obligatorio.");
+  if (!Array.isArray(hitzoneData?.monsters)) throw new Error("Matriz de hitzones inválida.");
+  const candidatesCache = makeWeaponCandidates(bowData, { loadUpPolicy: "match-c3" });
+
+  const resolved = builds.map(entry => {
+    const treeId = Number(entry.weapon?.treeId), level = Number(entry.weapon?.level);
+    const chargeSlot = Number(entry.weapon?.chargeSlot);
+    const candidates = candidatesCache.filter(row => row.treeId === treeId && row.level === level);
+    const main = candidates.find(row => row.chargeSlot === chargeSlot);
+    if (!main) throw new Error("No se encontró la carga elegida en el catálogo del arco: "
+      + treeId + "/" + level + "/" + chargeSlot);
+    const skillPoints = skillPointsFromOptimizerBuild(entry.build);
+    const sequence = sequenceForBow(candidates, main, skillPoints, style);
+    const elementType = main.elements?.[0]?.type || null;
+    return { ...entry, main, sequence, skillPoints, elementType };
+  });
+
+  const monsters = hitzoneData.monsters.filter(monster => monster.large && monster.tables?.[0]?.length);
+  const rows = [];
+  for (const monster of monsters) for (const part of monster.tables[0]) {
+    const byBuild = {};
+    for (const r of resolved) {
+      const result = calculateBowBuildMissionDamage({
+        weapon: r.main, build: r.build, profile: r.profile, part,
+        volleyCandidates: r.sequence, style, missionShots, coatingSwitchShots, elementCap,
+      });
+      byBuild[r.id] = {
+        totalDamage: result.totalDamagePerSequence,
+        rawDamage: result.rawDamagePerSequence,
+        elementalDamage: result.elementalDamagePerSequence,
+        elementHz: r.elementType ? num(part[5 + ELEMENTS[r.elementType]]) : 0,
+        elementType: r.elementType,
+        complete: r.build.complete,
+        activatedSkills: r.build.activatedSkills,
+        targetSkillCount: r.build.targetSkillCount,
+        coatings: result.coatings,
+      };
+    }
+    rows.push({
+      monster: monster.name, part: part[1] || ("Parte " + part[0]),
+      shotHz: num(part[4]), byBuild,
+    });
+  }
+
+  const genders = [...new Set(resolved.map(row => row.gender))];
+  const groups = [];
+  for (const gender of genders) for (const [targetProfile, referenceProfile] of [
+    ["elemental", "raw"], ["hybrid", "raw"], ["hybrid", "elemental"],
+  ]) {
+    const targetId = targetProfile + "/" + gender, referenceId = referenceProfile + "/" + gender;
+    if (!resolved.some(row => row.id === targetId) || !resolved.some(row => row.id === referenceId)) continue;
+    const ratios = [], bestByMonster = new Map();
+    for (const row of rows) {
+      const value = ratio(row.byBuild[targetId]?.totalDamage, row.byBuild[referenceId]?.totalDamage);
+      if (value === null) continue;
+      ratios.push(value);
+      const old = bestByMonster.get(row.monster);
+      if (!old || value > old.ratio) bestByMonster.set(row.monster, { ratio: value, part: row.part });
+    }
+    const bestRatios = [...bestByMonster.values()].map(row => row.ratio);
+    groups.push({
+      target: targetId, reference: referenceId,
+      meanRatioAllParts: averageOrNull(ratios), partsCompared: ratios.length,
+      partWins: ratios.filter(value => value > 1).length,
+      monstersCompared: bestByMonster.size,
+      monstersWithAtLeastOneWinningPart: bestRatios.filter(value => value > 1).length,
+      meanBestPartRatioPerMonster: averageOrNull(bestRatios),
+      bestPartByMonster: Object.fromEntries(bestByMonster.entries()),
+    });
+  }
+
+  return {
+    metadata: {
+      model: "MHGU bow build damage comparison across weapons v1",
+      weapon: builds[0].weapon, style, missionShots, coatingSwitchShots, elementCap,
+      monsterCount: monsters.length, partRows: rows.length, firstHitzoneTableOnly: true,
+      sameWeaponAndChargeForEveryBuild: false,
+      weapons: Object.fromEntries(resolved.map(row => [row.id, {
+        treeId: row.weapon.treeId, level: row.weapon.level, name: row.weapon.name,
+        chargeSlot: row.weapon.chargeSlot, elementType: row.elementType,
+      }])),
+      armorBuildsCompared: resolved.map(row => ({
+        id: row.id, profile: row.profile, gender: row.gender,
+        complete: row.build.complete,
+        activatedSkills: row.build.activatedSkills,
+        targetSkillCount: row.build.targetSkillCount,
+      })),
+      globalOptimumGuaranteed: false,
+    },
+    buildSkillPoints: Object.fromEntries(resolved.map(row => [row.id, row.skillPoints])),
+    summary: groups, rows,
+  };
+}
+
+/**
+ * Real mean damage of a single build over the 93 large-monster hitzones.
+ * Used by the class-B driver to select each profile's best bow by actual
+ * matrix damage, not by a catalog heuristic.
+ */
+export function meanBuildDamage({
+  bowData, build, profile, weapon, hitzoneData,
+  style = "guild", missionShots = 200, coatingSwitchShots = 0, elementCap = null,
+} = {}) {
+  if (!build || !weapon) throw new Error("build y weapon son obligatorios.");
+  const candidates = makeWeaponCandidates(bowData, { loadUpPolicy: "match-c3" })
+    .filter(row => row.treeId === Number(weapon.treeId) && row.level === Number(weapon.level));
+  const main = candidates.find(row => row.chargeSlot === Number(weapon.chargeSlot));
+  if (!main) throw new Error("No se encontró la carga elegida en el catálogo del arco.");
+  const skillPoints = skillPointsFromOptimizerBuild(build);
+  const sequence = sequenceForBow(candidates, main, skillPoints, style);
+  const monsters = hitzoneData.monsters.filter(monster => monster.large && monster.tables?.[0]?.length);
+  let total = 0, count = 0;
+  for (const monster of monsters) for (const part of monster.tables[0]) {
+    const result = calculateBowBuildMissionDamage({
+      weapon: main, build, profile, part,
+      volleyCandidates: sequence, style, missionShots, coatingSwitchShots, elementCap,
+    });
+    total += result.totalDamagePerSequence;
+    count++;
+  }
+  return count ? total / count : 0;
+}
