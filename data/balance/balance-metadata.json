@@ -1,0 +1,44 @@
+{
+  "stage": "16.1-parte-a",
+  "generatedAt": "2026-11-26T16:36:44.555Z",
+  "branch": "rework/bow-specialization-stage13",
+  "referenceHashes": {
+    "json": "e77b616609fc7f1545d2a2b8e2c70c875893a07d0e3ec2789fd4ecf008921713",
+    "csv": "ebada2895b089d59c6ba34b51b99003f706a98c4ac68a135a9f453de69209009"
+  },
+  "sources": [
+    "MHGU-LookUp (master)",
+    "Kiranico MHXX /en/yumi"
+  ],
+  "protected": [
+    "data/reference/mhxx-bow-original.json",
+    "data/reference/mhxx-bow-original.csv",
+    "data/weapons/bow.json (no se sobrescribe; se usa como estado 'rebalanceado')"
+  ],
+  "protectedMechanics": [
+    "CHARGE_RAW",
+    "CHARGE_ELEMENT",
+    "SHOT_MVS",
+    "SHOT_TYPE_UP",
+    "fórmulas de daño físico/afinidad/crítico elemental",
+    "coatings",
+    "mecánicas de Spread"
+  ],
+  "elementMedianNatural": {
+    "Thunder": 24,
+    "Ice": 25,
+    "Water": 25,
+    "Fire": 21,
+    "Blast": 21,
+    "Dragon": 22
+  },
+  "identityCounts": {
+    "raw-especializado": 46,
+    "elemental-equilibrado": 28,
+    "elemental-moderado": 38,
+    "elemental-extremo": 2,
+    "elemental-especializado": 2
+  },
+  "overrideCount": 578,
+  "designRule": "No existe un tope de elemento universal. Cada arma conserva/alcanza un valor elemental según su identidad, recuperando la diversidad natural MHXX (5-60)."
+}

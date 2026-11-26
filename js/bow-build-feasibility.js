@@ -119,6 +119,7 @@ export function makeBowSkillPackages() {
         id: "element-hybrid-" + element.toLowerCase() + "-" + shotType.toLowerCase(),
         label: "Híbrida · " + element + " · " + shotType + " · ambos coatings II",
         profile: "elemental",
+        legacy: true,
         shotType,
         element,
         requirements: buildBowSkillRequirements({
@@ -130,6 +131,7 @@ export function makeBowSkillPackages() {
         id: "element-hybrid-low-" + element.toLowerCase() + "-" + shotType.toLowerCase(),
         label: "Híbrida económica · " + element + " · " + shotType + " · ambos coatings I",
         profile: "elemental",
+        legacy: true,
         shotType,
         element,
         requirements: buildBowSkillRequirements({

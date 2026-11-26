@@ -126,12 +126,13 @@ test('C4 alignment skips charges that already match and unmarked charges', () =>
   assert.equal(changes.length, 0);
 });
 
-test('terminal inventory splits the real catalogue into 55/46/6 endpoints', () => {
+test('terminal inventory splits the real catalogue into 74/39/3 endpoints', () => {
+  // Stage 15 rebalance: 10 líneas convertidas a elementales + 9 ramas nuevas.
   const inventory = terminalLineInventory(realDatabase);
-  assert.equal(inventory.elemental.length, 55);
-  assert.equal(inventory.raw.length, 46);
-  assert.equal(inventory.blast.length, 6);
-  assert.equal(inventory.elemental.length + inventory.raw.length + inventory.blast.length, 107);
+  assert.equal(inventory.elemental.length, 74);
+  assert.equal(inventory.raw.length, 39);
+  assert.equal(inventory.blast.length, 3);
+  assert.equal(inventory.elemental.length + inventory.raw.length + inventory.blast.length, 116);
   for (const line of inventory.elemental) {
     assert.ok(line.element, 'elemental final must carry an element');
     assert.ok(['Fire', 'Water', 'Thunder', 'Ice', 'Dragon'].includes(line.element.type));
@@ -157,9 +158,9 @@ test('real catalogue ends with no natural element above the cap and aligned C4 c
   const aligned = alignLoadUpC4Types(realDatabase);
   assert.equal(aligned.changes.length, 0, 'the catalogue must already have aligned C4 charges');
   const audit = auditBowBranches(realDatabase);
-  assert.equal(audit.metadata.loadUp.marked, 674);
+  assert.equal(audit.metadata.loadUp.marked, 746);
   assert.equal(audit.metadata.loadUp.mismatches, 6, 'only the six C3 mismatches remain');
-  assert.equal(audit.metadata.loadUp.alreadyMatching, 668);
+  assert.equal(audit.metadata.loadUp.alreadyMatching, 740);
   assert.deepEqual(audit.metadata.loadUp.mismatchesBySlot, { '3': 6 });
 });
 
@@ -253,14 +254,14 @@ test('solveElementValue limits the raise when the medium window would be exceede
   assert.ok(solution.proposedRatios.poor <= REBALANCE_WINDOWS.poorMax + 1e-9);
 });
 
-test('proposal covers the 55 elemental finals with peer RAW context', () => {
+test('proposal covers the 74 elemental finals with peer RAW context', () => {
   // Evaluator that returns a fixed ratio so the proposal is deterministic.
   const evaluateRatio = () => 0.85;
   const proposal = proposeElementalRebalance(realDatabase, evaluateRatio);
-  assert.equal(proposal.metadata.elementalFinals, 55);
-  assert.equal(proposal.metadata.rawFinals, 46);
-  assert.equal(proposal.metadata.blastFinals, 6);
-  assert.equal(proposal.proposals.length, 55);
+  assert.equal(proposal.metadata.elementalFinals, 74);
+  assert.equal(proposal.metadata.rawFinals, 39);
+  assert.equal(proposal.metadata.blastFinals, 3);
+  assert.equal(proposal.proposals.length, 74);
   for (const row of proposal.proposals) {
     assert.ok(row.proposed >= row.current, 'proposals never lower the element');
     assert.ok(row.proposed <= ELEMENT_CAP, 'proposals never exceed the cap');

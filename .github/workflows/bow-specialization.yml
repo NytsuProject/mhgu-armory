@@ -1,0 +1,142 @@
+name: Bow specialization CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: bow-specialization-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  stage13-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run full test suite
+        run: npm test
+
+      - name: Stage 13 baseline audit and coverage matrix
+        run: |
+          set -e
+          OUT="tools/out/stage13"
+          mkdir -p "$OUT"
+          node tools/bow-specialization-audit.mjs --out "$OUT"
+
+      - name: Stage 14 official build matrices (12 RAW + 20 elementales G)
+        run: |
+          set -e
+          OUT="tools/out/stage14"
+          mkdir -p "$OUT"
+          # RAW: 4 shot types x 3 ranks, budget max completable per rank
+          # (LR/HR = 3, G = 4; Heavy G = 3, mismo presupuesto que Stage 12).
+          for spec in "Spread LR 3" "Spread HR 3" "Spread G 4" "Pierce LR 3" "Pierce HR 3" "Pierce G 4" "Rapid LR 3" "Rapid HR 3" "Rapid G 4" "Heavy LR 3" "Heavy HR 3" "Heavy G 3"; do
+            set -- $spec
+            node tools/bow-build-comparison.mjs --shot-type "$1" --budget "$3" --class b \
+              --talisman-policy verified --bow-rank "$2" --selection-limit 16 \
+              --out "$OUT/raw-$1-$2.json"
+          done
+          # Elemental: 5 elements x 4 shot types at G rank, budget 3.
+          for element in Fire Water Thunder Ice Dragon; do
+            for shot in Spread Pierce Rapid Heavy; do
+              node tools/bow-build-comparison.mjs --shot-type "$shot" --budget 3 --class b \
+                --talisman-policy verified --bow-rank G --selection-limit 16 --element "$element" \
+                --out "$OUT/elemental-$element-$shot-G.json"
+            done
+          done
+
+      - name: Upload stage 13 + stage 14 artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: bow-stage13-14-results
+          path: |
+            tools/out/stage13/bow-specialization-lines.json
+            tools/out/stage13/bow-specialization-lines.csv
+            tools/out/stage13/bow-specialization-coverage.json
+            tools/out/stage13/bow-specialization-coverage.csv
+            tools/out/stage13/bow-specialization-uncovered.json
+            tools/out/stage13/bow-specialization-candidates.json
+            tools/out/stage14/raw-*.json
+            tools/out/stage14/elemental-*.json
+          retention-days: 14
+
+  stage12-validation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run stage 12 test suite
+        run: npm test
+
+      - name: Generate class-B build artifacts (12 shot x rank)
+        run: |
+          set -e
+          OUT="tools/out/stage12"
+          mkdir -p "$OUT"
+          # Budget = max completable per rank: LR/HR=3, G=4.
+          for spec in "Spread LR 3" "Spread HR 3" "Spread G 4" "Pierce LR 3" "Pierce HR 3" "Pierce G 4" "Rapid LR 3" "Rapid HR 3" "Rapid G 4" "Heavy LR 3" "Heavy HR 3" "Heavy G 3"; do
+            set -- $spec
+            node tools/bow-build-comparison.mjs --shot-type "$1" --budget "$3" --class b \
+              --talisman-policy verified --bow-rank "$2" --selection-limit 16 \
+              --out "$OUT/cmp-$1-$2-b4.json"
+          done
+
+      - name: Generate C1 early-progression artifacts
+        run: |
+          set -e
+          OUT="tools/out/stage12"
+          for spec in "Spread LR 2" "Spread HR 2" "Spread G 3" "Pierce LR 2" "Pierce HR 2" "Pierce G 3" "Rapid LR 2" "Rapid HR 3" "Heavy LR 2" "Heavy HR 3" "Heavy G 3"; do
+            set -- $spec
+            node tools/bow-build-comparison.mjs --shot-type "$1" --budget "$3" --class b \
+              --talisman-policy verified --bow-rank "$2" --selection-limit 16 \
+              --preferred-charge-slot 1 --out "$OUT/cmp-$1-$2-c1-b4.json"
+          done
+
+      - name: C3/C4 comparison with Loading
+        run: |
+          node tools/bow-c4-comparison.mjs --budget 4 --ranks LR,HR,G \
+            --out "tools/out/stage12/c4-comparison.json" \
+            --csv "tools/out/stage12/c4-comparison.csv"
+
+      - name: Multiplier sensitivity sweep
+        run: node tools/bow-elemental-multiplier-sweep.mjs
+
+      - name: Aggregate stage 12 results
+        run: node tools/aggregate-stage12.mjs
+
+      - name: Upload stage 12 artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: bow-stage12-results
+          path: |
+            tools/out/stage12/cmp-*.json
+            tools/out/stage12/c4-comparison.json
+            tools/out/stage12/c4-comparison.csv
+            tools/out/stage12/multiplier-sensitivity.json
+            tools/out/stage12/multiplier-sensitivity.csv
+            tools/out/stage12/multiplier-sensitivity-by-element.csv
+            tools/out/stage12/stage12-summary.json
+            tools/out/stage12/stage12-ratios.csv
+            tools/out/stage12/stage12-c4.csv
+          retention-days: 14

@@ -158,7 +158,7 @@ test("rebalance-invariant conservation: element cap 30 and untouched RAW/Spread 
   }
 });
 
-test("elemental progression: 55 finals at 30 without inversions (problem 7)", () => {
+test("elemental progression: 74 finals at 30 without inversions (problem 7)", () => {
   let finalsEle = 0;
   let inversiones = 0;
   let maxValue = 0;
@@ -182,7 +182,7 @@ test("elemental progression: 55 finals at 30 without inversions (problem 7)", ()
       }
     }
   }
-  assert.equal(finalsEle, 55, "exactamente 55 finales elementales (sin Explosión)");
+  assert.equal(finalsEle, 74, "exactamente 74 finales elementales (sin Explosión)");
   assert.equal(inversiones, 0, "no puede haber progresiones invertidas");
   assert.ok(maxValue <= 30, "elemento máximo dentro del cap 30");
 });

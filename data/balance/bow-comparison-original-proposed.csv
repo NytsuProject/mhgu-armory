@@ -1,0 +1,867 @@
+treeId;name_es;level;stat;original;proposed;identity;justification
+1;Arco petrificado;1;ele;;;raw-especializado;ele
+1;Arco petrificado;2;ele;;;raw-especializado;ele
+1;Arco petrificado;3;ele;;;raw-especializado;ele
+1;Arco petrificado;4;ele;;;raw-especializado;ele
+1;Arco petrificado;5;ele;;;raw-especializado;ele
+1;Arco petrificado;6;ele;;;raw-especializado;ele
+1;Arco petrificado;7;ele;;;raw-especializado;ele
+1;Arco petrificado;8;ele;;;raw-especializado;ele
+1;Arco petrificado;9;ele;;;raw-especializado;ele
+1;Arco petrificado;10;ele;;;raw-especializado;ele
+1;Arco petrificado;11;ele;;;raw-especializado;ele
+4;Arko Nulo amarillo;1;ele;10;10;elemental-equilibrado;ele
+4;Arko Nulo amarillo;2;ele;12;12;elemental-equilibrado;ele
+4;Arko Nulo amarillo;3;ele;13;13;elemental-equilibrado;ele
+4;Arko Nulo amarillo;4;ele;25;25;elemental-equilibrado;ele
+4;Arko Nulo amarillo;5;ele;28;28;elemental-equilibrado;ele
+4;Arko Nulo amarillo;6;ele;30;30;elemental-equilibrado;ele
+4;Arko Nulo amarillo;7;ele;32;32;elemental-equilibrado;ele
+4;Arko Nulo amarillo;8;ele;34;34;elemental-equilibrado;ele
+5;Arko Nulo blanco;1;ele;10;10;elemental-equilibrado;ele
+5;Arko Nulo blanco;2;ele;13;13;elemental-equilibrado;ele
+5;Arko Nulo blanco;3;ele;15;15;elemental-equilibrado;ele
+5;Arko Nulo blanco;4;ele;28;28;elemental-equilibrado;ele
+5;Arko Nulo blanco;5;ele;31;31;elemental-equilibrado;ele
+5;Arko Nulo blanco;6;ele;32;32;elemental-equilibrado;ele
+5;Arko Nulo blanco;7;ele;32;32;elemental-equilibrado;ele
+5;Arko Nulo blanco;8;ele;33;33;elemental-equilibrado;ele
+6;Arco sónico;1;ele;10;10;elemental-equilibrado;ele
+6;Arco sónico;2;ele;17;17;elemental-equilibrado;ele
+6;Arco sónico;3;ele;19;19;elemental-equilibrado;ele
+6;Arco sónico;4;ele;21;21;elemental-equilibrado;ele
+6;Arco sónico;5;ele;23;23;elemental-equilibrado;ele
+6;Arco sónico;6;ele;25;25;elemental-equilibrado;ele
+6;Arco sónico;7;ele;27;27;elemental-equilibrado;ele
+6;Arco sónico;8;ele;33;33;elemental-equilibrado;ele
+7;Calima;1;ele;;;raw-especializado;ele
+7;Calima;2;ele;;;raw-especializado;ele
+7;Calima;3;ele;;;raw-especializado;ele
+7;Calima;4;ele;;;raw-especializado;ele
+7;Calima;5;ele;;;raw-especializado;ele
+8;Calígine;1;ele;10;10;elemental-moderado;ele
+8;Calígine;2;ele;12;12;elemental-moderado;ele
+8;Calígine;3;ele;14;14;elemental-moderado;ele
+8;Calígine;4;ele;16;16;elemental-moderado;ele
+8;Calígine;5;ele;17;17;elemental-moderado;ele
+8;Calígine;6;ele;18;18;elemental-moderado;ele
+8;Calígine;7;ele;18;18;elemental-moderado;ele
+9;Arco pluma;1;ele;;;raw-especializado;ele
+9;Arco pluma;2;ele;;;raw-especializado;ele
+9;Arco pluma;3;ele;;;raw-especializado;ele
+9;Arco pluma;4;ele;;;raw-especializado;ele
+9;Arco pluma;5;ele;;;raw-especializado;ele
+9;Arco pluma;6;ele;;;raw-especializado;ele
+9;Arco pluma;7;ele;;;raw-especializado;ele
+9;Arco pluma;8;ele;;;raw-especializado;ele
+9;Arco pluma;9;ele;;;raw-especializado;ele
+11;Arco de Daimyo;1;ele;15;15;elemental-equilibrado;ele
+11;Arco de Daimyo;2;ele;17;17;elemental-equilibrado;ele
+11;Arco de Daimyo;3;ele;19;19;elemental-equilibrado;ele
+11;Arco de Daimyo;4;ele;21;21;elemental-equilibrado;ele
+11;Arco de Daimyo;5;ele;23;23;elemental-equilibrado;ele
+11;Arco de Daimyo;6;ele;24;24;elemental-equilibrado;ele
+11;Arco de Daimyo;7;ele;25;25;elemental-equilibrado;ele
+11;Arco de Daimyo;8;ele;26;26;elemental-equilibrado;ele
+12;Arco de hoja de oso;1;ele;;;raw-especializado;ele
+12;Arco de hoja de oso;2;ele;;;raw-especializado;ele
+12;Arco de hoja de oso;3;ele;;;raw-especializado;ele
+12;Arco de hoja de oso;4;ele;;;raw-especializado;ele
+12;Arco de hoja de oso;5;ele;;;raw-especializado;ele
+12;Arco de hoja de oso;6;ele;;;raw-especializado;ele
+10;Arco oculto;1;ele;;;raw-especializado;ele
+10;Arco oculto;2;ele;;;raw-especializado;ele
+10;Arco oculto;3;ele;;;raw-especializado;ele
+10;Arco oculto;4;ele;;;raw-especializado;ele
+10;Arco oculto;5;ele;;;raw-especializado;ele
+10;Arco oculto;6;ele;;;raw-especializado;ele
+10;Arco oculto;7;ele;;;raw-especializado;ele
+97;Cresta de hielo;1;ele;12;12;elemental-moderado;ele
+97;Cresta de hielo;2;ele;14;14;elemental-moderado;ele
+97;Cresta de hielo;3;ele;16;16;elemental-moderado;ele
+97;Cresta de hielo;4;ele;18;18;elemental-moderado;ele
+97;Cresta de hielo;5;ele;20;20;elemental-moderado;ele
+2;Arco de obsidiana;1;ele;;;raw-especializado;ele
+2;Arco de obsidiana;2;ele;;;raw-especializado;ele
+2;Arco de obsidiana;3;ele;;;raw-especializado;ele
+2;Arco de obsidiana;4;ele;;;raw-especializado;ele
+2;Arco de obsidiana;5;ele;;;raw-especializado;ele
+2;Arco de obsidiana;6;ele;;;raw-especializado;ele
+2;Arco de obsidiana;7;ele;;;raw-especializado;ele
+3;Retumbar usurpador;1;ele;14;14;elemental-moderado;ele
+3;Retumbar usurpador;2;ele;16;16;elemental-moderado;ele
+3;Retumbar usurpador;3;ele;18;18;elemental-moderado;ele
+3;Retumbar usurpador;4;ele;20;20;elemental-moderado;ele
+3;Retumbar usurpador;5;ele;22;22;elemental-moderado;ele
+3;Retumbar usurpador;6;ele;23;23;elemental-moderado;ele
+3;Retumbar usurpador;7;ele;24;24;elemental-moderado;ele
+101;Choque del déspota;1;ele;19;19;elemental-moderado;ele
+101;Choque del déspota;2;ele;20;20;elemental-moderado;ele
+101;Choque del déspota;3;ele;21;21;elemental-moderado;ele
+29;Arco de cazador;1;ele;;;raw-especializado;ele
+29;Arco de cazador;2;ele;;;raw-especializado;ele
+29;Arco de cazador;3;ele;;;raw-especializado;ele
+29;Arco de cazador;4;ele;;;raw-especializado;ele
+29;Arco de cazador;5;ele;;;raw-especializado;ele
+29;Arco de cazador;6;ele;;;raw-especializado;ele
+29;Arco de cazador;7;ele;;;raw-especializado;ele
+29;Arco de cazador;8;ele;;;raw-especializado;ele
+29;Arco de cazador;9;ele;;;raw-especializado;ele
+29;Arco de cazador;10;ele;;;raw-especializado;ele
+29;Arco de cazador;11;ele;;;raw-especializado;ele
+34;Arco de piel de Blango;1;ele;15;15;elemental-equilibrado;ele
+34;Arco de piel de Blango;2;ele;18;18;elemental-equilibrado;ele
+34;Arco de piel de Blango;3;ele;21;21;elemental-equilibrado;ele
+34;Arco de piel de Blango;4;ele;24;24;elemental-equilibrado;ele
+34;Arco de piel de Blango;5;ele;27;27;elemental-equilibrado;ele
+34;Arco de piel de Blango;6;ele;30;30;elemental-equilibrado;ele
+34;Arco de piel de Blango;7;ele;32;32;elemental-equilibrado;ele
+36;Arco esponja;1;ele;10;10;elemental-moderado;ele
+36;Arco esponja;2;ele;12;12;elemental-moderado;ele
+36;Arco esponja;3;ele;14;14;elemental-moderado;ele
+36;Arco esponja;4;ele;16;16;elemental-moderado;ele
+36;Arco esponja;5;ele;18;18;elemental-moderado;ele
+36;Arco esponja;6;ele;20;20;elemental-moderado;ele
+36;Arco esponja;7;ele;22;22;elemental-moderado;ele
+36;Arco esponja;8;ele;24;24;elemental-moderado;ele
+37;Lanzarrayos;1;ele;7;7;elemental-moderado;ele
+37;Lanzarrayos;2;ele;9;9;elemental-moderado;ele
+37;Lanzarrayos;3;ele;11;11;elemental-moderado;ele
+37;Lanzarrayos;4;ele;12;12;elemental-moderado;ele
+37;Lanzarrayos;5;ele;12;12;elemental-moderado;ele
+37;Lanzarrayos;6;ele;13;13;elemental-moderado;ele
+37;Lanzarrayos;7;ele;14;14;elemental-moderado;ele
+35;Arco abominable;1;ele;8;8;elemental-moderado;ele
+35;Arco abominable;2;ele;9;9;elemental-moderado;ele
+35;Arco abominable;3;ele;10;10;elemental-moderado;ele
+35;Arco abominable;4;ele;11;11;elemental-moderado;ele
+35;Arco abominable;5;ele;12;12;elemental-moderado;ele
+35;Arco abominable;6;ele;12;12;elemental-moderado;ele
+35;Arco abominable;7;ele;12;12;elemental-moderado;ele
+100;Arco salvaje;1;ele;;;raw-especializado;ele
+100;Arco salvaje;1;raw;150;150;raw-especializado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+100;Arco salvaje;2;ele;;;raw-especializado;ele
+100;Arco salvaje;2;raw;170;170;raw-especializado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+100;Arco salvaje;3;ele;;;raw-especializado;ele
+100;Arco salvaje;3;raw;210;210;raw-especializado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+100;Arco salvaje;4;ele;;;raw-especializado;ele
+100;Arco salvaje;4;raw;240;240;raw-especializado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+100;Arco salvaje;5;ele;;;raw-especializado;ele
+100;Arco salvaje;5;raw;330;330;raw-especializado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+96;Arco poder salvaje;1;ele;;;raw-especializado;ele
+96;Arco poder salvaje;2;ele;;;raw-especializado;ele
+96;Arco poder salvaje;3;ele;;;raw-especializado;ele
+96;Arco poder salvaje;4;ele;;;raw-especializado;ele
+96;Arco poder salvaje;5;ele;;;raw-especializado;ele
+96;Arco poder salvaje;6;ele;;;raw-especializado;ele
+31;Arco Kut-Ku;1;ele;12;12;elemental-equilibrado;ele
+31;Arco Kut-Ku;2;ele;14;14;elemental-equilibrado;ele
+31;Arco Kut-Ku;3;ele;16;16;elemental-equilibrado;ele
+31;Arco Kut-Ku;4;ele;18;18;elemental-equilibrado;ele
+31;Arco Kut-Ku;5;ele;20;20;elemental-equilibrado;ele
+31;Arco Kut-Ku;6;ele;22;22;elemental-equilibrado;ele
+31;Arco Kut-Ku;7;ele;24;24;elemental-equilibrado;ele
+31;Arco Kut-Ku;8;ele;25;25;elemental-equilibrado;ele
+32;Arco de cuervo;1;ele;;;raw-especializado;ele
+32;Arco de cuervo;2;ele;;;raw-especializado;ele
+32;Arco de cuervo;3;ele;;;raw-especializado;ele
+32;Arco de cuervo;4;ele;;;raw-especializado;ele
+32;Arco de cuervo;5;ele;;;raw-especializado;ele
+33;Arco vil;1;ele;;;raw-especializado;ele
+33;Arco vil;2;ele;;;raw-especializado;ele
+33;Arco vil;3;ele;;;raw-especializado;ele
+33;Arco vil;4;ele;;;raw-especializado;ele
+33;Arco vil;5;ele;;;raw-especializado;ele
+30;Aguijón Kelbi;1;ele;;;raw-especializado;ele
+30;Aguijón Kelbi;2;ele;;;raw-especializado;ele
+30;Aguijón Kelbi;3;ele;;;raw-especializado;ele
+30;Aguijón Kelbi;4;ele;;;raw-especializado;ele
+30;Aguijón Kelbi;5;ele;;;raw-especializado;ele
+30;Aguijón Kelbi;6;ele;;;raw-especializado;ele
+95;Diablos enroscacola;1;ele;;;raw-especializado;ele
+95;Diablos enroscacola;2;ele;;;raw-especializado;ele
+95;Diablos enroscacola;3;ele;;;raw-especializado;ele
+95;Diablos enroscacola;4;ele;;;raw-especializado;ele
+95;Diablos enroscacola;5;ele;;;raw-especializado;ele
+13;Arco recio de cazador;1;ele;;;raw-especializado;ele
+13;Arco recio de cazador;1;raw;90;90;raw-especializado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+13;Arco recio de cazador;2;ele;;;raw-especializado;ele
+13;Arco recio de cazador;2;raw;100;100;raw-especializado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+13;Arco recio de cazador;3;ele;;;raw-especializado;ele
+13;Arco recio de cazador;3;raw;110;110;raw-especializado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+13;Arco recio de cazador;4;ele;;;raw-especializado;ele
+13;Arco recio de cazador;4;raw;120;120;raw-especializado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+13;Arco recio de cazador;5;ele;;;raw-especializado;ele
+13;Arco recio de cazador;5;raw;140;140;raw-especializado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+13;Arco recio de cazador;6;ele;;;raw-especializado;ele
+13;Arco recio de cazador;6;raw;160;160;raw-especializado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+13;Arco recio de cazador;7;ele;;;raw-especializado;ele
+13;Arco recio de cazador;7;raw;200;200;raw-especializado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+13;Arco recio de cazador;8;ele;;;raw-especializado;ele
+13;Arco recio de cazador;8;raw;220;220;raw-especializado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+13;Arco recio de cazador;9;ele;;;raw-especializado;ele
+13;Arco recio de cazador;9;raw;250;250;raw-especializado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+13;Arco recio de cazador;10;ele;;;raw-especializado;ele
+13;Arco recio de cazador;10;raw;280;280;raw-especializado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+13;Arco recio de cazador;11;ele;;;raw-especializado;ele
+13;Arco recio de cazador;11;raw;340;340;raw-especializado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+18;Multiarco tipo 64;1;ele;10;10;elemental-moderado;ele
+18;Multiarco tipo 64;2;ele;15;15;elemental-moderado;ele
+18;Multiarco tipo 64;3;ele;17;17;elemental-moderado;ele
+18;Multiarco tipo 64;4;ele;19;19;elemental-moderado;ele
+18;Multiarco tipo 64;5;ele;21;21;elemental-moderado;ele
+18;Multiarco tipo 64;6;ele;22;22;elemental-moderado;ele
+18;Multiarco tipo 64;7;ele;23;23;elemental-moderado;ele
+18;Multiarco tipo 64;8;ele;24;24;elemental-moderado;ele
+19;Arquero Tigrex;1;ele;;;raw-especializado;ele
+19;Arquero Tigrex;2;ele;;;raw-especializado;ele
+19;Arquero Tigrex;3;ele;;;raw-especializado;ele
+19;Arquero Tigrex;4;ele;;;raw-especializado;ele
+19;Arquero Tigrex;5;ele;;;raw-especializado;ele
+19;Arquero Tigrex;6;ele;;;raw-especializado;ele
+20;Arco de Shalya;1;ele;;;raw-especializado;ele
+20;Arco de Shalya;2;ele;;;raw-especializado;ele
+20;Arco de Shalya;3;ele;;;raw-especializado;ele
+20;Arco de Shalya;4;ele;;;raw-especializado;ele
+20;Arco de Shalya;5;ele;;;raw-especializado;ele
+20;Arco de Shalya;6;ele;;;raw-especializado;ele
+21;Flecha insurrecta;1;ele;;;raw-especializado;ele
+21;Flecha insurrecta;2;ele;;;raw-especializado;ele
+21;Flecha insurrecta;3;ele;;;raw-especializado;ele
+21;Flecha insurrecta;4;ele;;;raw-especializado;ele
+21;Flecha insurrecta;5;ele;;;raw-especializado;ele
+21;Flecha insurrecta;6;ele;;;raw-especializado;ele
+22;Cordel metálico;1;ele;5;5;elemental-moderado;ele
+22;Cordel metálico;2;ele;7;7;elemental-moderado;ele
+22;Cordel metálico;3;ele;9;9;elemental-moderado;ele
+22;Cordel metálico;4;ele;11;11;elemental-moderado;ele
+22;Cordel metálico;5;ele;13;13;elemental-moderado;ele
+22;Cordel metálico;6;ele;14;14;elemental-moderado;ele
+22;Cordel metálico;7;ele;15;15;elemental-moderado;ele
+23;Volador Brach;1;ele;10;10;elemental-moderado;ele
+23;Volador Brach;2;ele;12;12;elemental-moderado;ele
+23;Volador Brach;3;ele;14;14;elemental-moderado;ele
+23;Volador Brach;4;ele;15;15;elemental-moderado;ele
+23;Volador Brach;5;ele;16;16;elemental-moderado;ele
+24;Arco de demolición;1;ele;13;13;elemental-moderado;ele
+24;Arco de demolición;2;ele;15;15;elemental-moderado;ele
+24;Arco de demolición;3;ele;17;17;elemental-moderado;ele
+24;Arco de demolición;4;ele;18;18;elemental-moderado;ele
+24;Arco de demolición;5;ele;19;19;elemental-moderado;ele
+24;Arco de demolición;6;ele;20;20;elemental-moderado;ele
+93;Arco parterrayos;1;ele;22;22;elemental-moderado;ele
+93;Arco parterrayos;2;ele;23;23;elemental-moderado;ele
+93;Arco parterrayos;3;ele;24;24;elemental-moderado;ele
+25;Flor cristalina;1;ele;15;15;elemental-extremo;ele
+25;Flor cristalina;2;ele;18;18;elemental-extremo;ele
+25;Flor cristalina;3;ele;20;20;elemental-extremo;ele
+25;Flor cristalina;4;ele;45;45;elemental-extremo;ele
+25;Flor cristalina;5;ele;50;50;elemental-extremo;ele
+25;Flor cristalina;6;ele;54;54;elemental-extremo;ele
+25;Flor cristalina;7;ele;56;56;elemental-extremo;ele
+25;Flor cristalina;8;ele;60;60;elemental-extremo;ele
+28;Arco Khezu;1;ele;10;10;elemental-equilibrado;ele
+28;Arco Khezu;2;ele;13;13;elemental-equilibrado;ele
+28;Arco Khezu;3;ele;14;14;elemental-equilibrado;ele
+28;Arco Khezu;4;ele;22;22;elemental-equilibrado;ele
+28;Arco Khezu;5;ele;24;24;elemental-equilibrado;ele
+28;Arco Khezu;6;ele;25;25;elemental-equilibrado;ele
+28;Arco Khezu;7;ele;26;26;elemental-equilibrado;ele
+26;Llamas azules;1;ele;10;10;elemental-equilibrado;ele
+26;Llamas azules;2;ele;12;12;elemental-equilibrado;ele
+26;Llamas azules;3;ele;14;14;elemental-equilibrado;ele
+26;Llamas azules;4;ele;23;23;elemental-equilibrado;ele
+26;Llamas azules;5;ele;25;25;elemental-equilibrado;ele
+27;Llamas heladas;1;ele;8;8;elemental-moderado;ele
+27;Llamas heladas;2;ele;9;9;elemental-moderado;ele
+27;Llamas heladas;3;ele;10;10;elemental-moderado;ele
+27;Llamas heladas;4;ele;16;16;elemental-moderado;ele
+27;Llamas heladas;5;ele;18;18;elemental-moderado;ele
+17;Ira de la reina;1;ele;8;8;elemental-moderado;ele
+17;Ira de la reina;2;ele;11;11;elemental-moderado;ele
+17;Ira de la reina;3;ele;13;13;elemental-moderado;ele
+17;Ira de la reina;4;ele;15;15;elemental-moderado;ele
+17;Ira de la reina;5;ele;17;17;elemental-moderado;ele
+17;Ira de la reina;6;ele;18;18;elemental-moderado;ele
+17;Ira de la reina;7;ele;19;19;elemental-moderado;ele
+16;Arco de prominencia;1;ele;10;10;elemental-moderado;ele
+16;Arco de prominencia;2;ele;12;12;elemental-moderado;ele
+16;Arco de prominencia;3;ele;14;14;elemental-moderado;ele
+16;Arco de prominencia;4;ele;16;16;elemental-moderado;ele
+16;Arco de prominencia;5;ele;18;18;elemental-moderado;ele
+16;Arco de prominencia;6;ele;20;20;elemental-moderado;ele
+16;Arco de prominencia;7;ele;22;22;elemental-moderado;ele
+14;Arco de Yekla;1;ele;;;raw-especializado;ele
+14;Arco de Yekla;2;ele;;;raw-especializado;ele
+14;Arco de Yekla;3;ele;;;raw-especializado;ele
+14;Arco de Yekla;4;ele;;;raw-especializado;ele
+14;Arco de Yekla;5;ele;;;raw-especializado;ele
+14;Arco de Yekla;6;ele;;;raw-especializado;ele
+15;Arco casco demoníaco;1;ele;;;raw-especializado;ele
+15;Arco casco demoníaco;2;ele;;;raw-especializado;ele
+15;Arco casco demoníaco;3;ele;;;raw-especializado;ele
+15;Arco casco demoníaco;4;ele;;;raw-especializado;ele
+15;Arco casco demoníaco;5;ele;;;raw-especializado;ele
+15;Arco casco demoníaco;6;ele;;;raw-especializado;ele
+98;Puño de Scylla;1;ele;;;raw-especializado;ele
+98;Puño de Scylla;1;raw;180;180;raw-especializado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+98;Puño de Scylla;2;ele;;;raw-especializado;ele
+98;Puño de Scylla;2;raw;190;190;raw-especializado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+98;Puño de Scylla;3;ele;;;raw-especializado;ele
+98;Puño de Scylla;3;raw;200;200;raw-especializado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+98;Puño de Scylla;4;ele;;;raw-especializado;ele
+98;Puño de Scylla;4;raw;260;260;raw-especializado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+98;Puño de Scylla;5;ele;;;raw-especializado;ele
+98;Puño de Scylla;5;raw;290;290;raw-especializado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+98;Puño de Scylla;6;ele;;;raw-especializado;ele
+98;Puño de Scylla;6;raw;310;310;raw-especializado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+99;Entrelazado de Scylla;1;ele;;;raw-especializado;ele
+99;Entrelazado de Scylla;2;ele;;;raw-especializado;ele
+99;Entrelazado de Scylla;3;ele;;;raw-especializado;ele
+62;Arco Yukumo;1;ele;;;raw-especializado;ele
+62;Arco Yukumo;2;ele;;;raw-especializado;ele
+62;Arco Yukumo;3;ele;;;raw-especializado;ele
+62;Arco Yukumo;4;ele;;;raw-especializado;ele
+62;Arco Yukumo;5;ele;;;raw-especializado;ele
+62;Arco Yukumo;6;ele;;;raw-especializado;ele
+62;Arco Yukumo;7;ele;;;raw-especializado;ele
+62;Arco Yukumo;8;ele;;;raw-especializado;ele
+63;Pureza Yukumo;1;ele;;;raw-especializado;ele
+63;Pureza Yukumo;2;ele;;;raw-especializado;ele
+63;Pureza Yukumo;3;ele;;;raw-especializado;ele
+63;Pureza Yukumo;4;ele;;;raw-especializado;ele
+63;Pureza Yukumo;5;ele;;;raw-especializado;ele
+63;Pureza Yukumo;6;ele;;;raw-especializado;ele
+66;Arco de exquisitez;1;ele;;;raw-especializado;ele
+66;Arco de exquisitez;2;ele;;;raw-especializado;ele
+66;Arco de exquisitez;3;ele;;;raw-especializado;ele
+66;Arco de exquisitez;4;ele;;;raw-especializado;ele
+66;Arco de exquisitez;5;ele;;;raw-especializado;ele
+66;Arco de exquisitez;6;ele;;;raw-especializado;ele
+66;Arco de exquisitez;7;ele;;;raw-especializado;ele
+66;Arco de exquisitez;8;ele;;;raw-especializado;ele
+64;Taketori de bambú;1;ele;;;raw-especializado;ele
+64;Taketori de bambú;2;ele;;;raw-especializado;ele
+64;Taketori de bambú;3;ele;;;raw-especializado;ele
+64;Taketori de bambú;4;ele;;;raw-especializado;ele
+64;Taketori de bambú;5;ele;;;raw-especializado;ele
+64;Taketori de bambú;6;ele;;;raw-especializado;ele
+64;Taketori de bambú;7;ele;;;raw-especializado;ele
+64;Taketori de bambú;8;ele;;;raw-especializado;ele
+60;Arco de marfil;1;ele;;;raw-especializado;ele
+60;Arco de marfil;1;raw;130;130;raw-especializado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+60;Arco de marfil;2;ele;;;raw-especializado;ele
+60;Arco de marfil;2;raw;150;150;raw-especializado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+60;Arco de marfil;3;ele;;;raw-especializado;ele
+60;Arco de marfil;3;raw;170;170;raw-especializado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+60;Arco de marfil;4;ele;;;raw-especializado;ele
+60;Arco de marfil;4;raw;190;190;raw-especializado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+60;Arco de marfil;5;ele;;;raw-especializado;ele
+60;Arco de marfil;5;raw;220;220;raw-especializado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+60;Arco de marfil;6;ele;;;raw-especializado;ele
+60;Arco de marfil;6;raw;250;250;raw-especializado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+60;Arco de marfil;7;ele;;;raw-especializado;ele
+60;Arco de marfil;7;raw;310;310;raw-especializado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+67;Arco del caos;1;ele;;;raw-especializado;ele
+67;Arco del caos;2;ele;;;raw-especializado;ele
+67;Arco del caos;3;ele;;;raw-especializado;ele
+67;Arco del caos;4;ele;;;raw-especializado;ele
+67;Arco del caos;5;ele;;;raw-especializado;ele
+67;Arco del caos;6;ele;;;raw-especializado;ele
+67;Arco del caos;7;ele;;;raw-especializado;ele
+68;Arco de Felyne;1;ele;;;raw-especializado;ele
+68;Arco de Felyne;2;ele;;;raw-especializado;ele
+68;Arco de Felyne;3;ele;;;raw-especializado;ele
+68;Arco de Felyne;4;ele;;;raw-especializado;ele
+68;Arco de Felyne;5;ele;;;raw-especializado;ele
+68;Arco de Felyne;6;ele;;;raw-especializado;ele
+68;Arco de Felyne;7;ele;;;raw-especializado;ele
+68;Arco de Felyne;8;ele;;;raw-especializado;ele
+69;Arco de Arácnido;1;ele;;;raw-especializado;ele
+69;Arco de Arácnido;2;ele;;;raw-especializado;ele
+69;Arco de Arácnido;3;ele;;;raw-especializado;ele
+69;Arco de Arácnido;4;ele;;;raw-especializado;ele
+69;Arco de Arácnido;5;ele;;;raw-especializado;ele
+69;Arco de Arácnido;6;ele;;;raw-especializado;ele
+69;Arco de Arácnido;7;ele;;;raw-especializado;ele
+44;Lluvia bendita;1;ele;10;10;elemental-equilibrado;ele
+44;Lluvia bendita;2;ele;15;15;elemental-equilibrado;ele
+44;Lluvia bendita;3;ele;25;25;elemental-equilibrado;ele
+44;Lluvia bendita;4;ele;30;30;elemental-equilibrado;ele
+44;Lluvia bendita;5;ele;30;30;elemental-equilibrado;ele
+44;Lluvia bendita;6;ele;31;31;elemental-equilibrado;ele
+44;Lluvia bendita;7;ele;32;32;elemental-equilibrado;ele
+42;Arco de relámpago;1;ele;10;10;elemental-equilibrado;ele
+42;Arco de relámpago;2;ele;15;15;elemental-equilibrado;ele
+42;Arco de relámpago;3;ele;20;20;elemental-equilibrado;ele
+42;Arco de relámpago;4;ele;25;25;elemental-equilibrado;ele
+42;Arco de relámpago;5;ele;26;26;elemental-equilibrado;ele
+42;Arco de relámpago;6;ele;27;27;elemental-equilibrado;ele
+42;Arco de relámpago;7;ele;28;28;elemental-equilibrado;ele
+43;Arco de gigante;1;ele;10;10;elemental-equilibrado;ele
+43;Arco de gigante;2;ele;15;15;elemental-equilibrado;ele
+43;Arco de gigante;3;ele;20;20;elemental-equilibrado;ele
+43;Arco de gigante;4;ele;25;25;elemental-equilibrado;ele
+43;Arco de gigante;5;ele;26;26;elemental-equilibrado;ele
+43;Arco de gigante;6;ele;27;27;elemental-equilibrado;ele
+43;Arco de gigante;7;ele;28;28;elemental-equilibrado;ele
+45;Ira de ceniza;1;ele;10;10;elemental-equilibrado;ele
+45;Ira de ceniza;2;ele;15;15;elemental-equilibrado;ele
+45;Ira de ceniza;3;ele;20;20;elemental-equilibrado;ele
+45;Ira de ceniza;4;ele;25;25;elemental-equilibrado;ele
+45;Ira de ceniza;5;ele;26;26;elemental-equilibrado;ele
+45;Ira de ceniza;6;ele;26;26;elemental-equilibrado;ele
+45;Ira de ceniza;7;ele;26;26;elemental-equilibrado;ele
+46;Visión de desaliento;1;ele;12;12;elemental-moderado;ele
+46;Visión de desaliento;2;ele;14;14;elemental-moderado;ele
+46;Visión de desaliento;3;ele;16;16;elemental-moderado;ele
+46;Visión de desaliento;4;ele;18;18;elemental-moderado;ele
+46;Visión de desaliento;5;ele;20;20;elemental-moderado;ele
+46;Visión de desaliento;6;ele;22;22;elemental-moderado;ele
+47;Secuestrador;1;ele;8;8;elemental-moderado;ele
+47;Secuestrador;2;ele;10;10;elemental-moderado;ele
+47;Secuestrador;3;ele;12;12;elemental-moderado;ele
+47;Secuestrador;4;ele;13;13;elemental-moderado;ele
+47;Secuestrador;5;ele;14;14;elemental-moderado;ele
+47;Secuestrador;6;ele;15;15;elemental-moderado;ele
+49;Valor y esperanza;1;ele;21;21;elemental-equilibrado;ele
+49;Valor y esperanza;2;ele;23;23;elemental-equilibrado;ele
+49;Valor y esperanza;3;ele;25;25;elemental-equilibrado;ele
+49;Valor y esperanza;4;ele;30;30;elemental-equilibrado;ele
+49;Valor y esperanza;5;ele;30;30;elemental-equilibrado;ele
+49;Valor y esperanza;6;ele;30;30;elemental-equilibrado;ele
+50;Arco óseo;1;ele;10;10;elemental-equilibrado;ele
+50;Arco óseo;2;ele;12;12;elemental-equilibrado;ele
+50;Arco óseo;3;ele;14;14;elemental-equilibrado;ele
+50;Arco óseo;4;ele;16;16;elemental-equilibrado;ele
+50;Arco óseo;5;ele;28;28;elemental-equilibrado;ele
+50;Arco óseo;6;ele;30;30;elemental-equilibrado;ele
+51;Pájaro estrella polar;1;ele;14;14;elemental-moderado;ele
+51;Pájaro estrella polar;2;ele;16;16;elemental-moderado;ele
+51;Pájaro estrella polar;3;ele;18;18;elemental-moderado;ele
+51;Pájaro estrella polar;4;ele;18;18;elemental-moderado;ele
+51;Pájaro estrella polar;5;ele;18;18;elemental-moderado;ele
+61;Arco de ónice;1;ele;12;12;elemental-moderado;ele
+61;Arco de ónice;2;ele;14;14;elemental-moderado;ele
+61;Arco de ónice;3;ele;16;16;elemental-moderado;ele
+61;Arco de ónice;4;ele;18;18;elemental-moderado;ele
+61;Arco de ónice;5;ele;20;20;elemental-moderado;ele
+61;Arco de ónice;6;ele;20;20;elemental-moderado;ele
+41;Arca Raptora;1;ele;;;raw-especializado;ele
+41;Arca Raptora;2;ele;;;raw-especializado;ele
+41;Arca Raptora;3;ele;;;raw-especializado;ele
+41;Arca Raptora;4;ele;;;raw-especializado;ele
+41;Arca Raptora;5;ele;;;raw-especializado;ele
+41;Arca Raptora;6;ele;;;raw-especializado;ele
+41;Arca Raptora;7;ele;;;raw-especializado;ele
+65;Arpa caballito mar;1;ele;40;40;elemental-extremo;ele
+65;Arpa caballito mar;2;ele;45;45;elemental-extremo;ele
+65;Arpa caballito mar;3;ele;50;50;elemental-extremo;ele
+65;Arpa caballito mar;4;ele;55;55;elemental-extremo;ele
+65;Arpa caballito mar;5;ele;60;60;elemental-extremo;ele
+52;Arco rayo bestial;1;ele;17;17;elemental-moderado;ele
+52;Arco rayo bestial;2;ele;19;19;elemental-moderado;ele
+52;Arco rayo bestial;3;ele;21;21;elemental-moderado;ele
+52;Arco rayo bestial;4;ele;22;22;elemental-moderado;ele
+52;Arco rayo bestial;5;ele;22;22;elemental-moderado;ele
+53;Rayo archibestial;1;ele;5;5;elemental-moderado;ele
+53;Rayo archibestial;2;ele;7;7;elemental-moderado;ele
+53;Rayo archibestial;3;ele;9;9;elemental-moderado;ele
+53;Rayo archibestial;4;ele;18;18;elemental-moderado;ele
+53;Rayo archibestial;5;ele;20;20;elemental-moderado;ele
+102;Arco investigación;1;ele;;;raw-especializado;ele
+102;Arco investigación;2;ele;;;raw-especializado;ele
+102;Arco investigación;3;ele;;;raw-especializado;ele
+102;Arco investigación;4;ele;;;raw-especializado;ele
+102;Arco investigación;5;ele;;;raw-especializado;ele
+81;Arco del héroe;1;ele;;;raw-especializado;ele
+81;Arco del héroe;2;ele;;;raw-especializado;ele
+81;Arco del héroe;3;ele;;;raw-especializado;ele
+81;Arco del héroe;4;ele;;;raw-especializado;ele
+81;Arco del héroe;5;ele;;;raw-especializado;ele
+106;Arco pirata J;1;ele;;;raw-especializado;ele
+106;Arco pirata J;1;raw;170;170;raw-especializado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+106;Arco pirata J;2;ele;;;raw-especializado;ele
+106;Arco pirata J;2;raw;200;200;raw-especializado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+106;Arco pirata J;3;ele;;;raw-especializado;ele
+106;Arco pirata J;3;raw;280;280;raw-especializado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+106;Arco pirata J;4;ele;;;raw-especializado;ele
+106;Arco pirata J;4;raw;300;300;raw-especializado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+107;Arco ancestral;1;ele;;;raw-especializado;ele
+107;Arco ancestral;2;ele;;;raw-especializado;ele
+107;Arco ancestral;3;ele;;;raw-especializado;ele
+107;Arco ancestral;4;ele;;;raw-especializado;ele
+48;Grimorio del genio;1;ele;;;raw-especializado;ele
+48;Grimorio del genio;2;ele;;;raw-especializado;ele
+48;Grimorio del genio;3;ele;;;raw-especializado;ele
+48;Grimorio del genio;4;ele;;;raw-especializado;ele
+48;Grimorio del genio;5;ele;;;raw-especializado;ele
+54;Hiperión;1;ele;10;10;elemental-moderado;ele
+54;Hiperión;2;ele;12;12;elemental-moderado;ele
+54;Hiperión;3;ele;14;14;elemental-moderado;ele
+54;Hiperión;4;ele;16;16;elemental-moderado;ele
+54;Hiperión;5;ele;18;18;elemental-moderado;ele
+55;Selene Lunarrota;1;ele;16;16;elemental-equilibrado;ele
+55;Selene Lunarrota;2;ele;20;20;elemental-equilibrado;ele
+55;Selene Lunarrota;3;ele;24;24;elemental-equilibrado;ele
+55;Selene Lunarrota;4;ele;30;30;elemental-equilibrado;ele
+55;Selene Lunarrota;5;ele;32;32;elemental-equilibrado;ele
+56;Arco Akantor;1;ele;12;12;elemental-moderado;ele
+56;Arco Akantor;2;ele;14;14;elemental-moderado;ele
+56;Arco Akantor;3;ele;16;16;elemental-moderado;ele
+56;Arco Akantor;4;ele;22;22;elemental-moderado;ele
+56;Arco Akantor;5;ele;24;24;elemental-moderado;ele
+57;Arco Ukanlos;1;ele;9;9;elemental-moderado;ele
+57;Arco Ukanlos;2;ele;10;10;elemental-moderado;ele
+57;Arco Ukanlos;3;ele;11;11;elemental-moderado;ele
+57;Arco Ukanlos;4;ele;12;12;elemental-moderado;ele
+57;Arco Ukanlos;5;ele;13;13;elemental-moderado;ele
+59;Tormenta nocturna;1;ele;11;11;elemental-moderado;ele
+59;Tormenta nocturna;2;ele;12;12;elemental-moderado;ele
+59;Tormenta nocturna;3;ele;13;13;elemental-moderado;ele
+59;Tormenta nocturna;4;ele;14;14;elemental-moderado;ele
+59;Tormenta nocturna;5;ele;14;14;elemental-moderado;ele
+58;Arco de Alatreon;1;ele;20;20;elemental-equilibrado;ele
+58;Arco de Alatreon;2;ele;22;22;elemental-equilibrado;ele
+58;Arco de Alatreon;3;ele;24;24;elemental-equilibrado;ele
+58;Arco de Alatreon;4;ele;25;25;elemental-equilibrado;ele
+58;Arco de Alatreon;5;ele;26;26;elemental-equilibrado;ele
+83;Arco ala plata;1;ele;14;14;elemental-moderado;ele
+83;Arco ala plata;2;ele;15;15;elemental-moderado;ele
+83;Arco ala plata;3;ele;15;15;elemental-moderado;ele
+83;Arco ala plata;4;ele;16;16;elemental-moderado;ele
+83;Arco ala plata;5;ele;17;17;elemental-moderado;ele
+83;Arco ala plata;6;ele;18;18;elemental-moderado;ele
+105;Arco atávico;1;ele;;;raw-especializado;ele
+105;Arco atávico;2;ele;;;raw-especializado;ele
+105;Arco atávico;3;ele;;;raw-especializado;ele
+103;Tirachinas Kayancha;1;ele;;;raw-especializado;ele
+103;Tirachinas Kayancha;1;raw;280;280;raw-especializado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+103;Tirachinas Kayancha;2;ele;;;raw-especializado;ele
+103;Tirachinas Kayancha;2;raw;290;290;raw-especializado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+103;Tirachinas Kayancha;3;ele;;;raw-especializado;ele
+103;Tirachinas Kayancha;3;raw;310;310;raw-especializado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+104;Ala Victoria;1;ele;26;26;elemental-equilibrado;ele
+104;Ala Victoria;2;ele;28;28;elemental-equilibrado;ele
+104;Ala Victoria;3;ele;30;30;elemental-equilibrado;ele
+94;Gewinn/Pérdida;1;ele;18;18;elemental-moderado;ele
+94;Gewinn/Pérdida;2;ele;20;20;elemental-moderado;ele
+94;Gewinn/Pérdida;3;ele;22;22;elemental-moderado;ele
+89;Arco dragón de tierra;1;ele;24;24;elemental-equilibrado;ele
+89;Arco dragón de tierra;2;ele;25;25;elemental-equilibrado;ele
+89;Arco dragón de tierra;3;ele;26;26;elemental-equilibrado;ele
+82;Arco áurico;1;ele;;;raw-especializado;ele
+82;Arco áurico;2;ele;;;raw-especializado;ele
+82;Arco áurico;3;ele;;;raw-especializado;ele
+90;Choque y desolación;1;ele;19;19;elemental-equilibrado;ele
+90;Choque y desolación;2;ele;22;22;elemental-equilibrado;ele
+90;Choque y desolación;3;ele;25;25;elemental-equilibrado;ele
+91;Ira y debacle;1;ele;18;18;elemental-moderado;ele
+91;Ira y debacle;1;raw;270;270;elemental-moderado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+91;Ira y debacle;2;ele;20;20;elemental-moderado;ele
+91;Ira y debacle;2;raw;280;280;elemental-moderado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+91;Ira y debacle;3;ele;21;21;elemental-moderado;ele
+91;Ira y debacle;3;raw;300;300;elemental-moderado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+92;Victoria gloriosa;1;ele;31;31;elemental-especializado;ele
+92;Victoria gloriosa;2;ele;33;33;elemental-especializado;ele
+92;Victoria gloriosa;3;ele;35;35;elemental-especializado;ele
+70;Arco carmesí;1;ele;;;raw-especializado;ele
+70;Arco carmesí;2;ele;;;raw-especializado;ele
+70;Arco carmesí;3;ele;;;raw-especializado;ele
+70;Arco carmesí;4;ele;;;raw-especializado;ele
+70;Arco carmesí;5;ele;;;raw-especializado;ele
+70;Arco carmesí;6;ele;;;raw-especializado;ele
+70;Arco carmesí;7;ele;;;raw-especializado;ele
+70;Arco carmesí;8;ele;;;raw-especializado;ele
+70;Arco carmesí;9;ele;;;raw-especializado;ele
+70;Arco carmesí;10;ele;;;raw-especializado;ele
+70;Arco carmesí;11;ele;;;raw-especializado;ele
+70;Arco carmesí;12;ele;;;raw-especializado;ele
+70;Arco carmesí;13;ele;;;raw-especializado;ele
+70;Arco carmesí;14;ele;;;raw-especializado;ele
+70;Arco carmesí;15;ele;;;raw-especializado;ele
+71;Arco de Herm. Pétreo;1;ele;8;8;elemental-moderado;ele
+71;Arco de Herm. Pétreo;2;ele;9;9;elemental-moderado;ele
+71;Arco de Herm. Pétreo;3;ele;10;10;elemental-moderado;ele
+71;Arco de Herm. Pétreo;4;ele;11;11;elemental-moderado;ele
+71;Arco de Herm. Pétreo;5;ele;12;12;elemental-moderado;ele
+71;Arco de Herm. Pétreo;6;ele;13;13;elemental-moderado;ele
+71;Arco de Herm. Pétreo;7;ele;14;14;elemental-moderado;ele
+71;Arco de Herm. Pétreo;8;ele;15;15;elemental-moderado;ele
+71;Arco de Herm. Pétreo;9;ele;16;16;elemental-moderado;ele
+71;Arco de Herm. Pétreo;10;ele;17;17;elemental-moderado;ele
+71;Arco de Herm. Pétreo;11;ele;17;17;elemental-moderado;ele
+71;Arco de Herm. Pétreo;12;ele;17;17;elemental-moderado;ele
+71;Arco de Herm. Pétreo;13;ele;17;17;elemental-moderado;ele
+71;Arco de Herm. Pétreo;14;ele;17;17;elemental-moderado;ele
+71;Arco de Herm. Pétreo;15;ele;17;17;elemental-moderado;ele
+72;Fulgor real;1;ele;6;6;elemental-moderado;ele
+72;Fulgor real;2;ele;7;7;elemental-moderado;ele
+72;Fulgor real;3;ele;8;8;elemental-moderado;ele
+72;Fulgor real;4;ele;9;9;elemental-moderado;ele
+72;Fulgor real;5;ele;10;10;elemental-moderado;ele
+72;Fulgor real;6;ele;11;11;elemental-moderado;ele
+72;Fulgor real;7;ele;12;12;elemental-moderado;ele
+72;Fulgor real;8;ele;13;13;elemental-moderado;ele
+72;Fulgor real;9;ele;14;14;elemental-moderado;ele
+72;Fulgor real;10;ele;15;15;elemental-moderado;ele
+72;Fulgor real;11;ele;16;16;elemental-moderado;ele
+72;Fulgor real;12;ele;16;16;elemental-moderado;ele
+72;Fulgor real;13;ele;17;17;elemental-moderado;ele
+72;Fulgor real;14;ele;17;17;elemental-moderado;ele
+72;Fulgor real;15;ele;17;17;elemental-moderado;ele
+73;Arco demoníaco;1;ele;;;raw-especializado;ele
+73;Arco demoníaco;2;ele;;;raw-especializado;ele
+73;Arco demoníaco;3;ele;;;raw-especializado;ele
+73;Arco demoníaco;4;ele;;;raw-especializado;ele
+73;Arco demoníaco;5;ele;;;raw-especializado;ele
+73;Arco demoníaco;6;ele;;;raw-especializado;ele
+73;Arco demoníaco;7;ele;;;raw-especializado;ele
+73;Arco demoníaco;8;ele;;;raw-especializado;ele
+73;Arco demoníaco;9;ele;;;raw-especializado;ele
+73;Arco demoníaco;10;ele;;;raw-especializado;ele
+73;Arco demoníaco;11;ele;;;raw-especializado;ele
+73;Arco demoníaco;12;ele;;;raw-especializado;ele
+73;Arco demoníaco;13;ele;;;raw-especializado;ele
+73;Arco demoníaco;14;ele;;;raw-especializado;ele
+73;Arco demoníaco;15;ele;;;raw-especializado;ele
+74;Arco de Argénteo;1;ele;;;raw-especializado;ele
+74;Arco de Argénteo;2;ele;;;raw-especializado;ele
+74;Arco de Argénteo;3;ele;;;raw-especializado;ele
+74;Arco de Argénteo;4;ele;;;raw-especializado;ele
+74;Arco de Argénteo;5;ele;;;raw-especializado;ele
+74;Arco de Argénteo;6;ele;;;raw-especializado;ele
+74;Arco de Argénteo;7;ele;;;raw-especializado;ele
+74;Arco de Argénteo;8;ele;;;raw-especializado;ele
+74;Arco de Argénteo;9;ele;;;raw-especializado;ele
+74;Arco de Argénteo;10;ele;;;raw-especializado;ele
+74;Arco de Argénteo;11;ele;;;raw-especializado;ele
+74;Arco de Argénteo;12;ele;;;raw-especializado;ele
+74;Arco de Argénteo;13;ele;;;raw-especializado;ele
+74;Arco de Argénteo;14;ele;;;raw-especializado;ele
+74;Arco de Argénteo;15;ele;;;raw-especializado;ele
+75;Arco de Grobo;1;ele;5;5;elemental-moderado;ele
+75;Arco de Grobo;2;ele;6;6;elemental-moderado;ele
+75;Arco de Grobo;3;ele;7;7;elemental-moderado;ele
+75;Arco de Grobo;4;ele;8;8;elemental-moderado;ele
+75;Arco de Grobo;5;ele;10;10;elemental-moderado;ele
+75;Arco de Grobo;6;ele;12;12;elemental-moderado;ele
+75;Arco de Grobo;7;ele;13;13;elemental-moderado;ele
+75;Arco de Grobo;8;ele;15;15;elemental-moderado;ele
+75;Arco de Grobo;9;ele;15;15;elemental-moderado;ele
+75;Arco de Grobo;10;ele;18;18;elemental-moderado;ele
+75;Arco de Grobo;11;ele;18;18;elemental-moderado;ele
+75;Arco de Grobo;12;ele;18;18;elemental-moderado;ele
+75;Arco de Grobo;13;ele;18;18;elemental-moderado;ele
+75;Arco de Grobo;14;ele;18;18;elemental-moderado;ele
+75;Arco de Grobo;15;ele;18;18;elemental-moderado;ele
+76;Arco malvado;1;ele;;;raw-especializado;ele
+76;Arco malvado;2;ele;;;raw-especializado;ele
+76;Arco malvado;3;ele;;;raw-especializado;ele
+76;Arco malvado;4;ele;;;raw-especializado;ele
+76;Arco malvado;5;ele;;;raw-especializado;ele
+76;Arco malvado;6;ele;;;raw-especializado;ele
+76;Arco malvado;7;ele;;;raw-especializado;ele
+76;Arco malvado;8;ele;;;raw-especializado;ele
+76;Arco malvado;9;ele;;;raw-especializado;ele
+76;Arco malvado;10;ele;;;raw-especializado;ele
+76;Arco malvado;11;ele;;;raw-especializado;ele
+76;Arco malvado;12;ele;;;raw-especializado;ele
+76;Arco malvado;13;ele;;;raw-especializado;ele
+76;Arco malvado;14;ele;;;raw-especializado;ele
+76;Arco malvado;15;ele;;;raw-especializado;ele
+77;Arco del terror;1;ele;7;7;elemental-equilibrado;ele
+77;Arco del terror;2;ele;8;8;elemental-equilibrado;ele
+77;Arco del terror;3;ele;9;9;elemental-equilibrado;ele
+77;Arco del terror;4;ele;10;10;elemental-equilibrado;ele
+77;Arco del terror;5;ele;11;11;elemental-equilibrado;ele
+77;Arco del terror;6;ele;14;14;elemental-equilibrado;ele
+77;Arco del terror;7;ele;15;15;elemental-equilibrado;ele
+77;Arco del terror;8;ele;18;18;elemental-equilibrado;ele
+77;Arco del terror;9;ele;19;19;elemental-equilibrado;ele
+77;Arco del terror;10;ele;20;20;elemental-equilibrado;ele
+77;Arco del terror;11;ele;22;22;elemental-equilibrado;ele
+77;Arco del terror;12;ele;24;24;elemental-equilibrado;ele
+77;Arco del terror;13;ele;26;26;elemental-equilibrado;ele
+77;Arco del terror;14;ele;28;28;elemental-equilibrado;ele
+77;Arco del terror;15;ele;31;31;elemental-equilibrado;ele
+78;Arco retumbante;1;ele;7;7;elemental-moderado;ele
+78;Arco retumbante;2;ele;8;8;elemental-moderado;ele
+78;Arco retumbante;3;ele;9;9;elemental-moderado;ele
+78;Arco retumbante;4;ele;10;10;elemental-moderado;ele
+78;Arco retumbante;5;ele;11;11;elemental-moderado;ele
+78;Arco retumbante;6;ele;12;12;elemental-moderado;ele
+78;Arco retumbante;7;ele;13;13;elemental-moderado;ele
+78;Arco retumbante;8;ele;14;14;elemental-moderado;ele
+78;Arco retumbante;9;ele;15;15;elemental-moderado;ele
+78;Arco retumbante;10;ele;16;16;elemental-moderado;ele
+78;Arco retumbante;11;ele;17;17;elemental-moderado;ele
+78;Arco retumbante;12;ele;17;17;elemental-moderado;ele
+78;Arco retumbante;13;ele;17;17;elemental-moderado;ele
+78;Arco retumbante;14;ele;18;18;elemental-moderado;ele
+78;Arco retumbante;15;ele;19;19;elemental-moderado;ele
+79;Arco de Rudra;1;ele;;;raw-especializado;ele
+79;Arco de Rudra;2;ele;;;raw-especializado;ele
+79;Arco de Rudra;3;ele;;;raw-especializado;ele
+79;Arco de Rudra;4;ele;;;raw-especializado;ele
+79;Arco de Rudra;5;ele;;;raw-especializado;ele
+79;Arco de Rudra;6;ele;;;raw-especializado;ele
+79;Arco de Rudra;7;ele;;;raw-especializado;ele
+79;Arco de Rudra;8;ele;;;raw-especializado;ele
+79;Arco de Rudra;9;ele;;;raw-especializado;ele
+79;Arco de Rudra;10;ele;;;raw-especializado;ele
+79;Arco de Rudra;11;ele;;;raw-especializado;ele
+79;Arco de Rudra;12;ele;;;raw-especializado;ele
+79;Arco de Rudra;13;ele;;;raw-especializado;ele
+79;Arco de Rudra;14;ele;;;raw-especializado;ele
+79;Arco de Rudra;15;ele;;;raw-especializado;ele
+80;Ira infernal;1;ele;7;7;elemental-moderado;ele
+80;Ira infernal;1;raw;170;170;elemental-moderado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+80;Ira infernal;2;ele;8;8;elemental-moderado;ele
+80;Ira infernal;2;raw;170;170;elemental-moderado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+80;Ira infernal;3;ele;9;9;elemental-moderado;ele
+80;Ira infernal;3;raw;180;180;elemental-moderado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+80;Ira infernal;4;ele;10;10;elemental-moderado;ele
+80;Ira infernal;4;raw;180;180;elemental-moderado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+80;Ira infernal;5;ele;11;11;elemental-moderado;ele
+80;Ira infernal;5;raw;190;190;elemental-moderado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+80;Ira infernal;6;ele;12;12;elemental-moderado;ele
+80;Ira infernal;6;raw;190;190;elemental-moderado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+80;Ira infernal;7;ele;13;13;elemental-moderado;ele
+80;Ira infernal;7;raw;200;200;elemental-moderado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+80;Ira infernal;8;ele;14;14;elemental-moderado;ele
+80;Ira infernal;8;raw;200;200;elemental-moderado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+80;Ira infernal;9;ele;15;15;elemental-moderado;ele
+80;Ira infernal;9;raw;220;220;elemental-moderado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+80;Ira infernal;10;ele;16;16;elemental-moderado;ele
+80;Ira infernal;10;raw;220;220;elemental-moderado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+80;Ira infernal;11;ele;17;17;elemental-moderado;ele
+80;Ira infernal;11;raw;270;270;elemental-moderado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+80;Ira infernal;12;ele;17;17;elemental-moderado;ele
+80;Ira infernal;12;raw;280;280;elemental-moderado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+80;Ira infernal;13;ele;17;17;elemental-moderado;ele
+80;Ira infernal;13;raw;290;290;elemental-moderado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+80;Ira infernal;14;ele;18;18;elemental-moderado;ele
+80;Ira infernal;14;raw;300;300;elemental-moderado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+80;Ira infernal;15;ele;18;18;elemental-moderado;ele
+80;Ira infernal;15;raw;310;310;elemental-moderado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+88;Tirador acerado;1;ele;;;raw-especializado;ele
+88;Tirador acerado;2;ele;;;raw-especializado;ele
+88;Tirador acerado;3;ele;;;raw-especializado;ele
+88;Tirador acerado;4;ele;;;raw-especializado;ele
+88;Tirador acerado;5;ele;;;raw-especializado;ele
+85;Invierno perpetuo;1;ele;32;32;elemental-especializado;ele
+85;Invierno perpetuo;2;ele;34;34;elemental-especializado;ele
+85;Invierno perpetuo;3;ele;36;36;elemental-especializado;ele
+85;Invierno perpetuo;4;ele;38;38;elemental-especializado;ele
+85;Invierno perpetuo;5;ele;40;40;elemental-especializado;ele
+84;Arco Zephra;1;ele;21;21;elemental-equilibrado;ele
+84;Arco Zephra;2;ele;22;22;elemental-equilibrado;ele
+84;Arco Zephra;3;ele;23;23;elemental-equilibrado;ele
+84;Arco Zephra;4;ele;24;24;elemental-equilibrado;ele
+84;Arco Zephra;5;ele;25;25;elemental-equilibrado;ele
+86;Arco Glacial;1;ele;18;18;elemental-moderado;ele
+86;Arco Glacial;2;ele;18;18;elemental-moderado;ele
+86;Arco Glacial;3;ele;18;18;elemental-moderado;ele
+86;Arco Glacial;4;ele;19;19;elemental-moderado;ele
+86;Arco Glacial;5;ele;20;20;elemental-moderado;ele
+87;Arco masacre;1;ele;;;raw-especializado;ele
+87;Arco masacre;1;raw;370;370;raw-especializado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+87;Arco masacre;2;ele;;;raw-especializado;ele
+87;Arco masacre;2;raw;380;380;raw-especializado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+87;Arco masacre;3;ele;;;raw-especializado;ele
+87;Arco masacre;3;raw;390;390;raw-especializado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+87;Arco masacre;4;ele;;;raw-especializado;ele
+87;Arco masacre;4;raw;400;400;raw-especializado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+87;Arco masacre;5;ele;;;raw-especializado;ele
+87;Arco masacre;5;raw;410;410;raw-especializado;Restauración del RAW original del convertido Stage-15 (el catálogo había reducido RAW en todos los niveles).
+38;Arco gastado;1;ele;;;raw-especializado;ele
+38;Arco gastado;2;ele;;;raw-especializado;ele
+38;Arco gastado;3;ele;;;raw-especializado;ele
+38;Arco gastado;4;ele;;;raw-especializado;ele
+38;Arco gastado;5;ele;;;raw-especializado;ele
+38;Arco gastado;6;ele;;;raw-especializado;ele
+38;Arco gastado;7;ele;;;raw-especializado;ele
+38;Arco gastado;8;ele;;;raw-especializado;ele
+40;Arco de acero gélido;1;ele;15;15;elemental-equilibrado;ele
+40;Arco de acero gélido;2;ele;17;17;elemental-equilibrado;ele
+40;Arco de acero gélido;3;ele;19;19;elemental-equilibrado;ele
+40;Arco de acero gélido;4;ele;23;23;elemental-equilibrado;ele
+40;Arco de acero gélido;5;ele;25;25;elemental-equilibrado;ele
+39;Pata de ángel;1;ele;12;12;elemental-moderado;ele
+39;Pata de ángel;2;ele;14;14;elemental-moderado;ele
+39;Pata de ángel;3;ele;16;16;elemental-moderado;ele
+39;Pata de ángel;4;ele;16;16;elemental-moderado;ele
+39;Pata de ángel;5;ele;16;16;elemental-moderado;ele
+108;Arco de hollín;1;ele;4;7;elemental-moderado;ele
+108;Arco de hollín;2;ele;8;9;elemental-moderado;ele
+108;Arco de hollín;3;ele;11;11;elemental-moderado;ele
+108;Arco de hollín;4;ele;15;13;elemental-moderado;ele
+108;Arco de hollín;5;ele;19;15;elemental-moderado;ele
+108;Arco de hollín;6;ele;23;17;elemental-moderado;ele
+108;Arco de hollín;7;ele;26;19;elemental-moderado;ele
+108;Arco de hollín;8;ele;30;21;elemental-moderado;ele
+109;Arco de mareas;1;ele;4;9;elemental-equilibrado;ele
+109;Arco de mareas;2;ele;8;11;elemental-equilibrado;ele
+109;Arco de mareas;3;ele;11;13;elemental-equilibrado;ele
+109;Arco de mareas;4;ele;15;16;elemental-equilibrado;ele
+109;Arco de mareas;5;ele;19;18;elemental-equilibrado;ele
+109;Arco de mareas;6;ele;23;20;elemental-equilibrado;ele
+109;Arco de mareas;7;ele;26;23;elemental-equilibrado;ele
+109;Arco de mareas;8;ele;30;25;elemental-equilibrado;ele
+110;Arco de la corriente;1;ele;4;9;elemental-equilibrado;ele
+110;Arco de la corriente;2;ele;8;11;elemental-equilibrado;ele
+110;Arco de la corriente;3;ele;11;13;elemental-equilibrado;ele
+110;Arco de la corriente;4;ele;15;16;elemental-equilibrado;ele
+110;Arco de la corriente;5;ele;19;18;elemental-equilibrado;ele
+110;Arco de la corriente;6;ele;23;20;elemental-equilibrado;ele
+110;Arco de la corriente;7;ele;26;23;elemental-equilibrado;ele
+110;Arco de la corriente;8;ele;30;25;elemental-equilibrado;ele
+111;Arco de escarcha;1;ele;4;9;elemental-equilibrado;ele
+111;Arco de escarcha;2;ele;8;11;elemental-equilibrado;ele
+111;Arco de escarcha;3;ele;11;13;elemental-equilibrado;ele
+111;Arco de escarcha;4;ele;15;16;elemental-equilibrado;ele
+111;Arco de escarcha;5;ele;19;18;elemental-equilibrado;ele
+111;Arco de escarcha;6;ele;23;20;elemental-equilibrado;ele
+111;Arco de escarcha;7;ele;26;23;elemental-equilibrado;ele
+111;Arco de escarcha;8;ele;30;25;elemental-equilibrado;ele
+112;Arco de ventisquero;1;ele;4;9;elemental-equilibrado;ele
+112;Arco de ventisquero;2;ele;8;11;elemental-equilibrado;ele
+112;Arco de ventisquero;3;ele;11;13;elemental-equilibrado;ele
+112;Arco de ventisquero;4;ele;15;16;elemental-equilibrado;ele
+112;Arco de ventisquero;5;ele;19;18;elemental-equilibrado;ele
+112;Arco de ventisquero;6;ele;23;20;elemental-equilibrado;ele
+112;Arco de ventisquero;7;ele;26;23;elemental-equilibrado;ele
+112;Arco de ventisquero;8;ele;30;25;elemental-equilibrado;ele
+113;Arco glacial;1;ele;4;9;elemental-equilibrado;ele
+113;Arco glacial;2;ele;8;11;elemental-equilibrado;ele
+113;Arco glacial;3;ele;11;13;elemental-equilibrado;ele
+113;Arco glacial;4;ele;15;16;elemental-equilibrado;ele
+113;Arco glacial;5;ele;19;18;elemental-equilibrado;ele
+113;Arco glacial;6;ele;23;20;elemental-equilibrado;ele
+113;Arco glacial;7;ele;26;23;elemental-equilibrado;ele
+113;Arco glacial;8;ele;30;25;elemental-equilibrado;ele
+114;Arco del abismo;1;ele;4;8;elemental-moderado;ele
+114;Arco del abismo;2;ele;8;10;elemental-moderado;ele
+114;Arco del abismo;3;ele;11;12;elemental-moderado;ele
+114;Arco del abismo;4;ele;15;14;elemental-moderado;ele
+114;Arco del abismo;5;ele;19;16;elemental-moderado;ele
+114;Arco del abismo;6;ele;23;18;elemental-moderado;ele
+114;Arco del abismo;7;ele;26;20;elemental-moderado;ele
+114;Arco del abismo;8;ele;30;22;elemental-moderado;ele
+115;Arco de trueno torvo;1;ele;4;8;elemental-moderado;ele
+115;Arco de trueno torvo;2;ele;8;11;elemental-moderado;ele
+115;Arco de trueno torvo;3;ele;11;13;elemental-moderado;ele
+115;Arco de trueno torvo;4;ele;15;15;elemental-moderado;ele
+115;Arco de trueno torvo;5;ele;19;17;elemental-moderado;ele
+115;Arco de trueno torvo;6;ele;23;20;elemental-moderado;ele
+115;Arco de trueno torvo;7;ele;26;22;elemental-moderado;ele
+115;Arco de trueno torvo;8;ele;30;24;elemental-moderado;ele
+116;Arco de hielo torvo;1;ele;4;9;elemental-equilibrado;ele
+116;Arco de hielo torvo;2;ele;8;11;elemental-equilibrado;ele
+116;Arco de hielo torvo;3;ele;11;13;elemental-equilibrado;ele
+116;Arco de hielo torvo;4;ele;15;16;elemental-equilibrado;ele
+116;Arco de hielo torvo;5;ele;19;18;elemental-equilibrado;ele
+116;Arco de hielo torvo;6;ele;23;20;elemental-equilibrado;ele
+116;Arco de hielo torvo;7;ele;26;23;elemental-equilibrado;ele
+116;Arco de hielo torvo;8;ele;30;25;elemental-equilibrado;ele
