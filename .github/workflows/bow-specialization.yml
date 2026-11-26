@@ -38,10 +38,32 @@ jobs:
           mkdir -p "$OUT"
           node tools/bow-specialization-audit.mjs --out "$OUT"
 
-      - name: Upload stage 13 audit artifacts
+      - name: Stage 14 official build matrices (12 RAW + 20 elementales G)
+        run: |
+          set -e
+          OUT="tools/out/stage14"
+          mkdir -p "$OUT"
+          # RAW: 4 shot types x 3 ranks, budget max completable per rank
+          # (LR/HR = 3, G = 4; Heavy G = 3, mismo presupuesto que Stage 12).
+          for spec in "Spread LR 3" "Spread HR 3" "Spread G 4" "Pierce LR 3" "Pierce HR 3" "Pierce G 4" "Rapid LR 3" "Rapid HR 3" "Rapid G 4" "Heavy LR 3" "Heavy HR 3" "Heavy G 3"; do
+            set -- $spec
+            node tools/bow-build-comparison.mjs --shot-type "$1" --budget "$3" --class b \
+              --talisman-policy verified --bow-rank "$2" --selection-limit 16 \
+              --out "$OUT/raw-$1-$2.json"
+          done
+          # Elemental: 5 elements x 4 shot types at G rank, budget 3.
+          for element in Fire Water Thunder Ice Dragon; do
+            for shot in Spread Pierce Rapid Heavy; do
+              node tools/bow-build-comparison.mjs --shot-type "$shot" --budget 3 --class b \
+                --talisman-policy verified --bow-rank G --selection-limit 16 --element "$element" \
+                --out "$OUT/elemental-$element-$shot-G.json"
+            done
+          done
+
+      - name: Upload stage 13 + stage 14 artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: bow-stage13-audit-results
+          name: bow-stage13-14-results
           path: |
             tools/out/stage13/bow-specialization-lines.json
             tools/out/stage13/bow-specialization-lines.csv
@@ -49,6 +71,8 @@ jobs:
             tools/out/stage13/bow-specialization-coverage.csv
             tools/out/stage13/bow-specialization-uncovered.json
             tools/out/stage13/bow-specialization-candidates.json
+            tools/out/stage14/raw-*.json
+            tools/out/stage14/elemental-*.json
           retention-days: 14
 
   stage12-validation:

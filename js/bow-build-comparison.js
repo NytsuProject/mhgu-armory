@@ -103,6 +103,14 @@ export function offensiveSkillsActivated(build, skillLevels = {}, priority = nul
 }
 
 /**
+ * Perfil híbrido: LEGADO. No es una especialización oficial del proyecto.
+ * Se conserva únicamente por compatibilidad histórica de la API; todas las
+ * comparaciones, matrices y recomendaciones oficiales usan solo «raw» o
+ * «elemental». No se usa en el sistema oficial de specializaciones.
+ */
+export const HYBRID_PROFILE = Object.freeze({ id: "hybrid", legacy: true });
+
+/**
  * Offensive-skill priority order for a profile + shot type + element.
  * The first N entries are activated when activeSkillBudget = N. Every entry is
  * an offensive skill (see OFFENSIVE_SKILL_REASONS); coating multipliers Power C+
@@ -120,10 +128,12 @@ export function offensivePriority(profile, shotType, element) {
   if (profile === "elemental") {
     const elementSkill = BOW_ELEMENT_SKILLS[element];
     if (!elementSkill) throw new Error("Elemento no válido para perfil elemental: " + element);
-    // Elemental: elemental damage multipliers first, then shot multiplier.
-    return [elementSkill, "Crit Element", "Tenderizer", shotSkill, "Elemental", "Critical Up"];
+    // Elemental: elemental damage multipliers first. Expert (Ojo crítico) es
+    // una fuente de afinidad que alimenta el multiplicador de Crítico
+    // elemental, por lo que se valora como candidata de afinidad.
+    return [elementSkill, "Crit Element", "Tenderizer", "Expert", shotSkill, "Elemental", "Critical Up"];
   }
-  if (profile === "hybrid") {
+  if (profile === HYBRID_PROFILE.id || profile === "hybrid") {
     const elementSkill = BOW_ELEMENT_SKILLS[element];
     if (!elementSkill) throw new Error("Elemento no válido para perfil híbrido: " + element);
     // Hybrid: elemental multipliers, then shot multiplier, then physical
@@ -132,6 +142,12 @@ export function offensivePriority(profile, shotType, element) {
   }
   throw new Error("Perfil no válido: " + profile);
 }
+
+/**
+ * Conjunto oficial de perfiles de especialización. El híbrido NO es una
+ * especialización oficial: queda fuera de todas las comparaciones oficiales.
+ */
+export const OFFICIAL_PROFILES = Object.freeze(["raw", "elemental"]);
 
 /**
  * Build the `buildOutput` object consumed by simulateBowBuildHitzoneMatrix.
@@ -161,7 +177,7 @@ export function runProfileComparison({
   rank = "G", genders = ["male", "female"],
   activeSkillBudget = 5, talismanPolicy = "max", allowNegatives = true,
   beamWidth = 300, topBuilds = 1, topTalismansPerArmor = 3,
-  profiles = ["raw", "elemental", "hybrid"],
+  profiles = ["raw", "elemental"],
 }) {
   const tree = bowData.trees.find(row => Number(row.id) === Number(treeId));
   if (!tree) throw new Error("Árbol de arcos no encontrado: " + treeId);

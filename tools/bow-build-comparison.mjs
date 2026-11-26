@@ -117,7 +117,7 @@ function screeningScore({ weapon, chargeSlot, shotType, element, profile, ctx })
 // Enumerate ALL eligible bows for a shot type and rank, INCLUDING `!` (C4)
 // charges. Each candidate keeps its highest charge of the requested shot type
 // (preferring a non-`!` charge only as a tie-break on level).
-function enumerateProfileCandidates(bowData, shotType, requireElement, bowRank = "G", preferredChargeSlot = null) {
+function enumerateProfileCandidates(bowData, shotType, requireElement, bowRank = "G", preferredChargeSlot = null, preferredElement = null) {
   const candidates = [];
   for (const tree of bowData.trees) {
     for (const level of tree.levels || []) {
@@ -129,6 +129,7 @@ function enumerateProfileCandidates(bowData, shotType, requireElement, bowRank =
       if (!slots.length) continue;
       const element = findElement(level);
       if (requireElement && !element) continue;
+      if (requireElement && preferredElement && element[1] !== preferredElement) continue;
       // If a preferred charge slot is requested (e.g. C1 for early-progression
       // study), the bow must HAVE that slot; bows lacking it are skipped so the
       // study is restricted to bows that actually use the requested charge.
@@ -159,9 +160,9 @@ function enumerateProfileCandidates(bowData, shotType, requireElement, bowRank =
  * evaluated by real mean damage; the best is selected. If no shortlist bow
  * completes the budget, the profile is marked non-comparable.
  */
-function selectProfileBow({ armorData, decorations, talismanSkills, skillLevels, bowData, hitzoneData, shotType, requireElement, profile, budget, talismanPolicy, bowRank = "G", selectionLimit = 16, preferredChargeSlot = null }) {
+function selectProfileBow({ armorData, decorations, talismanSkills, skillLevels, bowData, hitzoneData, shotType, requireElement, profile, budget, talismanPolicy, bowRank = "G", selectionLimit = 16, preferredChargeSlot = null, preferredElement = null }) {
   const ctx = screeningContext(hitzoneData);
-  const candidates = enumerateProfileCandidates(bowData, shotType, requireElement, bowRank, preferredChargeSlot);
+  const candidates = enumerateProfileCandidates(bowData, shotType, requireElement, bowRank, preferredChargeSlot, preferredElement);
   if (!candidates.length) {
     return { bow: null, note: "No hay arco " + bowRank + " con esa carga." + (requireElement ? " y elemento." : ""), screening: { totalEligible: 0, shortlistSize: 0 } };
   }
@@ -238,17 +239,24 @@ function runClassA({ armorData, decorations, talismanSkills, skillLevels, bowDat
   };
 }
 
-function runClassB({ armorData, decorations, talismanSkills, skillLevels, bowData, hitzoneData, shotType, budget, switchShots, out, talismanPolicy, bowRank = "G", selectionLimit = 16, preferredChargeSlot = null }) {
+function runClassB({ armorData, decorations, talismanSkills, skillLevels, bowData, hitzoneData, shotType, budget, switchShots, out, talismanPolicy, bowRank = "G", selectionLimit = 16, preferredChargeSlot = null, preferredElementArg = null, includeLegacyHybrid = false }) {
   const profiles = [
     { profile: "raw", requireElement: false },
     { profile: "elemental", requireElement: true },
-    { profile: "hybrid", requireElement: true },
   ];
+  // El perfil híbrido es LEGADO y queda fuera del sistema oficial. Solo se
+  // incluye bajo bandera explícita para compatibilidad histórica.
+  if (includeLegacyHybrid) {
+    profiles.push({ profile: "hybrid", requireElement: true, legacy: true });
+  }
   const selected = [];
   const allBuilds = [];
   for (const { profile, requireElement } of profiles) {
+    // El perfil elemental oficial puede restringirse a un elemento concreto
+    // (--element) para las matrices por elemento.
+    const preferredElement = profile === "elemental" ? preferredElementArg : null;
     const { bow, note, completable, incomplete, shortlistSize, screening } = selectProfileBow({
-      preferredChargeSlot,
+      preferredChargeSlot, preferredElement,
       armorData, decorations, talismanSkills, skillLevels, bowData, hitzoneData,
       shotType, requireElement, profile, budget, talismanPolicy, bowRank, selectionLimit,
     });
@@ -325,6 +333,8 @@ function main() {
   if (!["LR", "HR", "G"].includes(bowRank)) throw new Error("--bow-rank debe ser LR, HR o G.");
   const selectionLimit = Number(args["selection-limit"] || 16);
   const preferredChargeSlot = args["preferred-charge-slot"] != null ? Number(args["preferred-charge-slot"]) : null;
+  const includeLegacyHybrid = Boolean(args["include-legacy-hybrid"]);
+  const preferredElementArg = args.element || null;
   const out = resolve(args.out || "tools/out/stage12/bow-build-comparison.json");
   if (!SHOT_TYPES.includes(shotType)) throw new Error("shot-type debe ser Spread, Pierce, Rapid o Heavy.");
 
@@ -335,12 +345,12 @@ function main() {
     selectionLimit,
     theoretical: talismanPolicy === "max",
     ...(classArg === "b" ? {} : { classA: runClassA({ armorData, decorations, talismanSkills, skillLevels, bowData, hitzoneData, shotType, budget, switchShots, out, talismanPolicy }) }),
-    ...(classArg === "a" ? {} : { classB: runClassB({ armorData, decorations, talismanSkills, skillLevels, bowData, hitzoneData, shotType, budget, switchShots, out, talismanPolicy, bowRank, selectionLimit, preferredChargeSlot }) }),
+    ...(classArg === "a" ? {} : { classB: runClassB({ armorData, decorations, talismanSkills, skillLevels, bowData, hitzoneData, shotType, budget, switchShots, out, talismanPolicy, bowRank, selectionLimit, preferredChargeSlot, preferredElementArg, includeLegacyHybrid }) }),
   };
   mkdirSync(dirname(out), { recursive: true });
   writeFileSync(out, JSON.stringify(payload, null, 2) + "\n", "utf8");
-  console.log("MHGU bow build fair comparison (stage 12)");
-  console.log("shot type=" + shotType + " | budget=" + budget + " | bow rank=" + bowRank + " | talismans=" + talismanPolicy + (talismanPolicy === "max" ? " (TEÓRICO)" : "") + " | shortlist=" + selectionLimit + (preferredChargeSlot ? " | carga preferida=C" + preferredChargeSlot : ""));
+  console.log("MHGU bow build fair comparison (stage 14, especializaciones oficiales)");
+  console.log("shot type=" + shotType + " | budget=" + budget + " | bow rank=" + bowRank + " | talismans=" + talismanPolicy + (talismanPolicy === "max" ? " (TEÓRICO)" : "") + " | shortlist=" + selectionLimit + (preferredChargeSlot ? " | carga preferida=C" + preferredChargeSlot : "") + (preferredElementArg ? " | elemento=" + preferredElementArg : ""));
   if (payload.classA) {
     if (!payload.classA.matrix) {
       console.log("clase A: " + (payload.classA.note || "no disponible"));
