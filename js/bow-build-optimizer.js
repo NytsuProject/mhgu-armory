@@ -68,7 +68,26 @@ function compatiblePiece(piece, rank, slot, gender) {
   if (slot !== "head" && piece.cls !== "G" && piece.cls !== "A") return false;
   return true;
 }
-function getTalismanOptions(talismanSkills, targetSkills) {
+function positiveValues(values) {
+  return [...new Set((values || []).map(Number).filter(n => Number.isFinite(n) && n > 0))]
+    .sort((a, b) => a - b);
+}
+
+/**
+ * Talisman catalog policies.
+ * - "max": theoretical-max performance — each skill carries its catalog maximum
+ *   positive points, including two skills on one charm. This assumes the best
+ *   points of both skills are simultaneously craftable; flagged as an
+ *   unverified assumption, not measured in-game.
+ * - "legal": legally-possible — every positive point value present in the
+ *   catalog is enumerated (single-skill and two-skill combinations).
+ * - "conservative": single-skill charms only (no two-skill assumption), any
+ *   positive catalog value, deco 0-3.
+ */
+export function getTalismanOptions(talismanSkills, targetSkills, policy = "max") {
+  if (!["max", "legal", "conservative"].includes(policy)) {
+    throw new Error("Política de talismán no válida: " + policy);
+  }
   const lookup = new Map(talismanSkills.map(row => [row.en, row]));
   const keys = targetSkills.filter(skill => lookup.has(skill));
   const options = new Map();
@@ -78,20 +97,28 @@ function getTalismanOptions(talismanSkills, targetSkills) {
   };
   for (let deco = 1; deco <= 3; deco++) add(deco, []);
   for (const skill of keys) {
-    const row = lookup.get(skill), points = maxPositive(row.points?.[0]);
-    if (points) for (let deco = 0; deco <= 3; deco++) add(deco, [[skill, row.es || skill, points]]);
+    const row = lookup.get(skill);
+    const values = policy === "max" ? [maxPositive(row.points?.[0])].filter(Boolean)
+      : positiveValues(row.points?.[0]);
+    for (const points of values) for (let deco = 0; deco <= 3; deco++) {
+      add(deco, [[skill, row.es || skill, points]]);
+    }
   }
+  if (policy === "conservative") return [...options.values()];
   for (const first of keys) for (const second of keys) {
     if (first === second) continue;
     const a = lookup.get(first), b = lookup.get(second);
-    const p1 = maxPositive(a.points?.[0]), p2 = maxPositive(b.points?.[1]);
-    if (p1 && p2) for (let deco = 0; deco <= 3; deco++) {
+    const v1 = policy === "max" ? [maxPositive(a.points?.[0])].filter(Boolean)
+      : positiveValues(a.points?.[0]);
+    const v2 = policy === "max" ? [maxPositive(b.points?.[1])].filter(Boolean)
+      : positiveValues(b.points?.[1]);
+    for (const p1 of v1) for (const p2 of v2) for (let deco = 0; deco <= 3; deco++) {
       add(deco, [[first, a.es || first, p1], [second, b.es || second, p2]]);
     }
   }
   return [...options.values()];
 }
-function summarizeSkills(rows, requirements, skillLevels) {
+function summarizeSkills(rows, requirements, skillLevels, weights = null) {
   const totals = new Map(rows.map(row => [row.en, Number(row.total || 0)]));
   const target = Object.entries(requirements).map(([skill, threshold]) => {
     const points = totals.get(skill) || 0;
@@ -105,10 +132,12 @@ function summarizeSkills(rows, requirements, skillLevels) {
     if (points <= threshold) negativeSkills.push({ skill, points, threshold });
   }
   const activatedSkills = target.filter(row => row.active).length;
-  const coverage = target.reduce((sum, row) => sum + row.progress, 0);
+  const weightAt = i => weights && weights[target[i].skill] !== undefined ? weights[target[i].skill] : 1;
+  const coverage = target.reduce((sum, row, i) => sum + weightAt(i) * row.progress, 0);
+  const weightSum = target.reduce((sum, row, i) => sum + weightAt(i), 0) || 1;
   return {
     target, activatedSkills, targetSkillCount: target.length,
-    coverage: target.length ? coverage / target.length : 0,
+    coverage: target.length ? coverage / weightSum : 0,
     negativeSkills,
     score: activatedSkills * 10 + coverage - negativeSkills.length * 2.5,
   };
@@ -118,9 +147,9 @@ function buildPieces(armor, talisman, weaponSlots, weaponName) {
     slot: "weapon", name: weaponName || "Arco", deco: weaponSlots, sk: [],
   }];
 }
-function evaluate(armor, talisman, weaponSlots, weaponName, jewelsBySlot, requirements, skillLevels) {
+function evaluate(armor, talisman, weaponSlots, weaponName, jewelsBySlot, requirements, skillLevels, weights = null) {
   const skills = setSkills(buildPieces(armor, talisman, weaponSlots, weaponName), jewelsBySlot);
-  return { skills, summary: summarizeSkills(skills, requirements, skillLevels) };
+  return { skills, summary: summarizeSkills(skills, requirements, skillLevels, weights) };
 }
 function partialVector(state, requirements) {
   return Object.keys(requirements).map(skill =>
@@ -195,9 +224,9 @@ function jewelCandidatesFor(decorations, requirements) {
   return decorations.filter(jewel => Number.isInteger(Number(jewel.cost)) && Number(jewel.cost) >= 1 && Number(jewel.cost) <= 3
     && (jewel.sk || []).some(([skill, , points]) => allowed.has(skill) && Number(points) > 0));
 }
-function allocateJewels({ armor, talisman, weaponSlots, weaponName, decorations, requirements, skillLevels }) {
+function allocateJewels({ armor, talisman, weaponSlots, weaponName, decorations, requirements, skillLevels, weights = null }) {
   const containers = getContainers(armor, talisman, weaponSlots), jewelsBySlot = emptyJewels();
-  let current = evaluate(armor, talisman, weaponSlots, weaponName, jewelsBySlot, requirements, skillLevels);
+  let current = evaluate(armor, talisman, weaponSlots, weaponName, jewelsBySlot, requirements, skillLevels, weights);
   let usedSockets = 0;
   const maxIterations = containers.reduce((sum, row) => sum + row.capacity, 0);
   for (let iteration = 0; iteration < maxIterations; iteration++) {
@@ -207,7 +236,7 @@ function allocateJewels({ armor, talisman, weaponSlots, weaponName, decorations,
       const used = jewelsBySlot[container.slot].reduce((sum, row) => sum + Number(row.cost), 0);
       if (container.capacity - used < cost) continue;
       jewelsBySlot[container.slot].push(jewel);
-      const trial = evaluate(armor, talisman, weaponSlots, weaponName, jewelsBySlot, requirements, skillLevels);
+      const trial = evaluate(armor, talisman, weaponSlots, weaponName, jewelsBySlot, requirements, skillLevels, weights);
       jewelsBySlot[container.slot].pop();
       const delta = trial.summary.score - current.summary.score, efficiency = delta / cost;
       if (delta > 1e-7 && (!best || efficiency > best.efficiency + 1e-9 ||
@@ -227,7 +256,7 @@ function allocateJewels({ armor, talisman, weaponSlots, weaponName, decorations,
   return { jewelsBySlot, usedSockets, freeSockets, ...current };
 }
 
-function buildSignature(build) {
+export function buildSignature(build) {
   const armor = build.armor.map(piece => piece.id).join("-");
   const charm = build.talisman ? build.talisman.deco + ":" + build.talisman.skills.map(row => row[0] + "=" + row[2]).join(",") : "none";
   const jewels = Object.entries(build.jewelsBySlot).map(([slot, rows]) => slot + ":" + rows.map(row => row.id).join(",")).join("|");
@@ -238,6 +267,8 @@ export function optimizeBowBuild({
   armorData, decorations, talismanSkills, skillLevels, requirements,
   rank = "G", gender = "male", weaponSlots = 0, weaponName = "Arco",
   beamWidth = 700, topBuilds = 3, topTalismansPerArmor = 3,
+  activeSkillBudget = null, offensiveSkillPriority = null,
+  talismanPolicy = "max", allowNegatives = true, extraSkillThreshold = 10,
 } = {}) {
   if (!armorData?.pieces || !Array.isArray(decorations) || !Array.isArray(talismanSkills)
     || !skillLevels || !requirements || !Object.keys(requirements).length) {
@@ -246,9 +277,49 @@ export function optimizeBowBuild({
   if (!["LR", "HR", "G"].includes(rank)) throw new Error("Rango no válido.");
   const genderId = normalizeGender(gender);
   if (!Number.isInteger(weaponSlots) || weaponSlots < 0 || weaponSlots > 3) throw new Error("weaponSlots debe ser de 0 a 3.");
+  if (!["max", "legal", "conservative"].includes(talismanPolicy)) {
+    throw new Error("Política de talismán no válida: " + talismanPolicy);
+  }
   const width = Math.max(50, Math.min(5000, Number(beamWidth) || 700));
-  const armorSearch = makeArmorBeam(armorData, requirements, rank, genderId, width);
-  const charms = getTalismanOptions(talismanSkills, Object.keys(requirements));
+
+  // Budget mode: activate the top-N offensive skills of the documented priority
+  // order instead of the whole requirement set. If the requirement set does not
+  // reach the budget, the remaining slots are filled with extra offensive skills
+  // from the priority list (using extraSkillThreshold points) so every profile
+  // can be compared at an equal activated-skill budget.
+  let budgetedRequirements = requirements;
+  let budgetMeta = { budget: null, budgetedSkills: Object.keys(requirements), unbudgetedSkills: [] };
+  if (activeSkillBudget !== null && activeSkillBudget !== undefined) {
+    const budget = Number(activeSkillBudget);
+    const extraThreshold = Number(extraSkillThreshold) || 10;
+    if (!Number.isInteger(budget) || budget < 1) throw new Error("activeSkillBudget debe ser un entero positivo.");
+    const priority = Array.isArray(offensiveSkillPriority) ? offensiveSkillPriority : Object.keys(requirements);
+    const ordered = priority.filter(skill => requirements[skill] !== undefined);
+    const extra = priority.filter(skill => requirements[skill] === undefined && !ordered.includes(skill));
+    if (ordered.length + extra.length < budget) throw new Error("Presupuesto " + budget + " mayor que habilidades disponibles (requisitos + prioridad): " + (ordered.length + extra.length));
+    const budgetedKeys = [...ordered, ...extra].slice(0, budget);
+    budgetedRequirements = Object.fromEntries(budgetedKeys.map(skill => [
+      skill, requirements[skill] !== undefined ? requirements[skill] : extraThreshold,
+    ]));
+    budgetMeta = {
+      budget,
+      budgetedSkills: budgetedKeys,
+      unbudgetedSkills: Object.keys(requirements).filter(skill => !budgetedKeys.includes(skill)),
+      priorityOrder: priority,
+      extraSkills: budgetedKeys.filter(skill => requirements[skill] === undefined),
+      extraSkillThreshold: extraThreshold,
+    };
+  }
+
+  const armorSearch = makeArmorBeam(armorData, budgetedRequirements, rank, genderId, width);
+  // Budget weights: higher-priority skills get higher coverage weight, so the
+  // search activates the most important offensive skills first.
+  const weights = budgetMeta.budget
+    ? Object.fromEntries(budgetMeta.priorityOrder
+        .filter(skill => budgetMeta.budgetedSkills.includes(skill))
+        .map((skill, i) => [skill, budgetMeta.budget - i]))
+    : null;
+  const charms = getTalismanOptions(talismanSkills, Object.keys(budgetedRequirements), talismanPolicy);
   const candidates = [];
   let talismanCandidatesTested = 0;
   for (const state of armorSearch.beam) {
@@ -256,7 +327,7 @@ export function optimizeBowBuild({
     for (const charm of charms) {
       talismanCandidatesTested++;
       const talisman = charm.sk.length || charm.deco ? charm : null;
-      const base = evaluate(state.armor, talisman, weaponSlots, weaponName, emptyJewels(), requirements, skillLevels);
+      const base = evaluate(state.armor, talisman, weaponSlots, weaponName, emptyJewels(), budgetedRequirements, skillLevels, weights);
       scored.push({
         armor: state.armor,
         talisman,
@@ -266,14 +337,18 @@ export function optimizeBowBuild({
     scored.sort((a, b) => b.score - a.score);
     candidates.push(...scored.slice(0, topTalismansPerArmor));
   }
-  const jewels = jewelCandidatesFor(decorations, requirements);
+  const jewels = jewelCandidatesFor(decorations, budgetedRequirements);
   const results = [];
   for (const candidate of candidates) {
     const allocation = allocateJewels({
       armor: candidate.armor, talisman: candidate.talisman, weaponSlots, weaponName,
-      decorations: jewels, requirements, skillLevels,
+      decorations: jewels, requirements: budgetedRequirements, skillLevels, weights,
     });
     const target = allocation.summary.target;
+    const budgetedPoints = budgetMeta.budgetedSkills.reduce((sum, skill) => {
+      const row = target.find(entry => entry.skill === skill);
+      return sum + (row?.points || 0);
+    }, 0);
     const build = {
       armor: candidate.armor.map(piece => ({
         id: piece.id, slot: piece.slot, name: piece.nameEs || piece.name,
@@ -298,6 +373,11 @@ export function optimizeBowBuild({
       jewelSocketsUsed: allocation.usedSockets,
       jewelSocketsFree: allocation.freeSockets,
       score: allocation.summary.score,
+      thresholds: Object.fromEntries(Object.entries(budgetedRequirements)),
+      investedPoints: budgetedPoints,
+      slotsUsed: allocation.usedSockets,
+      cost: allocation.usedSockets,
+      budget: budgetMeta,
     };
     results.push(build);
   }
@@ -306,8 +386,19 @@ export function optimizeBowBuild({
     || b.coverage - a.coverage
     || a.negativeSkills.length - b.negativeSkills.length
     || b.jewelSocketsFree - a.jewelSocketsFree);
+  let pool = results;
+  let negativeFallback = null;
+  if (!allowNegatives) {
+    const clean = results.filter(build => build.negativeSkills.length === 0);
+    if (clean.length) pool = clean;
+    else {
+      negativeFallback = results[0];
+      negativeFallback.negativeSkillsJustified = true;
+      pool = [negativeFallback];
+    }
+  }
   const unique = [], seen = new Set();
-  for (const build of results) {
+  for (const build of pool) {
     const key = buildSignature(build);
     if (seen.has(key)) continue;
     seen.add(key);
@@ -316,12 +407,14 @@ export function optimizeBowBuild({
   }
   return {
     metadata: {
-      model: "MHGU bow real armor build optimizer v1",
+      model: "MHGU bow real armor build optimizer v2",
       rank, gender: genderId === 0 ? "male" : "female", weaponSlots, beamWidth: width,
+      talismanPolicy, allowNegatives,
       retainedArmorStatesBySlot: armorSearch.statesPerSlot,
       compatibleArmorPiecesBySlot: armorSearch.compatiblePiecesBySlot,
       talismanCandidatesTested, candidateBuildsEvaluated: candidates.length,
       jewelCandidates: jewels.length,
+      budget: budgetMeta,
       searchMethod: "bounded beam search + legal talisman options + iterative jewel placement",
       globalOptimumGuaranteed: false,
       notes: [
@@ -329,8 +422,13 @@ export function optimizeBowBuild({
         "Cada joya se coloca en una ranura individual con capacidad suficiente.",
         "Las piezas unisex se permiten en búsquedas masculinas y femeninas; no se mezclan piezas de ambos géneros.",
         "El beam search es acotado: entrega builds legales encontradas, no una prueba matemática de óptimo global.",
+        talismanPolicy === "max"
+          ? "Política de talismán max: puntos máximos de ambas habilidades a la vez; suposición no verificada en juego."
+          : talismanPolicy === "legal"
+            ? "Política de talismán legal: todos los valores positivos presentes en el catálogo, talismánes de una y dos habilidades."
+            : "Política de talismán conservadora: solo talismánes de una habilidad.",
       ],
     },
-    requirements, builds: unique,
+    requirements: budgetedRequirements, builds: unique,
   };
 }
